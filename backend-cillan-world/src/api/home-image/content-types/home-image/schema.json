@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "home_images",
+  "info": {
+    "singularName": "home-image",
+    "pluralName": "home-images",
+    "displayName": "HomeImage"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "homeImageName": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "homeImageName"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "order": {
+      "type": "integer"
+    }
+  }
+}

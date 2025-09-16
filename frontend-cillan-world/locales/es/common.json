@@ -1,0 +1,50 @@
+{
+  "general": {
+    "image_missing": "Falta la imagen",
+    "terms_conditions": "términos y condiciones",
+    "highlights": "destacados",
+    "all_catalogue": "todo el catálogo"
+  },
+  "navbar": {
+    "shop": "tienda",
+    "view_all": "ver todo",
+    "tops": "prendas superiores",
+    "bottoms": "prendas inferiores",
+    "runaway_pieces": "piezas de pasarela",
+    "universe": "universo",
+    "about": "sobre nosotros"
+  },
+  "bag": {
+    "your_bag": "Tu Cesta",
+    "bag_is_empty": "Tu cesta está vacía (por ahora)",
+    "read_accepted": "Declaro haber leído y aceptado la",
+    "privacy_policy": "Politica de Privacidad",
+    "total": "Total",
+    "checkout": "Finalizar compra",
+    "size": "Talla",
+    "remove": "Eliminar"
+  },
+  "collection": {
+    "no_images_found": "No se han encontrado imágenes para esta colección"
+  },
+  "product": {
+    "add_to_bag": "añadir a la cesta",
+    "loading_product": "Cargando producto...",
+    "product_not_found": "Producto no encontrado",
+    "which_size": "¿Que talla debería elegir?",
+    "select_size_validation": "Por favor, seleccione una talla antes de añadir a la cesta",
+    "details": "Detalles",
+    "materials": "Materiales",
+    "garment_care": "Cuidado de la prenda"
+  },
+  "about": {
+    "is_the": "es el",
+    "inner_world": "mundo interior",
+    "p_1_1": "de los niños, la dualidad entre lo complejo de desarrollar una personalidad y divertirse durante la infancia, darse cuenta que todas las referencias son válidas para enriquecerse y que nunca se es demasiado curioso. Entendido desde la ironía y el juego,",
+    "never": "jamás",
+    "p_1_2": "se deja de ser un niño.",
+    "born_as": "nace como un",
+    "alter_ego": "alter ego",
+    "p_2": ", representa lo que se supone que se debe dejar atrás pero nos negamos a perderlo, es la versión oculta que todos tenemos en la vida adulta, es la creatividad la diversión y no tener prejuicios."
+  }
+}

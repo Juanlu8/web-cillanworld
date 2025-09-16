@@ -1,0 +1,24 @@
+# generales
+.DS_Store
+.vscode/
+.env
+.env.*.local
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+.next/
+coverage/
+.cache/
+
+# Logs / temporales
+logs/
+*.log
+tmp/
+
+# Si el backend es .NET (si no, borra estas líneas)
+bin/
+obj/
+.vs/frontend-cillan-world/public/video/*
+*.mp4

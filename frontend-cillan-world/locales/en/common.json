@@ -1,0 +1,50 @@
+{
+  "general": {
+    "image_missing": "Image missing",
+    "terms_conditions": "terms & conditions",
+    "highlights": "highlights",
+    "all_catalogue": "all catalogue"
+  },
+  "navbar": {
+    "shop": "shop",
+    "view_all": "view all",
+    "tops": "tops",
+    "bottoms": "bottoms",
+    "runaway_pieces": "runaway pieces",
+    "universe": "universe",
+    "about": "about"
+  },
+  "bag": {
+    "your_bag": "Your Bag",
+    "bag_is_empty": "Your bag is empty (for now)",
+    "read_accepted": "I declare that I have read and accept the",
+    "privacy_policy": "Privacy Policy",
+    "total": "Total",
+    "checkout": "Checkout",
+    "size": "Size",
+    "remove": "Remove"
+  },
+  "collection": {
+    "no_images_found": "No images found for this collection."
+  },
+  "product": {
+    "add_to_bag": "add to bag",
+    "loading_product": "Loading product...",
+    "product_not_found": "Product not found",
+    "which_size": "Which size should I choose?",
+    "select_size_validation": "Please select a size before adding to the bag",
+    "details": "Details",
+    "materials": "Materials",
+    "garment_care": "Garment Care"
+  },
+  "about": {
+    "is_the": "is the",
+    "inner_world": "inner world",
+    "p_1_1": "of children, the duality between the complexity of developing a personality and having fun during childhood, realizing that all references are valid for enrichment and that one can never be too curious. Understood through irony and play, one",
+    "never": "never",
+    "p_1_2": "stops being a child.",
+    "born_as": "is born as an",
+    "alter_ego": "alter ego",
+    "p_2": ", representing what we are supposed to leave behind but refuse to lose. It is the hidden version we all have in adulthood, embodying creativity, fun, and freedom from prejudice."
+  }
+}
