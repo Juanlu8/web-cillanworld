@@ -7,6 +7,7 @@ import { CollectionType } from "@/types/collection";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import NextImage from "next/image";
 
 type AnyObj = Record<string, any>;
 
@@ -109,9 +110,11 @@ export default function CollectionPage() {
 
           {/* Logo centrado */}
           <div className="w-full flex justify-center pt-14 md:pt-10 relative z-10">
-            <img
+            <NextImage
               src="/images/logo-top.png"
               alt="Cillán"
+              width={1600}
+              height={900}
               className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 hover:scale-105 cursor-pointer"
               onClick={goToHome}
             />
@@ -170,12 +173,14 @@ export default function CollectionPage() {
                         style={{ minHeight: '40vw', maxHeight: '150vh' }}
                       >
                         {src ? (
-                          <img
+                          <NextImage
                             src={src}
                             alt={`${name} ${idx + 1}`}
                             className="w-full h-full object-cover transition duration-300 ease-in-out group-hover:scale-110 cursor-pointer"
                             loading="lazy"
                             decoding="async"
+                            width={1600}
+                            height={1600}
                             crossOrigin="anonymous"
                             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                             onClick={() =>
@@ -212,9 +217,11 @@ export default function CollectionPage() {
                 className="relative max-w-4xl max-h-[90vh]"
                 onClick={(e) => e.stopPropagation()}
               >
-                <img
+                <NextImage
                   src={modalImage}
                   alt="Imagen ampliada"
+                  width={1600}
+                  height={1600}
                   className="max-w-full max-h-[90vh] object-contain rounded"
                 />
               </div>

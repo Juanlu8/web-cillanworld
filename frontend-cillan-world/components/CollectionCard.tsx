@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { CollectionType } from "@/types/collection";
 import { useTranslation } from "react-i18next";
+import NextImage from "next/image";
 
 type Props = {
   collection: CollectionType;
@@ -35,10 +36,12 @@ export default function CollectionCard({ collection }: Props) {
 
       {/* Imagen principal */}
       {imageUrl ? (
-        <img
+        <NextImage
           src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${imageUrl}`}
           alt={collection.collectionName}
           onLoad={() => setIsImageLoaded(true)}
+          width={1600}
+          height={1600}
           className={`w-full h-full object-contain transition duration-300 ease-in-out group-hover:scale-105 ${
             isImageLoaded ? "opacity-100" : "opacity-0"
           }`}

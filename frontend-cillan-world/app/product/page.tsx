@@ -10,6 +10,7 @@ import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/componen
 import { useCart } from "@/hooks/use-cart";
 import { CartItemType } from "@/types/cartItem";
 import { useTranslation } from "react-i18next";
+import NextImage from "next/image";
 
 export default function ProductPage() {
   // Estado para el color dominante (primera imagen)
@@ -104,9 +105,11 @@ export default function ProductPage() {
     <div className="relative min-h-screen bg-white">
       {/* Marca de agua */}
       <div className="pt-14 md:pt-10 left-0 w-full flex justify-center z-20">
-        <img
+        <NextImage
           src="/images/logo-top.png"
           alt="Marca de agua"
+          width={1600}
+          height={900}
           className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105"
           onClick={goToHome}
         />
@@ -129,10 +132,12 @@ export default function ProductPage() {
                       <div className="absolute inset-0 animate-pulse bg-gray-100 opacity-50 rounded" />
                     )}
 
-                    <img
+                    <NextImage
                       ref={idx === 0 ? imgRef : undefined}
                       src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${image.attributes.url}`}
                       alt={`Imagen ${image.id}`}
+                      width={1600}
+                      height={1600}
                       className={`h-full w-auto object-contain rounded cursor-pointer transition-opacity duration-300 ${
                         loaded[image.id] ? "opacity-100" : "opacity-0"
                       }`}
@@ -167,9 +172,11 @@ export default function ProductPage() {
                 className="relative max-w-4xl max-h-[90vh] p-4"
                 onClick={(e) => e.stopPropagation()}
               >
-                <img
+                <NextImage
                   src={modalImage}
                   alt="Imagen ampliada"
+                  width={1600}
+                  height={1600}
                   className="max-w-full max-h-[80vh] object-contain rounded"
                 />
               </div>
@@ -215,9 +222,11 @@ export default function ProductPage() {
                     onClick={() => router.push(`/product?slug=${variant.attributes?.slug}`)}
                     title={colorValue}
                   >
-                    <img
+                    <NextImage
                       src="/images/anilla.png"
                       alt="Anilla"
+                      width={943}
+                      height={943}
                       style={{ width: 40, height: 40, display: "block" }}
                     />
                     <div

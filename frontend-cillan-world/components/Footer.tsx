@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from "react-i18next";
+import NextImage from "next/image";
 
 const Footer = () => {
   const goToPrivacyPolicy = () => {
@@ -21,9 +22,11 @@ const Footer = () => {
   return (
     <footer className="relative bg-black text-white py-10 overflow-hidden z-12 w-full flex flex-col items-center justify-center">
       {/* Marca de agua de fondo */}
-      <img
+      <NextImage
         src="/images/white-logo-cillan.png"
         alt="Cillan"
+        width={1600}
+        height={900}
         className="absolute inset-0 m-auto w-[500px] md:w-[100%] opacity-5 pointer-events-none select-none"
       />
 
@@ -62,9 +65,11 @@ const Footer = () => {
       {/* Créditos */}
       <div className="absolute bottom-4 right-4 z-20 flex items-end">
         <a href="https://www.linkedin.com/in/juan-luis-bertoncini-ferreras/" target="_blank" rel="noopener noreferrer">
-          <img
+          <NextImage
             src="/images/white-logo.png"
             alt="Logo Créditos"
+            width={500}
+            height={181}
             className="w-24 h-auto object-contain"
           />
         </a>

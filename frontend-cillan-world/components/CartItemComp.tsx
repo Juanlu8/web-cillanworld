@@ -3,6 +3,7 @@
 import { useCart } from "@/hooks/use-cart";
 import { CartItemType } from "@/types/cartItem";
 import { useTranslation } from "react-i18next";
+import NextImage from "next/image";
 
 interface CartItemProps {
   item: CartItemType;
@@ -16,11 +17,13 @@ const CartItemComp = ({ item }: CartItemProps) => {
     <div className="flex items-center justify-between border-b pb-4 mb-4">
       {/* Imagen */}
       <div className="w-24 h-32 relative">
-        <img
+        <NextImage
           src={
             `${process.env.NEXT_PUBLIC_BACKEND_URL}${item.product.attributes.images?.data?.[0]?.attributes?.url}`
           }
           alt={item.product.attributes.productName}
+          width={1600}
+          height={1600}
           className="object-cover rounded w-full h-full"
         />
       </div>

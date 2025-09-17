@@ -4,7 +4,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { toast } from "sonner";
-
+import NextImage from "next/image";
 import { CartItemType } from "@/types/cartItem";
 import { ProductType } from "@/types/product";
 
@@ -47,9 +47,11 @@ export const useCart = create(
               <button className="ml-auto text-lg" onClick={() => toast.dismiss()}>×</button>
             </div>
             <div className="flex gap-3 items-center mb-12">
-              <img
+              <NextImage
                 src={itemProduct.product?.attributes?.images?.data?.[0]?.attributes?.url ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${itemProduct.product.attributes.images.data[0].attributes.url}` : '/images/IMG_1.jpg'}
                 alt={itemProduct.product?.attributes?.productName}
+                width={1600}
+                height={1600}
                 className="w-40 h-40 object-contain rounded"
               />
               <div>

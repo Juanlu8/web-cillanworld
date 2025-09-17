@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ProductType } from "@/types/product";
 import { Eye, EyeOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import NextImage from "next/image";
 
 type Props = {
   product: ProductType;
@@ -33,10 +34,12 @@ export default function ProductCard({ product }: Props) {
 
       {/* Imagen principal */}
       {imageUrl ? (
-        <img
+        <NextImage
           src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${imageUrl}`}
           alt={product.attributes.productName}
           onLoad={() => setIsImageLoaded(true)}
+          width={1600}
+          height={1600}
           className={`w-full h-full object-contain transition duration-300 ease-in-out group-hover:scale-105 ${
             isImageLoaded ? "opacity-100" : "opacity-0"
           }`}

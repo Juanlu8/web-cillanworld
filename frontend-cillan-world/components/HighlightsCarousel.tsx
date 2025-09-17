@@ -7,6 +7,7 @@ import { Carousel, CarouselContent, CarouselItem } from './ui/carousel';
 import { ProductType } from '@/types/product';
 import { Card, CardContent } from './ui/card';
 import { useTranslation } from "react-i18next";
+import NextImage from "next/image";
 
 const HighlightsCarousel = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -68,9 +69,11 @@ const HighlightsCarousel = () => {
                       <CardContent className="flex items-center justify-center h-full w-full">
                         {images?.data?.length > 0 && images?.data[images.data.length - 1]?.attributes?.url ? (
                           <a href={`/product?slug=${attributes.slug}`} className="block h-full w-full">
-                            <img
+                            <NextImage
                               src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${images.data[images.data.length - 1].attributes.url}`}
                               alt={productName}
+                              width={1600}
+                              height={1600}
                               className="h-full w-full object-cover transition duration-300 ease-in-out rounded group-hover:scale-110 cursor-pointer"
                             />
                           </a>

@@ -8,6 +8,7 @@ import { ProductType } from "@/types/product";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
+import NextImage from "next/image";
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -79,18 +80,22 @@ export default function CatalogPage() {
     <div className="relative">
       {/* Fondo decorativo anilla */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
-        <img
+        <NextImage
           src="/images/anilla.png"
           alt="Fondo anilla"
+          width={943}
+          height={943}
           className="w-4/5 max-w-[450px] md:w-full md:max-w-[600px] h-auto opacity-20 select-none object-contain mt-0 md:mt-48 md:ms-42"
         />
       </div>
 
       {/* Marca de agua */}
       <div className="pt-14 md:pt-10 left-0 w-full flex justify-center z-00">
-        <img
+        <NextImage
           src="/images/logo-top.png"
           alt="Marca de agua"
+          width={1600}
+          height={900}
           className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105"
           onClick={goToHome}
         />

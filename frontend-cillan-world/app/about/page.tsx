@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import NavBar from "@/components/ui/navbar";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import NextImage from "next/image";
 
 export default function PrivacyPolicyPage() {
     
@@ -18,9 +19,11 @@ export default function PrivacyPolicyPage() {
     <div className="relative text-justify">
       {/* Marca de agua */}
       <div className="fixed pt-14 md:pt-10 left-0 w-full flex justify-center z-00">
-        <img
+        <NextImage
           src="/images/logo-top.png"
           alt="Marca de agua"
+          width={1600}
+          height={900}
           className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105"
           onClick={() => goToHome()}
         />
@@ -35,9 +38,11 @@ export default function PrivacyPolicyPage() {
           </p>
         </div>
         <div className="py-12 md:py-24 flex items-center gap-6 md:gap-24">
-          <img
+          <NextImage
             src="/images/foto-peque.png"
             alt="foto nene"
+            width={1352}
+            height={1920}
             className="w-24 sm:w-42 md:w-48 lg:w-64 cursor-pointer rounded-full"
             onClick={() => goToHome()}
           />

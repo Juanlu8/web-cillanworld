@@ -8,6 +8,7 @@ import { CollectionType } from "@/types/collection";
 import { useGetCollections } from '@/api/useGetCollections';
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../LanguageSwitcher";
+import NextImage from "next/image";
 
 const Navbar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -99,9 +100,11 @@ const Navbar = () => {
                   className="p-2 cursor-pointer"
                   aria-label="Menu"
                 >
-                  <img
+                  <NextImage
                     src="/images/anilla.png"
                     alt="Menú"
+                    width={943}
+                    height={943}
                     className="w-8 h-8 object-contain"
                   />
                 </button>
