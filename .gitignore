@@ -20,5 +20,5 @@ tmp/
 # Si el backend es .NET (si no, borra estas líneas)
 bin/
 obj/
-.vs/frontend-cillan-world/public/video/*
-*.mp4
+#.vs/frontend-cillan-world/public/video/*
+#*.mp4
