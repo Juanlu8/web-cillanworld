@@ -1,6 +1,6 @@
 export type HomeImageType = {
     id: number;
-    homImageName: string;
+    homeImageName: string;
     slug: string;
     active: boolean;
     order: number;

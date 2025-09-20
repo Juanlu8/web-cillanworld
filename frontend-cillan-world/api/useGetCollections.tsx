@@ -1,26 +1,33 @@
 import { useEffect, useState } from "react";
-
+import { fetchFromApi } from "@/lib/api";
+import { CollectionType } from "@/types/collection";
 
 export function useGetCollections() {
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/collections?populate=*`;
-    const [result, setResult] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [result, setResult] = useState<CollectionType[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        (async() => {
-            try{
-                const res = await fetch(url);
-                const json = await res.json();
-                setResult(json.data);
-                setLoading(false);  
-            }catch(error: any){
-                setError(error);
-                setLoading(false);
-            }
-        })();
-    }, [url]);
+  useEffect(() => {
+    const controller = new AbortController();
 
-    return {loading, result, error};
+    (async () => {
+      try {
+        const json = await fetchFromApi<{ data: CollectionType[] }>(
+          "/api/collections?populate=*",
+          { signal: controller.signal }
+        );
+        setResult(json.data);
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          setError(err.message || "Unknown error");
+        }
+      } finally {
+        setLoading(false);
+      }
+    })();
 
+    return () => controller.abort();
+  }, []);
+
+  return { loading, result, error };
 }

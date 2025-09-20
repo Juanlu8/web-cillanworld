@@ -1,26 +1,31 @@
 import { useEffect, useState } from "react";
-
+import { ProductType } from "@/types/product";
+import { fetchFromApi } from "@/lib/api";
 
 export function useGetProducts() {
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products?populate=*`;
-    const [result, setResult] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [result, setResult] = useState<ProductType[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        (async() => {
-            try{
-                const res = await fetch(url);
-                const json = await res.json();
-                setResult(json.data);
-                setLoading(false);  
-            }catch(error: any){
-                setError(error);
-                setLoading(false);
-            }
-        })();
-    }, [url]);
+  useEffect(() => {
+    const controller = new AbortController();
 
-    return {loading, result, error};
+    (async () => {
+      try {
+        const json = await fetchFromApi<{ data: ProductType[] }>(
+          "/api/products?populate=*",
+          { signal: controller.signal }
+        );
+        setResult(json.data);
+      } catch (err: any) {
+        if (err.name !== "AbortError") setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
 
+    return () => controller.abort();
+  }, []);
+
+  return { loading, result, error };
 }

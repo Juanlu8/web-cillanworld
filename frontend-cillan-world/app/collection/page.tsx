@@ -7,7 +7,8 @@ import { CollectionType } from "@/types/collection";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import NextImage from "next/image";
+import Image from "next/image";
+import { toMediaUrl } from "@/lib/media";
 
 type AnyObj = Record<string, any>;
 
@@ -24,7 +25,6 @@ function getDescription(c: AnyObj, lang: "es" | "en") {
   return c?.description ?? c?.attributes?.description ?? "";
 }
 function getImagesData(c: AnyObj) {
-  // Soporta tanto c.images.data como c.images (array directa)
   if (Array.isArray(c?.images)) return c.images;
   if (Array.isArray(c?.images?.data)) return c.images.data;
   if (Array.isArray(c?.attributes?.images)) return c.attributes.images;
@@ -32,15 +32,7 @@ function getImagesData(c: AnyObj) {
   return [];
 }
 function getImageUrl(img: AnyObj): string | undefined {
-  // Soporta tanto { url } como { attributes: { url } }
   return img?.url ?? img?.attributes?.url;
-}
-function resolveMediaUrl(url?: string) {
-  if (!url) return "";
-  if (url.startsWith("http")) return url;
-  const base = (process.env.NEXT_PUBLIC_BACKEND_URL || "").replace(/\/$/, "");
-  const path = url.startsWith("/") ? url : `/${url}`;
-  return `${base}${path}`;
 }
 
 export default function CollectionPage() {
@@ -110,13 +102,14 @@ export default function CollectionPage() {
 
           {/* Logo centrado */}
           <div className="w-full flex justify-center pt-14 md:pt-10 relative z-10">
-            <NextImage
+            <Image
               src="/images/logo-top.png"
               alt="Cillán"
               width={1600}
               height={900}
               className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 hover:scale-105 cursor-pointer"
               onClick={goToHome}
+              priority
             />
           </div>
 
@@ -127,9 +120,10 @@ export default function CollectionPage() {
             </h1>
 
             {filteredCollections.map((collection: AnyObj) => {
-              // ...
               const description = getDescription(collection, currentLanguage) || "";
-              const paragraphs: string[] = description ? description.split(/\n\s*\n/) : [description];
+              const paragraphs: string[] = description
+                ? description.split(/\n\s*\n/)
+                : [description];
 
               return (
                 <div key={collection.id} className="space-y-4 md:space-y-5">
@@ -144,7 +138,6 @@ export default function CollectionPage() {
                   ))}
                 </div>
               );
-
             })}
           </div>
         </div>
@@ -165,35 +158,34 @@ export default function CollectionPage() {
                 {imagesData.length > 0 ? (
                   imagesData.map((img: AnyObj, idx: number) => {
                     const raw = getImageUrl(img);
-                    const src = resolveMediaUrl(raw);
+                    const src = toMediaUrl(raw); // ✅ sin process.env en JSX
+
                     return (
                       <div
                         key={img.id ?? `${name}-${idx}`}
-                        className="w-full md:w-1/2 aspect-[3/4] flex items-center justify-center bg-white rounded-none overflow-hidden shadow-none"
-                        style={{ minHeight: '40vw', maxHeight: '150vh' }}
+                        className="w-full md:w-1/2"
                       >
-                        {src ? (
-                          <NextImage
-                            src={src}
-                            alt={`${name} ${idx + 1}`}
-                            className="w-full h-full object-cover transition duration-300 ease-in-out group-hover:scale-110 cursor-pointer"
-                            loading="lazy"
-                            decoding="async"
-                            width={1600}
-                            height={1600}
-                            crossOrigin="anonymous"
-                            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                            onClick={() =>
-                                      setModalImage(
-                                        `${process.env.NEXT_PUBLIC_BACKEND_URL}${raw}`
-                                      )
-                                    }
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                            {t("general.image_missing")}
-                          </div>
-                        )}
+                        {/* Caja con ratio estable */}
+                        <div
+                          className="relative aspect-[3/4] bg-white rounded-none overflow-hidden shadow-none"
+                          style={{ minHeight: "40vw", maxHeight: "150vh" }}
+                        >
+                          {src ? (
+                            <Image
+                              src={src}
+                              alt={`${name} ${idx + 1}`}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 50vw"
+                              className="object-cover transition duration-300 ease-in-out group-hover:scale-110 cursor-pointer"
+                              loading="lazy"
+                              onClick={() => setModalImage(src)} // ✅ usa ya la URL absoluta
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
+                              {t("general.image_missing")}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     );
                   })
@@ -208,30 +200,31 @@ export default function CollectionPage() {
         })}
 
         {/* Modal imagen ampliada */}
-          {modalImage && (
+        {modalImage && (
+          <div
+            className="fixed inset-0 bg-[rgba(0,0,0,0.8)] flex items-center justify-center z-[9999]"
+            onClick={() => setModalImage(null)}
+          >
             <div
-              className="fixed inset-0 bg-[rgba(0,0,0,0.8)] flex items-center justify-center z-[9999]"
-              onClick={() => setModalImage(null)}
+              className="relative max-w-4xl w-[90vw] max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div
-                className="relative max-w-4xl max-h-[90vh]"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <NextImage
+              <div className="relative w-full h-[80vh]">
+                <Image
                   src={modalImage}
                   alt="Imagen ampliada"
-                  width={1600}
-                  height={1600}
-                  className="max-w-full max-h-[90vh] object-contain rounded"
+                  fill
+                  sizes="90vw"
+                  className="object-contain rounded"
+                  priority
                 />
               </div>
             </div>
-          )}
+          </div>
+        )}
       </section>
 
       <Footer />
     </div>
   );
 }
-
-

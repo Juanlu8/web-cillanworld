@@ -4,8 +4,6 @@ import Footer from "@/components/Footer";
 import * as React from "react"
 import NextImage from "next/image";
 
-//AAA
-
 export default function Home() {
   return (
     <main>

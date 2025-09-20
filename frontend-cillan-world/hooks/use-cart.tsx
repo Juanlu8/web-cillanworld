@@ -4,7 +4,8 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { toast } from "sonner";
-import NextImage from "next/image";
+import Image from "next/image";
+import { toMediaUrl } from "@/lib/media";
 import { CartItemType } from "@/types/cartItem";
 import { ProductType } from "@/types/product";
 
@@ -29,7 +30,7 @@ export const useCart = create(
   persist<CartStore>(
     (set, get) => ({
       items: [],
-      isHydrated: false, // 👈 nuevo estado
+      isHydrated: false,
 
       addItem: (itemProduct: CartItemType, size: string) => {
         const currentItems = get().items;
@@ -39,23 +40,38 @@ export const useCart = create(
             item.size === size
         );
 
-        // Frame visual para el toast
+        // URL preview para el toast
+        const firstUrl =
+          itemProduct.product?.attributes?.images?.data?.[0]?.attributes?.url;
+        const previewSrc = firstUrl ? toMediaUrl(firstUrl) : "/images/IMG_1.jpg";
+
+        // Nº de líneas que tendrá el carrito tras la acción
+        const nextLinesCount =
+          existingItemIndex !== -1 ? currentItems.length : currentItems.length + 1;
+
+        // Frame visual del toast
         const frame = (
           <div className="text-black w-[320px] min-h-[220px] p-8 flex flex-col justify-center items-center">
-            <div className="flex items-center mb-2">
+            <div className="flex items-center mb-2 w-full">
               <span className="font-bold">item added to your cart</span>
-              <button className="ml-auto text-lg" onClick={() => toast.dismiss()}>×</button>
+              <button className="ml-auto text-lg" onClick={() => toast.dismiss()}>
+                ×
+              </button>
             </div>
-            <div className="flex gap-3 items-center mb-12">
-              <NextImage
-                src={itemProduct.product?.attributes?.images?.data?.[0]?.attributes?.url ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${itemProduct.product.attributes.images.data[0].attributes.url}` : '/images/IMG_1.jpg'}
-                alt={itemProduct.product?.attributes?.productName}
-                width={1600}
-                height={1600}
-                className="w-40 h-40 object-contain rounded"
-              />
-              <div>
-                <div className="font-bold">{itemProduct.product?.attributes?.productName}</div>
+            <div className="flex gap-3 items-center mb-12 w-full">
+              <div className="relative w-40 h-40 overflow-hidden rounded bg-gray-100">
+                <Image
+                  src={previewSrc}
+                  alt={itemProduct.product?.attributes?.productName ?? "Product"}
+                  fill
+                  sizes="160px"
+                  className="object-contain"
+                />
+              </div>
+              <div className="min-w-0">
+                <div className="font-bold line-clamp-2">
+                  {itemProduct.product?.attributes?.productName}
+                </div>
                 <div className="text-sm">Size: {size}</div>
               </div>
             </div>
@@ -66,13 +82,13 @@ export const useCart = create(
                 document.querySelector<HTMLElement>('[aria-label="Cart"]')?.click();
               }}
             >
-              View cart ({currentItems.length + 1})
+              View cart ({nextLinesCount})
             </button>
             <button
               className="border border-black rounded-md py-4 mt-2 w-full font-semibold hover:bg-black hover:text-white transition"
               onClick={() => {
                 toast.dismiss();
-                window.location.href = '/checkout';
+                window.location.href = "/checkout";
               }}
             >
               Check out
@@ -135,7 +151,6 @@ export const useCart = create(
             updatedItems[index].quantity -= 1;
             set({ items: updatedItems });
           } else {
-            // Si la cantidad baja de 1, eliminar el ítem
             updatedItems.splice(index, 1);
             set({ items: updatedItems });
           }
@@ -145,12 +160,11 @@ export const useCart = create(
       updateQuantity: (slug, size, quantity) => {
         if (quantity < 1 || quantity > 20) return;
 
-        const updatedItems = get().items.map((item) => {
-          if (item.product.attributes.slug === slug && item.size === size) {
-            return { ...item, quantity };
-          }
-          return item;
-        });
+        const updatedItems = get().items.map((item) =>
+          item.product.attributes.slug === slug && item.size === size
+            ? { ...item, quantity }
+            : item
+        );
 
         set({ items: updatedItems });
       },
@@ -161,7 +175,6 @@ export const useCart = create(
       name: "cart-storage",
       storage: createJSONStorage(() => localStorage),
       onRehydrateStorage: () => (state, error) => {
-        // Cuando se hidrata el estado desde localStorage, marcamos isHydrated
         if (state) {
           state.isHydrated = true;
         }

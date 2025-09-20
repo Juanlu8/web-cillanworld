@@ -1,26 +1,33 @@
 import { useEffect, useState } from "react";
-
+import { fetchFromApi } from "@/lib/api";
+import { HomeImageType } from "@/types/homeImage";
 
 export function useGetHomeImages() {
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/home-images?populate=*`;
-    const [result, setResult] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [result, setResult] = useState<HomeImageType[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        (async() => {
-            try{
-                const res = await fetch(url);
-                const json = await res.json();
-                setResult(json.data);
-                setLoading(false);  
-            }catch(error: any){
-                setError(error);
-                setLoading(false);
-            }
-        })();
-    }, [url]);
+  useEffect(() => {
+    const controller = new AbortController();
 
-    return {loading, result, error};
+    (async () => {
+      try {
+        const json = await fetchFromApi<{ data: HomeImageType[] }>(
+          "/api/home-images?populate=*",
+          { signal: controller.signal }
+        );
+        setResult(json.data);
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          setError(err.message || "Unknown error");
+        }
+      } finally {
+        setLoading(false);
+      }
+    })();
 
+    return () => controller.abort();
+  }, []);
+
+  return { loading, result, error };
 }
