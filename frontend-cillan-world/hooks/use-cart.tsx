@@ -1,15 +1,14 @@
 "use client";
 
-// store/cart-store.ts
+// hooks/use-cart.tsx
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist, createJSONStorage, type PersistOptions } from "zustand/middleware";
 import { toast } from "sonner";
 import Image from "next/image";
 import { toMediaUrl } from "@/lib/media";
 import { CartItemType } from "@/types/cartItem";
-import { ProductType } from "@/types/product";
 
-// Nuevo tipo que combina producto, talla y cantidad
+// Ítem en carrito (producto + talla + cantidad)
 export interface CartItem extends CartItemType {
   size: string;
   quantity: number;
@@ -26,8 +25,33 @@ interface CartStore {
   updateQuantity: (slug: string, size: string, quantity: number) => void;
 }
 
-export const useCart = create(
-  persist<CartStore>(
+// Solo persistimos esto
+type CartPersisted = { items: CartItem[] };
+
+const persistOptions: PersistOptions<CartStore, CartPersisted> = {
+  name: "cart-storage",
+  storage: createJSONStorage(() => localStorage),
+
+  // ✅ Solo guardamos 'items'
+  partialize: (state) => ({ items: state.items }),
+
+  // ✅ Marcar hidratación SIN tocar 'useCart' (evita TDZ)
+  onRehydrateStorage: () => (state, error) => {
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to rehydrate cart storage:", error);
+    }
+    if (state) {
+      // 'state' es el store vivo: marca bandera de hidratación
+      state.isHydrated = true;
+    }
+  },
+
+  version: 1,
+};
+
+export const useCart = create<CartStore>()(
+  persist(
     (set, get) => ({
       items: [],
       isHydrated: false,
@@ -36,20 +60,16 @@ export const useCart = create(
         const currentItems = get().items;
         const existingItemIndex = currentItems.findIndex(
           (item) =>
-            item.product?.attributes?.slug === itemProduct.product?.attributes?.slug &&
-            item.size === size
+            item.product?.attributes?.slug ===
+              itemProduct.product?.attributes?.slug && item.size === size
         );
 
-        // URL preview para el toast
         const firstUrl =
           itemProduct.product?.attributes?.images?.data?.[0]?.attributes?.url;
         const previewSrc = firstUrl ? toMediaUrl(firstUrl) : "/images/IMG_1.jpg";
-
-        // Nº de líneas que tendrá el carrito tras la acción
         const nextLinesCount =
           existingItemIndex !== -1 ? currentItems.length : currentItems.length + 1;
 
-        // Frame visual del toast
         const frame = (
           <div className="text-black w-[320px] min-h-[220px] p-8 flex flex-col justify-center items-center">
             <div className="flex items-center mb-2 w-full">
@@ -98,23 +118,19 @@ export const useCart = create(
 
         if (existingItemIndex !== -1) {
           const existingItem = currentItems[existingItemIndex];
-
           if (existingItem.quantity >= 20) {
-            return toast.error("Maximum quantity for this item reached");
+            toast.error("Maximum quantity for this item reached");
+            return;
           }
-
           const updatedItems = [...currentItems];
           updatedItems[existingItemIndex] = {
             ...existingItem,
             quantity: existingItem.quantity + 1,
           };
-
           set({ items: updatedItems });
-          return toast.success(frame);
+          toast.success(frame);
         } else {
-          set({
-            items: [...currentItems, { ...itemProduct, size, quantity: 1 }],
-          });
+          set({ items: [...currentItems, { ...itemProduct, size, quantity: 1 }] });
           toast.success(frame);
         }
       },
@@ -122,7 +138,8 @@ export const useCart = create(
       removeItem: (slug: string, size: string) => {
         set({
           items: get().items.filter(
-            (item) => item.product.attributes.slug !== slug || item.size !== size
+            (item) =>
+              item.product?.attributes?.slug !== slug || item.size !== size
           ),
         });
         toast.info("Product removed from cart");
@@ -131,7 +148,7 @@ export const useCart = create(
       increaseQuantity: (slug: string, size: string) => {
         const currentItems = get().items;
         const index = currentItems.findIndex(
-          (item) => item.product.attributes.slug === slug && item.size === size
+          (item) => item.product?.attributes?.slug === slug && item.size === size
         );
         if (index !== -1 && currentItems[index].quantity < 20) {
           const updatedItems = [...currentItems];
@@ -143,7 +160,7 @@ export const useCart = create(
       decreaseQuantity: (slug: string, size: string) => {
         const currentItems = get().items;
         const index = currentItems.findIndex(
-          (item) => item.product.attributes.slug === slug && item.size === size
+          (item) => item.product?.attributes?.slug === slug && item.size === size
         );
         if (index !== -1) {
           const updatedItems = [...currentItems];
@@ -157,28 +174,18 @@ export const useCart = create(
         }
       },
 
-      updateQuantity: (slug, size, quantity) => {
+      updateQuantity: (slug: string, size: string, quantity: number) => {
         if (quantity < 1 || quantity > 20) return;
-
         const updatedItems = get().items.map((item) =>
-          item.product.attributes.slug === slug && item.size === size
+          item.product?.attributes?.slug === slug && item.size === size
             ? { ...item, quantity }
             : item
         );
-
         set({ items: updatedItems });
       },
 
       removeAll: () => set({ items: [] }),
     }),
-    {
-      name: "cart-storage",
-      storage: createJSONStorage(() => localStorage),
-      onRehydrateStorage: () => (state, error) => {
-        if (state) {
-          state.isHydrated = true;
-        }
-      },
-    }
+    persistOptions
   )
 );
