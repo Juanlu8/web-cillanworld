@@ -14,8 +14,7 @@ import Image from "next/image";
 import { toMediaUrl } from "@/lib/media";
 
 export default function ProductPage() {
-  // (opcional) color dominante, hoy no se usa en estilos
-  const [dominantColor, setDominantColor] = useState<string | null>(null);
+  // ref opcional para la primera imagen (no crítico)
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   const { t, i18n } = useTranslation();
@@ -63,7 +62,6 @@ export default function ProductPage() {
     api.on("select", handleChange);
     handleChange();
     return () => {
-      // @ts-ignore Embla API suele tener off
       api.off?.("select", handleChange);
     };
   }, [api]);
@@ -148,6 +146,7 @@ export default function ProductPage() {
 
                       {src && (
                         <Image
+                          // Next/Image no tipa el ref como HTMLImageElement; es aceptable para nuestro uso
                           ref={idx === 0 ? imgRef : undefined}
                           src={src}
                           alt={`${productName ?? "Producto"} - Imagen ${idx + 1}`}

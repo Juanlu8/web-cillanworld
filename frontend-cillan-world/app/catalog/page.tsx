@@ -8,7 +8,7 @@ import { ProductType } from "@/types/product";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
-import NextImage from "next/image";
+import Image from "next/image";
 
 export default function CatalogPage() {
   const router = useRouter();
@@ -30,11 +30,19 @@ export default function CatalogPage() {
   }, []);
 
   const searchParams = useSearchParams();
-  const categoryFromURL = searchParams.get("category");
+  const categoryFromURL = useMemo(
+    () => searchParams.get("category"),
+    [searchParams]
+  );
 
   const goToHome = () => router.push(`/`);
 
-  const result: ProductType[] = useGetProducts().result ?? [];
+  // Resultado estable de productos
+  const { result } = useGetProducts();
+  const products: ProductType[] = useMemo(
+    () => (Array.isArray(result) ? result : []),
+    [result]
+  );
 
   // Mantén el estado sincronizado con la URL
   const [activeCategory, setActiveCategory] = useState<string | null>(categoryFromURL);
@@ -44,60 +52,63 @@ export default function CatalogPage() {
 
   // Orden por 'order'
   const orderedResult = useMemo(() => {
-    return [...result].sort((a, b) => {
-      const orderA = a.attributes.order;
-      const orderB = b.attributes.order;
-      if (orderA == null && orderB == null) return 0;
-      if (orderA == null) return 1;
-      if (orderB == null) return -1;
-      return orderA - orderB;
-    });
-  }, [result]);
+    return products
+      .slice()
+      .sort((a, b) => {
+        const orderA = a.attributes.order;
+        const orderB = b.attributes.order;
+        if (orderA == null && orderB == null) return 0;
+        if (orderA == null) return 1;
+        if (orderB == null) return -1;
+        return orderA - orderB;
+      });
+  }, [products]);
 
-  // Filtro por slug usando **categories** (array)
+  // Filtro por categoría
   const filteredProducts = useMemo(() => {
     if (!activeCategory || activeCategory === "view-all") return orderedResult;
-
     return orderedResult.filter((product) => {
       const cats = product.attributes.categories?.data ?? [];
       return cats.some((c) => c.attributes.slug === activeCategory);
     });
   }, [orderedResult, activeCategory]);
 
-  // Título por categoría seleccionada
-  const pageTitle = useMemo(() => {
-    if (!activeCategory || activeCategory === "view-all")
-      return t("general.all_catalogue").toUpperCase();
-    if (activeCategory === "tops") return t("navbar.tops").toUpperCase();
-    if (activeCategory === "bottoms") return t("navbar.bottoms").toUpperCase();
-    if (activeCategory === "runaway-pieces")
-      return t("navbar.runaway_pieces").toUpperCase();
-    // fallback
-    return t("general.all_catalogue").toUpperCase();
-  }, [activeCategory, t]);
+  // Título (cálculo directo, sin useMemo)
+  const pageTitle =
+    !activeCategory || activeCategory === "view-all"
+      ? t("general.all_catalogue").toUpperCase()
+      : activeCategory === "tops"
+      ? t("navbar.tops").toUpperCase()
+      : activeCategory === "bottoms"
+      ? t("navbar.bottoms").toUpperCase()
+      : activeCategory === "runaway-pieces"
+      ? t("navbar.runaway_pieces").toUpperCase()
+      : t("general.all_catalogue").toUpperCase();
 
   return (
     <div className="relative">
       {/* Fondo decorativo anilla */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
-        <NextImage
+        <Image
           src="/images/anilla.png"
           alt="Fondo anilla"
           width={943}
           height={943}
           className="w-4/5 max-w-[450px] md:w-full md:max-w-[600px] h-auto opacity-20 select-none object-contain mt-0 md:mt-48 md:ms-42"
+          priority={false}
         />
       </div>
 
       {/* Marca de agua */}
-      <div className="pt-14 md:pt-10 left-0 w-full flex justify-center z-00">
-        <NextImage
+      <div className="pt-14 md:pt-10 left-0 w-full flex justify-center z-0">
+        <Image
           src="/images/logo-top.png"
           alt="Marca de agua"
           width={1600}
           height={900}
-          className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105"
+          className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105 cursor-pointer"
           onClick={goToHome}
+          priority
         />
       </div>
 

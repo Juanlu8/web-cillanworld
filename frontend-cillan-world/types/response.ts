@@ -1,5 +1,5 @@
-export type ResponseType = {
-    result: any;
-    loading: boolean;
-    error: string;
+export type ResponseType<T> = {
+  loading: boolean;
+  result: T | null;
+  error: string | null;
 };

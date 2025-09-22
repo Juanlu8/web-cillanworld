@@ -54,7 +54,7 @@ const CartModal = ({ isVisible, isCartOpen, cartRef, closeCart, cartItems, total
                 <input type="checkbox" id="privacy" className="mr-2 cursor-pointer" />
                 <label htmlFor="privacy" className="text-sm">
                   {t("bag.read_accepted") + ' '}
-                  <a href="/privacy" className="underline" target="_blank" rel="noopener noreferrer">{t("bag.privacy_policy")}</a>.
+                  <a href="/privacyPolicy" className="underline" target="_blank" rel="noopener noreferrer">{t("bag.privacy_policy")}</a>.
                 </label>
               </div>
               <div className="flex justify-between items-center mb-6">

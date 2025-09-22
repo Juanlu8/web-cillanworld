@@ -10,6 +10,18 @@ import { toMediaUrl } from "@/lib/media";
 
 type Props = { data: HomeImageType };
 
+/** Tipos auxiliares para soportar ambas formas de imagen */
+type DirectImage = { url?: string | null };
+type StrapiImage = { attributes?: { url?: string | null } | null };
+type DirectOrStrapiImage = DirectImage | StrapiImage | null | undefined;
+
+/** Extrae la URL sin usar `any` */
+function getImageUrl(img: DirectOrStrapiImage): string | undefined {
+  const direct = (img as DirectImage | null | undefined)?.url ?? null;
+  const attr = (img as StrapiImage | null | undefined)?.attributes?.url ?? null;
+  return direct ?? attr ?? undefined;
+}
+
 export default function HomeImageCard({ data }: Props) {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -58,8 +70,8 @@ export default function HomeImageCard({ data }: Props) {
     return () => node.removeEventListener("wheel", handleWheel);
   }, [isHovering]);
 
-  // URL de imagen (acepta url directa o en attributes.url)
-  const rawUrl = data.image?.url ?? (data as any).image?.attributes?.url;
+  // URL de imagen (acepta url directa o en attributes.url) — sin `any`
+  const rawUrl = getImageUrl(data.image as unknown as DirectOrStrapiImage);
   const src = toMediaUrl(rawUrl);
   const slug = data.slug;
 

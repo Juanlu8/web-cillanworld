@@ -10,43 +10,101 @@ import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { toMediaUrl } from "@/lib/media";
 
-type AnyObj = Record<string, any>;
+// --- Tipos auxiliares (evitan any) ------------------------------------------
+type UnknownRecord = Record<string, unknown>;
 
-function getSlug(c: AnyObj) {
-  return c?.slug ?? c?.attributes?.slug ?? "";
+type ImageLike =
+  | { id?: number | string; url?: string }
+  | { id?: number | string; attributes?: { url?: string } }
+  | UnknownRecord;
+
+type ImagesField = { data?: ImageLike[] } | ImageLike[] | undefined;
+
+type CollectionLike =
+  | CollectionType
+  | {
+      id?: number | string;
+      slug?: string;
+      collectionName?: string;
+      description?: string;
+      description_en?: string;
+      images?: ImagesField;
+      attributes?: {
+        slug?: string;
+        collectionName?: string;
+        description?: string;
+        description_en?: string;
+        images?: ImagesField;
+      };
+    };
+
+// --- Helpers con narrowing ---------------------------------------------------
+function getSlug(c: CollectionLike): string {
+  const anyC = c as UnknownRecord;
+  const direct = (anyC.slug as string) ?? undefined;
+  const nested = (anyC.attributes as UnknownRecord | undefined)?.slug as string | undefined;
+  return direct ?? nested ?? "";
 }
-function getName(c: AnyObj) {
-  return c?.collectionName ?? c?.attributes?.collectionName ?? "";
+
+function getName(c: CollectionLike): string {
+  const anyC = c as UnknownRecord;
+  const direct = (anyC.collectionName as string) ?? undefined;
+  const nested = (anyC.attributes as UnknownRecord | undefined)?.collectionName as
+    | string
+    | undefined;
+  return direct ?? nested ?? "";
 }
-function getDescription(c: AnyObj, lang: "es" | "en") {
+
+function getDescription(c: CollectionLike, lang: "es" | "en"): string {
+  const anyC = c as UnknownRecord;
   if (lang === "en") {
-    return c?.description_en ?? c?.attributes?.description_en ?? "";
+    const direct = (anyC.description_en as string) ?? undefined;
+    const nested = (anyC.attributes as UnknownRecord | undefined)?.description_en as
+      | string
+      | undefined;
+    return direct ?? nested ?? "";
   }
-  return c?.description ?? c?.attributes?.description ?? "";
+  const direct = (anyC.description as string) ?? undefined;
+  const nested = (anyC.attributes as UnknownRecord | undefined)?.description as
+    | string
+    | undefined;
+  return direct ?? nested ?? "";
 }
-function getImagesData(c: AnyObj) {
-  if (Array.isArray(c?.images)) return c.images;
-  if (Array.isArray(c?.images?.data)) return c.images.data;
-  if (Array.isArray(c?.attributes?.images)) return c.attributes.images;
-  if (Array.isArray(c?.attributes?.images?.data)) return c.attributes.images.data;
+
+function getImagesData(c: CollectionLike): ImageLike[] {
+  const anyC = c as UnknownRecord;
+  const direct = anyC.images as ImagesField;
+  const nested = (anyC.attributes as UnknownRecord | undefined)?.images as ImagesField;
+
+  const field = direct ?? nested;
+  if (!field) return [];
+  if (Array.isArray(field)) return field as ImageLike[];
+  if (Array.isArray(field.data)) return field.data as ImageLike[];
   return [];
 }
-function getImageUrl(img: AnyObj): string | undefined {
-  return img?.url ?? img?.attributes?.url;
+
+function getImageUrl(img: ImageLike): string | undefined {
+  const anyImg = img as UnknownRecord;
+  const direct = anyImg.url as string | undefined;
+  const nested = (anyImg.attributes as UnknownRecord | undefined)?.url as string | undefined;
+  return direct ?? nested;
 }
+
+// -----------------------------------------------------------------------------
 
 export default function CollectionPage() {
   const router = useRouter();
   const goToHome = () => router.push(`/`);
-  const { t } = useTranslation();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentLanguage = (i18n.resolvedLanguage || i18n.language || "es")
     .slice(0, 2) as "es" | "en";
 
   const searchParams = useSearchParams();
   const collectionFromURL = (searchParams.get("collection") || "").toLowerCase();
 
-  const { result = [] } = useGetCollections();
+  const { result } = useGetCollections();
+  const collections: CollectionLike[] = useMemo(() => result ?? [], [result]);
+
   const [modalImage, setModalImage] = useState<string | null>(null);
 
   const { filteredCollections, title } = useMemo(() => {
@@ -56,14 +114,12 @@ export default function CollectionPage() {
       opncplddupslnusaddmpc: "OPNCPLDDUPSLNUSADDMPC",
     };
     const slug = collectionFromURL;
-    const filtered = (result ?? []).filter(
-      (c: CollectionType | AnyObj) => getSlug(c)?.toLowerCase() === slug
-    );
+    const filtered = collections.filter((c) => getSlug(c).toLowerCase() === slug);
     return {
       filteredCollections: filtered,
-      title: titleBySlug[slug] ?? slug?.toUpperCase() ?? "",
+      title: titleBySlug[slug] ?? slug.toUpperCase(),
     };
-  }, [result, collectionFromURL]);
+  }, [collections, collectionFromURL]);
 
   return (
     <div className="relative">
@@ -77,23 +133,11 @@ export default function CollectionPage() {
         <div className="shadow-sm relative overflow-hidden">
           {/* Video background (o fondo gris) */}
           {title === "IDKKID" ? (
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover z-0"
-            >
+            <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
               <source src="/video/video-IDKKID.MP4" type="video/mp4" />
             </video>
           ) : title === "MIEDOS" ? (
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover z-0"
-            >
+            <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
               <source src="/video/video-miedos.MP4" type="video/mp4" />
             </video>
           ) : (
@@ -119,14 +163,12 @@ export default function CollectionPage() {
               {title}
             </h1>
 
-            {filteredCollections.map((collection: AnyObj) => {
+            {filteredCollections.map((collection) => {
               const description = getDescription(collection, currentLanguage) || "";
-              const paragraphs: string[] = description
-                ? description.split(/\n\s*\n/)
-                : [description];
+              const paragraphs: string[] = description ? description.split(/\n\s*\n/) : [description];
 
               return (
-                <div key={collection.id} className="space-y-4 md:space-y-5">
+                <div key={(collection as UnknownRecord).id as number | string} className="space-y-4 md:space-y-5">
                   {paragraphs.map((p: string, i: number) => (
                     <p
                       key={i}
@@ -145,26 +187,30 @@ export default function CollectionPage() {
 
       {/* GALERÍA */}
       <section className="w-full">
-        {filteredCollections.map((collection: AnyObj) => {
+        {filteredCollections.map((collection) => {
           const name = getName(collection) || "Collection";
-          let imagesData = getImagesData(collection);
-          if (!Array.isArray(imagesData)) imagesData = [];
+          const imagesData = getImagesData(collection);
+
           if (imagesData.length === 0) {
+            // Log solo informativo; permitido por la config típica de Next (allow: ["warn", "error"])
             console.warn("No images found for collection:", name, collection);
           }
+
           return (
-            <div key={collection.id} className="w-full">
+            <div key={(collection as UnknownRecord).id as number | string} className="w-full">
               <div className="flex flex-wrap w-full gap-0">
                 {imagesData.length > 0 ? (
-                  imagesData.map((img: AnyObj, idx: number) => {
+                  imagesData.map((img: ImageLike, idx: number) => {
                     const raw = getImageUrl(img);
-                    const src = toMediaUrl(raw); // ✅ sin process.env en JSX
+                    const src = toMediaUrl(raw);
+
+                    // key segura: número/string si existe, si no, fallback string
+                    const imgId =
+                      typeof img.id === "number" || typeof img.id === "string" ? img.id : undefined;
+                    const key: string | number = imgId ?? `${name}-${idx}`;
 
                     return (
-                      <div
-                        key={img.id ?? `${name}-${idx}`}
-                        className="w-full md:w-1/2"
-                      >
+                      <div key={key} className="w-full md:w-1/2">
                         {/* Caja con ratio estable */}
                         <div
                           className="relative aspect-[3/4] bg-white rounded-none overflow-hidden shadow-none"
@@ -178,7 +224,7 @@ export default function CollectionPage() {
                               sizes="(max-width: 768px) 100vw, 50vw"
                               className="object-cover transition duration-300 ease-in-out group-hover:scale-110 cursor-pointer"
                               loading="lazy"
-                              onClick={() => setModalImage(src)} // ✅ usa ya la URL absoluta
+                              onClick={() => setModalImage(src)}
                             />
                           ) : (
                             <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
@@ -205,10 +251,7 @@ export default function CollectionPage() {
             className="fixed inset-0 bg-[rgba(0,0,0,0.8)] flex items-center justify-center z-[9999]"
             onClick={() => setModalImage(null)}
           >
-            <div
-              className="relative max-w-4xl w-[90vw] max-h-[90vh]"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="relative max-w-4xl w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
               <div className="relative w-full h-[80vh]">
                 <Image
                   src={modalImage}
