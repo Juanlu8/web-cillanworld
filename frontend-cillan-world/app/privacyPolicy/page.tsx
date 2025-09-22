@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import NavBar from "@/components/ui/navbar";
 import { useRouter } from "next/navigation";
 import NextImage from "next/image";
+import Link from "next/link";
 
 export default function PrivacyPolicyPage() {
     
@@ -86,7 +87,7 @@ export default function PrivacyPolicyPage() {
           <h2 className="text-xl font-semibold mt-8 mb-2">5. ¿Con quién compartimos tus datos?</h2>
           <p className="mb-2 text-gray-800">Solo compartimos tus datos con terceros esenciales para operar nuestra tienda:</p>
           <ul className="list-disc list-inside mb-6 text-gray-800">
-            <li><strong>Stripe, Inc.</strong>, para procesar los pagos. Puedes consultar su política de privacidad aquí: <a href="https://stripe.com/es/privacy" target="_blank" className="text-blue-600 underline">https://stripe.com/es/privacy</a></li>
+            <li><strong>Stripe, Inc.</strong>, para procesar los pagos. Puedes consultar su política de privacidad aquí: <Link href="https://stripe.com/es/privacy" target="_blank" className="text-blue-600 underline">https://stripe.com/es/privacy</Link></li>
           </ul>
           <p className="mb-6 text-gray-800">No vendemos ni cedemos tus datos personales a terceros con fines comerciales.</p>
 
@@ -103,7 +104,7 @@ export default function PrivacyPolicyPage() {
             <li>Retirar tu consentimiento, si lo diste previamente</li>
           </ul>
           <p className="mb-6 text-gray-800">Para ejercerlos, escríbenos a <strong>contacto@[tudominio].com</strong> con el asunto “Protección de datos”.</p>
-          <p className="mb-6 text-gray-800">También puedes presentar una reclamación ante la Agencia Española de Protección de Datos: <a href="https://www.aepd.es" target="_blank" className="text-blue-600 underline">https://www.aepd.es</a></p>
+          <p className="mb-6 text-gray-800">También puedes presentar una reclamación ante la Agencia Española de Protección de Datos: <Link href="https://www.aepd.es" target="_blank" className="text-blue-600 underline">https://www.aepd.es</Link></p>
 
           <h2 className="text-xl font-semibold mt-8 mb-2">8. Seguridad de tus datos</h2>
           <p className="mb-6 text-gray-800">Adoptamos medidas técnicas y organizativas para proteger tus datos personales, incluyendo cifrado SSL, plataformas de pago seguras (como Stripe) y controles de acceso internos.</p>

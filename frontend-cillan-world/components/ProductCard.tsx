@@ -22,7 +22,7 @@ export default function ProductCard({ product }: Props) {
 
   const handleClick = () => {
     setClicked(true);
-    router.push(`/product?slug=${slug}`);
+    router.push(`/product/${slug}`);
   };
 
   return (

@@ -81,13 +81,13 @@ const Navbar = () => {
   const goToCatalog = (category: string) => {
     setIsMenuOpen(false);
     setActiveSubmenu(null);
-    window.location.href = `/catalog?category=${category}`;
+    window.location.href = `/catalog/${category}`;
   };
 
   const goToCollection = (collection: string) => {
     setIsMenuOpen(false);
     setActiveSubmenu(null);
-    window.location.href = `/collection?collection=${collection}`;
+    window.location.href = `/collection/${collection}`;
   };
 
   const goToAbout = () => {

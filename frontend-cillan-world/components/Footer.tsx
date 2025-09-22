@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTranslation } from "react-i18next";
 import NextImage from "next/image";
+import Link from "next/link";
 
 const Footer = () => {
   const goToPrivacyPolicy = () => {
@@ -34,10 +35,10 @@ const Footer = () => {
       <div className="relative z-10 w-full max-w-4xl px-6 pt-16 pb-12 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-48 mx-auto">
         {/* Enlaces */}
         <div className="flex flex-col items-start md:items-start space-y-2 text-sm sm:text-left md:text-left">
-          <a href="#" onClick={() => goToAbout()} className="hover:underline">{t("navbar.about")}</a>
-          <a href="https://www.instagram.com/sergio.cillan?igsh=MXkxNngwMjZkZXU1dQ==" target="_blank" rel="noopener noreferrer" className="hover:underline">instagram</a>
-          <a href="#" onClick={() => goToTermsConditions()} className="hover:underline">{t("general.terms_conditions")}</a>
-          <a href="#" onClick={() => goToPrivacyPolicy()} className="hover:underline">{t("bag.privacy_policy")}</a>
+          <Link href="#" onClick={() => goToAbout()} className="hover:underline">{t("navbar.about")}</Link>
+          <Link href="https://www.instagram.com/sergio.cillan?igsh=MXkxNngwMjZkZXU1dQ==" target="_blank" rel="noopener noreferrer" className="hover:underline">instagram</Link>
+          <Link href="#" onClick={() => goToTermsConditions()} className="hover:underline">{t("general.terms_conditions")}</Link>
+          <Link href="#" onClick={() => goToPrivacyPolicy()} className="hover:underline">{t("bag.privacy_policy")}</Link>
         </div>
 
         <div className="flex flex-col items-center md:items-start space-y-8"></div>
@@ -64,7 +65,7 @@ const Footer = () => {
 
       {/* Créditos */}
       <div className="absolute bottom-4 right-4 z-20 flex items-end">
-        <a href="https://www.linkedin.com/in/juan-luis-bertoncini-ferreras/" target="_blank" rel="noopener noreferrer">
+        <Link href="https://www.linkedin.com/in/juan-luis-bertoncini-ferreras/" target="_blank" rel="noopener noreferrer">
           <NextImage
             src="/images/white-logo.png"
             alt="Logo Créditos"
@@ -72,7 +73,7 @@ const Footer = () => {
             height={181}
             className="w-24 h-auto object-contain"
           />
-        </a>
+        </Link>
       </div>
     </footer>
   );

@@ -83,7 +83,7 @@ export default function HomeImageCard({ data }: Props) {
 
   const handleClick = () => {
     setClicked(true);
-    router.push(`/product?slug=${slug}`);
+    router.push(`/product/${slug}`);
   };
 
   return (

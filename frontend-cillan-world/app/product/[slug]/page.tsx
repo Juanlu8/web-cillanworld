@@ -1,27 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useGetProducts } from "@/api/useGetProducts";
 import NavBar from "@/components/ui/navbar";
 import Footer from "@/components/Footer";
 import { ProductType } from "@/types/product";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { useCart } from "@/hooks/use-cart";
 import { CartItemType } from "@/types/cartItem";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
+import Link from "next/link";
 import { toMediaUrl } from "@/lib/media";
 
 export default function ProductPage() {
-  // ref opcional para la primera imagen (no crítico)
+  // ← leemos el slug del segmento dinámico
+  const { slug } = useParams<{ slug: string }>();
+  const slugFromParams = Array.isArray(slug) ? slug[0] : slug;
+
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   const { t, i18n } = useTranslation();
   const currentLanguage = (i18n.resolvedLanguage || i18n.language || "es")
     .slice(0, 2) as "es" | "en";
 
-  // Mapeo de nombres de color en español a CSS
   const colorMap: Record<string, string> = {
     azul: "blue",
     rojo: "red",
@@ -45,12 +48,14 @@ export default function ProductPage() {
   }
 
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const slugFromURL = searchParams.get("slug");
 
   // Datos
-  const result: ProductType[] = useGetProducts().result ?? [];
-  const product = result.find((p) => p.attributes?.slug === slugFromURL) || null;
+  const { result } = useGetProducts();
+  const products: ProductType[] = useMemo(() => result ?? [], [result]);
+  const product = useMemo(
+    () => products.find((p) => p.attributes?.slug === slugFromParams) || null,
+    [products, slugFromParams]
+  );
 
   // Carousel
   const [api, setApi] = useState<CarouselApi | null>(null);
@@ -80,7 +85,7 @@ export default function ProductPage() {
 
   const goToHome = () => router.push(`/`);
 
-  if (result.length === 0) {
+  if (!result) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p>{t("product.loading_product")}</p>
@@ -108,8 +113,6 @@ export default function ProductPage() {
     images,
   } = product.attributes;
 
-  const sizes: string[] = ["S", "M", "L", "XL"];
-
   return (
     <div className="relative min-h-screen bg-white">
       {/* Marca de agua / logo superior */}
@@ -131,7 +134,6 @@ export default function ProductPage() {
       <div className="max-w-6xl mx-auto px-4 md:px-2 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-48">
         {/* Imagen */}
         <div>
-          {/* Carrusel de imágenes */}
           <Carousel opts={{ align: "start", loop: false }} setApi={setApi} className="w-full">
             <CarouselContent>
               {images?.data.map((image, idx) => {
@@ -139,14 +141,11 @@ export default function ProductPage() {
                 return (
                   <CarouselItem key={image.id} className="basis-full">
                     <div className="relative flex justify-center items-center h-[500px] rounded overflow-hidden">
-                      {/* Skeleton por imagen */}
                       {!loaded[image.id] && (
                         <div className="absolute inset-0 animate-pulse bg-gray-100 opacity-50" />
                       )}
-
                       {src && (
                         <Image
-                          // Next/Image no tipa el ref como HTMLImageElement; es aceptable para nuestro uso
                           ref={idx === 0 ? imgRef : undefined}
                           src={src}
                           alt={`${productName ?? "Producto"} - Imagen ${idx + 1}`}
@@ -155,12 +154,8 @@ export default function ProductPage() {
                           className={`object-contain rounded cursor-pointer transition-opacity duration-300 ${
                             loaded[image.id] ? "opacity-100" : "opacity-0"
                           }`}
-                          onLoad={() =>
-                            setLoaded((prev) => ({ ...prev, [image.id]: true }))
-                          }
-                          onError={() =>
-                            setLoaded((prev) => ({ ...prev, [image.id]: true }))
-                          }
+                          onLoad={() => setLoaded((prev) => ({ ...prev, [image.id]: true }))}
+                          onError={() => setLoaded((prev) => ({ ...prev, [image.id]: true }))}
                           onClick={() => setModalImage(src)}
                           priority={idx === 0}
                         />
@@ -213,29 +208,29 @@ export default function ProductPage() {
           {/* Anillas de color (variantes por slug base) */}
           <div className="flex justify-center gap-2 mt-4">
             {(() => {
-              const baseSlug = slugFromURL?.split("-")[0];
-              const colorVariants = result.filter(
+              const baseSlug = slugFromParams.split("-")[0];
+              const colorVariants = products.filter(
                 (p) =>
                   p.attributes?.slug?.startsWith(`${baseSlug}-`) ||
                   p.attributes?.slug === baseSlug
               );
               return colorVariants.map((variant) => {
                 const colorValue = variant.attributes?.color;
+                const variantSlug = variant.attributes?.slug ?? "";
                 return (
-                  <div
+                  <Link
                     key={variant.id}
+                    href={`/product/${variantSlug}`}
                     className="transition-transform duration-200 ease-in-out hover:scale-125"
+                    title={colorValue}
+                    aria-label={variantSlug}
+                    prefetch
                     style={{
                       position: "relative",
                       width: 40,
                       height: 40,
-                      cursor: "pointer",
                       display: "inline-block",
                     }}
-                    onClick={() =>
-                      router.push(`/product?slug=${variant.attributes?.slug}`)
-                    }
-                    title={colorValue}
                   >
                     <Image
                       src="/images/anilla.png"
@@ -267,7 +262,7 @@ export default function ProductPage() {
                         })(),
                       }}
                     />
-                  </div>
+                  </Link>
                 );
               });
             })()}
@@ -282,12 +277,12 @@ export default function ProductPage() {
           {/* Tallas */}
           <div>
             <h3 className="text-sm font-semibold mb-4">
-              <a className="hover:underline" href="https://midominio.com">
+              <Link className="hover:underline" href="https://midominio.com">
                 {t("product.which_size")}
-              </a>
+              </Link>
             </h3>
             <div className="grid grid-cols-4 gap-2">
-              {sizes?.map((size: string) => (
+              {["S", "M", "L", "XL"].map((size) => (
                 <button
                   key={size}
                   className={`border rounded-md py-2 font-medium transition cursor-pointer
@@ -311,13 +306,10 @@ export default function ProductPage() {
               onClick={() => {
                 if (!selectedSize) {
                   setShowValidation(true);
-                } else if (!product) {
-                  console.warn("Producto aún no está disponible.");
-                  return;
                 } else {
                   setShowValidation(false);
                   const added: CartItemType = {
-                    product: product,
+                    product,
                     quantity: 1,
                     size: selectedSize,
                   };

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import CartItem from "@/components/CartItemComp";
 import { CartItemType } from "@/types/cartItem";
 import { RefObject } from "react";
+import Link from "next/link";
 
 interface CartModalProps {
   isVisible: boolean;
@@ -54,7 +55,7 @@ const CartModal = ({ isVisible, isCartOpen, cartRef, closeCart, cartItems, total
                 <input type="checkbox" id="privacy" className="mr-2 cursor-pointer" />
                 <label htmlFor="privacy" className="text-sm">
                   {t("bag.read_accepted") + ' '}
-                  <a href="/privacyPolicy" className="underline" target="_blank" rel="noopener noreferrer">{t("bag.privacy_policy")}</a>.
+                  <Link href="/privacyPolicy" className="underline" target="_blank" rel="noopener noreferrer">{t("bag.privacy_policy")}</Link>.
                 </label>
               </div>
               <div className="flex justify-between items-center mb-6">

@@ -79,7 +79,7 @@ const HighlightsCarousel = () => {
                       <CardContent className="flex items-center justify-center h-full w-full">
                         {src ? (
                           <Link
-                            href={`/product?slug=${slug}`}
+                            href={`/product/${slug}`}
                             className="block h-full w-full"
                             onClick={(e) => {
                               if (dragged) {
