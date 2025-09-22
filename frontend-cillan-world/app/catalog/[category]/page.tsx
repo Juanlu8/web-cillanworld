@@ -5,7 +5,7 @@ import { useGetProducts } from "@/api/useGetProducts";
 import NavBar from "@/components/ui/navbar";
 import Footer from "@/components/Footer";
 import { ProductType } from "@/types/product";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
@@ -29,11 +29,7 @@ export default function CatalogPage() {
     return () => window.removeEventListener("beforeunload", saveScroll);
   }, []);
 
-  const searchParams = useSearchParams();
-  const categoryFromURL = useMemo(
-    () => searchParams.get("category"),
-    [searchParams]
-  );
+  const { category } = useParams<{ category: string }>();
 
   const goToHome = () => router.push(`/`);
 
@@ -45,10 +41,10 @@ export default function CatalogPage() {
   );
 
   // Mantén el estado sincronizado con la URL
-  const [activeCategory, setActiveCategory] = useState<string | null>(categoryFromURL);
+  const [activeCategory, setActiveCategory] = useState<string | null>(category || null);
   useEffect(() => {
-    setActiveCategory(categoryFromURL);
-  }, [categoryFromURL]);
+    setActiveCategory(category || null);
+  }, [category]);
 
   // Orden por 'order'
   const orderedResult = useMemo(() => {

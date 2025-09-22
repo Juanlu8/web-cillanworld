@@ -4,7 +4,7 @@ import { useGetCollections } from "@/api/useGetCollections";
 import Footer from "@/components/Footer";
 import NavBar from "@/components/ui/navbar";
 import { CollectionType } from "@/types/collection";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
@@ -99,8 +99,7 @@ export default function CollectionPage() {
   const currentLanguage = (i18n.resolvedLanguage || i18n.language || "es")
     .slice(0, 2) as "es" | "en";
 
-  const searchParams = useSearchParams();
-  const collectionFromURL = (searchParams.get("collection") || "").toLowerCase();
+  const { collection } = useParams<{ collection: string }>();
 
   const { result } = useGetCollections();
   const collections: CollectionLike[] = useMemo(() => result ?? [], [result]);
@@ -113,13 +112,13 @@ export default function CollectionPage() {
       miedos: "MIEDOS",
       opncplddupslnusaddmpc: "OPNCPLDDUPSLNUSADDMPC",
     };
-    const slug = collectionFromURL;
+    const slug = collection;
     const filtered = collections.filter((c) => getSlug(c).toLowerCase() === slug);
     return {
       filteredCollections: filtered,
       title: titleBySlug[slug] ?? slug.toUpperCase(),
     };
-  }, [collections, collectionFromURL]);
+  }, [collections, collection]);
 
   return (
     <div className="relative">
