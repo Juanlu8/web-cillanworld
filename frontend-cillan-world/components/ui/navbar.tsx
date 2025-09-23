@@ -102,7 +102,7 @@ const Navbar = () => {
           aria-controls="main-menu"
         >
           <NextImage
-            src="/images/anilla.png"
+            src="/images/anilla.webp"
             alt="Menú"
             width={943}
             height={943}
@@ -117,7 +117,7 @@ const Navbar = () => {
               id="main-menu"
               role="menu"
               aria-label={t("navbar.menu") as string}
-              className="relative w-[350px] h-[350px] bg-[url('/images/anilla.png')] bg-cover bg-center rounded-full flex items-center justify-center animate-fadeZoom"
+              className="relative w-[350px] h-[350px] bg-[url('/images/anilla.webp')] bg-cover bg-center rounded-full flex items-center justify-center animate-fadeZoom"
             >
               <ul className="text-white text-center space-y-1 text-2xl font-handwriting z-20 relative">
                 <li

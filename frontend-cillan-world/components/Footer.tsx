@@ -24,7 +24,7 @@ const Footer = () => {
     <footer className="relative bg-black text-white py-10 overflow-hidden z-12 w-full flex flex-col items-center justify-center">
       {/* Marca de agua de fondo */}
       <NextImage
-        src="/images/white-logo-cillan.png"
+        src="/images/white-logo-cillan.webp"
         alt="Cillan"
         width={1600}
         height={900}
@@ -67,7 +67,7 @@ const Footer = () => {
       <div className="absolute bottom-4 right-4 z-20 flex items-end">
         <Link href="https://www.linkedin.com/in/juan-luis-bertoncini-ferreras/" target="_blank" rel="noopener noreferrer">
           <NextImage
-            src="/images/white-logo.png"
+            src="/images/white-logo.webp"
             alt="Logo Créditos"
             width={500}
             height={181}

@@ -246,6 +246,6 @@ details[open] .toggle-icon::after { content: "–"; color: #d4d7dd; }
   width: auto;
   aspect-ratio: 1 / 1;
   margin: 0 0.5em -1em 0;       /* margen derecho + margen inferior negativo */
-  background: url("/images/logo-top-nomargin.png") no-repeat left center / contain;
+  background: url("/images/logo-top-nomargin.webp") no-repeat left center / contain;
   vertical-align: bottom;           
 }

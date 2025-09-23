@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <main>
       <NextImage
-        src="/images/white-logo-cillan.png"
+        src="/images/white-logo-cillan.webp"
         alt="Marca de agua"
         width={1600}
         height={900}

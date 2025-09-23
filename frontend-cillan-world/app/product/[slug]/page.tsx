@@ -118,7 +118,7 @@ export default function ProductPage() {
       {/* Marca de agua / logo superior */}
       <div className="pt-14 md:pt-10 left-0 w-full flex justify-center z-20">
         <Image
-          src="/images/logo-top.png"
+          src="/images/logo-top.webp"
           alt="Cillán"
           width={1600}
           height={900}

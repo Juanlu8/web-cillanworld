@@ -146,7 +146,7 @@ export default function CollectionPage() {
           {/* Logo centrado */}
           <div className="w-full flex justify-center pt-14 md:pt-10 relative z-10">
             <Image
-              src="/images/logo-top.png"
+              src="/images/logo-top.webp"
               alt="Cillán"
               width={1600}
               height={900}

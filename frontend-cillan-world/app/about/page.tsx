@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
       {/* Marca de agua */}
       <div className="fixed pt-14 md:pt-10 left-0 w-full flex justify-center z-00">
         <NextImage
-          src="/images/logo-top.png"
+          src="/images/logo-top.webp"
           alt="Marca de agua"
           width={1600}
           height={900}
@@ -39,7 +39,7 @@ export default function PrivacyPolicyPage() {
         </div>
         <div className="py-12 md:py-24 flex items-center gap-6 md:gap-24">
           <NextImage
-            src="/images/foto-peque.png"
+            src="/images/foto-peque.webp"
             alt="foto nene"
             width={1352}
             height={1920}
