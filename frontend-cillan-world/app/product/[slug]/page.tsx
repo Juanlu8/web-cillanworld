@@ -233,7 +233,7 @@ export default function ProductPage() {
                     }}
                   >
                     <Image
-                      src="/images/anilla.png"
+                      src="/images/anilla.webp"
                       alt="Anilla"
                       width={943}
                       height={943}

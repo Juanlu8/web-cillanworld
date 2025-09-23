@@ -86,7 +86,7 @@ export default function CatalogPage() {
       {/* Fondo decorativo anilla */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
         <Image
-          src="/images/anilla.png"
+          src="/images/anilla.webp"
           alt="Fondo anilla"
           width={943}
           height={943}
