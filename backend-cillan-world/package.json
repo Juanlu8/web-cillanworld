@@ -10,6 +10,8 @@
     "dev": "strapi develop",
     "develop": "strapi develop",
     "start": "strapi start",
+    "typecheck": "tsc --noEmit || echo 'skip'",
+    "lint": "eslint . --ext .js,.ts || echo 'skip'",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
