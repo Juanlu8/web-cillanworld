@@ -6,8 +6,8 @@ import { useGetHomeImages } from '@/api/useGetHomeImages';
 import { HomeImageType } from '@/types/homeImage';
 import HomeImageCard from './HomeImageCard';
 
-const SPEED_PX_PER_SEC = 40;       // Ajusta la velocidad del autoscroll
-const FRAME_FALLBACK_MS = 16;      // ~60fps
+const SPEED_PX_PER_SEC = 40;    // Velocidad del autoscroll
+const FRAME_FALLBACK_MS = 16;   // ~60fps
 
 const VerticalSnapCarousel: React.FC = () => {
   const result: HomeImageType[] = useGetHomeImages().result ?? [];
@@ -18,14 +18,20 @@ const VerticalSnapCarousel: React.FC = () => {
   const rafRef = React.useRef<number | null>(null);
   const lastTimeRef = React.useRef<number | null>(null);
   const pausedRef = React.useRef<boolean>(false);
-  const listHeightRef = React.useRef<number>(0);
+  const listHeightRef = React.useRef<number>(0); // altura total de la lista
 
-  // Mide la altura de una "lista" (no la duplicada)
+  // Medir la altura de la lista
   const measureListHeight = React.useCallback(() => {
     const list = listRef.current;
     if (!list) return;
-    // Altura total del contenido de UNA pasada (no el contenedor)
     listHeightRef.current = list.scrollHeight;
+  }, []);
+
+  // Máximo desplazamiento (altura scrollable)
+  const getScrollMax = React.useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return 0;
+    return Math.max(0, listHeightRef.current - container.clientHeight);
   }, []);
 
   // Loop de animación
@@ -44,21 +50,23 @@ const VerticalSnapCarousel: React.FC = () => {
     lastTimeRef.current = now;
 
     const delta = SPEED_PX_PER_SEC * dt;
-    const oneListHeight = listHeightRef.current;
+    const scrollMax = getScrollMax();
 
-    if (oneListHeight > 0) {
+    if (scrollMax > 0) {
       // Avanza
-      container.scrollTop += delta;
+      let nextTop = container.scrollTop + delta;
 
-      // Cuando pasamos el final de la primera lista, restamos su altura.
-      // Esto crea un bucle continuo sin salto visual.
-      if (container.scrollTop >= oneListHeight) {
-        container.scrollTop -= oneListHeight;
+      // Si llegamos (o pasamos) al final, volvemos al inicio
+      if (nextTop >= scrollMax) {
+        // Reinicio suave: colocamos en 0 en el siguiente frame
+        nextTop = 0;
       }
+
+      container.scrollTop = nextTop;
     }
 
     rafRef.current = requestAnimationFrame(tick);
-  }, []);
+  }, [getScrollMax]);
 
   const start = React.useCallback(() => {
     if (rafRef.current) return;
@@ -73,29 +81,41 @@ const VerticalSnapCarousel: React.FC = () => {
     }
   }, []);
 
-  // Efecto: iniciar animación y limpiar
+  // Iniciar animación y listeners
   React.useEffect(() => {
-    // Medimos tras montar y cuando cambie el contenido
     measureListHeight();
     start();
 
-    // Re-medimos al redimensionar para mantener el bucle fino
+    // Re-medimos en resize y preservamos posición proporcional
     const onResize = () => {
       const container = containerRef.current;
-      const oldOne = listHeightRef.current;
+      const oldScrollable = Math.max(0, listHeightRef.current - (container?.clientHeight ?? 0));
       measureListHeight();
-
-      // Mantén la posición proporcional si cambia la altura
-      const one = listHeightRef.current;
-      if (container && oldOne > 0 && one > 0) {
-        const ratio = container.scrollTop / oldOne;
-        container.scrollTop = ratio * one;
+      const newScrollable = Math.max(0, listHeightRef.current - (container?.clientHeight ?? 0));
+      if (container && oldScrollable > 0 && newScrollable > 0) {
+        const ratio = container.scrollTop / oldScrollable;
+        container.scrollTop = ratio * newScrollable;
       }
     };
     window.addEventListener('resize', onResize);
 
+    // Observa cambios de tamaño en la lista (imágenes cargando, etc.)
+    const ro = new ResizeObserver(() => {
+      const container = containerRef.current;
+      const oldScrollable = Math.max(0, listHeightRef.current - (container?.clientHeight ?? 0));
+      measureListHeight();
+      const newScrollable = Math.max(0, listHeightRef.current - (container?.clientHeight ?? 0));
+      // Mantener posición proporcional si cambia
+      if (container && oldScrollable > 0 && newScrollable > 0) {
+        const ratio = container.scrollTop / oldScrollable;
+        container.scrollTop = ratio * newScrollable;
+      }
+    });
+    if (listRef.current) ro.observe(listRef.current);
+
     return () => {
       window.removeEventListener('resize', onResize);
+      ro.disconnect();
       stop();
     };
   }, [measureListHeight, start, stop, result.length]);
@@ -108,11 +128,10 @@ const VerticalSnapCarousel: React.FC = () => {
     pausedRef.current = false;
   };
 
-  // Si no hay datos, renderiza vacío
   if (!result || result.length === 0) {
     return null;
   }
-  // Ordena por el campo 'order' si hay datos
+
   const orderedResult = [...result].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
@@ -132,7 +151,7 @@ const VerticalSnapCarousel: React.FC = () => {
         ref={containerRef}
         className={`
           relative h-[100vh] overflow-y-auto
-          snap-none  /* importante: sin snap para scroll continuo */
+          snap-none
           px-4 py-24
         `}
         onMouseEnter={handleUserInteract}
@@ -140,17 +159,13 @@ const VerticalSnapCarousel: React.FC = () => {
         onWheel={handleUserInteract}
         onTouchMove={handleUserInteract}
       >
-        {/* Duplicamos la lista para lograr loop perfecto */}
+        {/* UNA sola lista */}
         <div ref={listRef} className="flex flex-col gap-0">
-          {orderedResult.map((img: HomeImageType) => (
-            <HomeImageCard key={`a-${img.id ?? img.slug ?? Math.random()}`} data={img} />
-          ))}
-        </div>
-
-        {/* Copia 2 — NO usar la misma ref, solo duplicar contenido */}
-        <div className="flex flex-col gap-0">
-          {orderedResult.map((img: HomeImageType) => (
-            <HomeImageCard key={`b-${img.id ?? img.slug ?? Math.random()}`} data={img} />
+          {orderedResult.map((img, idx) => (
+            <HomeImageCard
+              key={img.id ?? img.slug ?? `img-${idx}`}
+              data={img}
+            />
           ))}
         </div>
       </div>
