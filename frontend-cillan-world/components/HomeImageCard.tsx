@@ -7,6 +7,7 @@ import { HomeImageType } from "@/types/homeImage";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { toMediaUrl } from "@/lib/media";
+import Link from 'next/link';
 
 type Props = { data: HomeImageType };
 
@@ -28,6 +29,7 @@ export default function HomeImageCard({ data }: Props) {
   const [isHovering, setIsHovering] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [dragged, setDragged] = useState(false);
   const { t } = useTranslation();
 
   // Auto-scroll del contenedor padre solo mientras hay hover en la tarjeta
@@ -74,6 +76,7 @@ export default function HomeImageCard({ data }: Props) {
   const rawUrl = getImageUrl(data.image as unknown as DirectOrStrapiImage);
   const src = toMediaUrl(rawUrl);
   const slug = data.slug;
+  const productSlug = data.productSlug;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -83,7 +86,7 @@ export default function HomeImageCard({ data }: Props) {
 
   const handleClick = () => {
     setClicked(true);
-    router.push(`/product/${slug}`);
+    router.push(`/product/${productSlug}`);
   };
 
   return (
@@ -110,7 +113,17 @@ export default function HomeImageCard({ data }: Props) {
 
             {/* Imagen principal */}
             {src ? (
-              <Image
+              <Link
+                href={`/product/${productSlug}`}
+                className="block h-full w-full"
+                onClick={(e) => {
+                  if (dragged) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
+                }}
+              >
+                <Image
                 src={src}
                 alt={data.homeImageName}
                 fill
@@ -123,6 +136,7 @@ export default function HomeImageCard({ data }: Props) {
                 loading="lazy"
                 priority={false}
               />
+              </Link>
             ) : (
               <div className="flex items-center justify-center w-full h-full bg-gray-100 text-gray-500">
                 {t("general.image_missing")}
@@ -139,7 +153,7 @@ export default function HomeImageCard({ data }: Props) {
               {clicked ? (
                 <Eye className="text-white w-6 h-6 transform scale-y-0 transition duration-300" />
               ) : (
-                <EyeOff className="text-white w-6 h-6 transition duration-300" />
+                <Eye className="text-white w-6 h-6 transition duration-300" />
               )}
             </button>
           </div>

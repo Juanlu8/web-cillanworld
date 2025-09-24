@@ -462,6 +462,7 @@ export interface ApiHomeImageHomeImage extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     order: Schema.Attribute.Integer;
+    productSlug: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'homeImageName'>;
     updatedAt: Schema.Attribute.DateTime;
