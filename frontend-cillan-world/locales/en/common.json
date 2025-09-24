@@ -19,6 +19,7 @@
     "bag_is_empty": "Your bag is empty (for now)",
     "read_accepted": "I declare that I have read and accept the",
     "privacy_policy": "Privacy Policy",
+    "privacy_required": "You must accept the privacy policy to continue",
     "total": "Total",
     "checkout": "Checkout",
     "size": "Size",

@@ -1,13 +1,14 @@
 // components/CartModal.tsx
 "use client";
 
-import { useEffect, useMemo, useRef, useCallback } from "react";
+import { useEffect, useMemo, useRef, useCallback, useState } from "react";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import CartItem from "@/components/CartItemComp";
 import type { CartItemType } from "@/types/cartItem";
 import Link from "next/link";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 
 interface CartModalProps {
   isVisible: boolean;           // monta/desmonta UI (pero no hooks)
@@ -30,12 +31,16 @@ export default function CartModal({
   total,
 }: CartModalProps) {
   const { t } = useTranslation();
+  const router = useRouter();
 
-  // 👇 hooks SIEMPRE al tope, sin returns antes
+  // ✅ Estado de privacidad + error
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [privacyError, setPrivacyError] = useState<string | null>(null);
+
+  // hooks al tope
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const initialFocusRef = useRef<HTMLButtonElement | null>(null);
 
-  // Lock de scroll sólo cuando visible y abierto
   useEffect(() => {
     if (!(isVisible && isCartOpen)) return;
     const prev = document.body.style.overflow;
@@ -45,7 +50,6 @@ export default function CartModal({
     };
   }, [isVisible, isCartOpen]);
 
-  // Focus inicial + trap + Esc sólo cuando visible y abierto
   useEffect(() => {
     if (!(isVisible && isCartOpen)) return;
 
@@ -104,7 +108,29 @@ export default function CartModal({
     [cartItems]
   );
 
-  // 👇 AHORA sí, después de llamar hooks, podemos decidir no renderizar
+  // ✅ Handler de checkbox
+  const onChangePrivacy = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setPrivacyAccepted(checked);
+    if (checked) setPrivacyError(null);
+  };
+
+  // ✅ Validación previa al checkout
+  const onCheckoutClick = () => {
+    if (!privacyAccepted) {
+      setPrivacyError(
+        (t("bag.privacy_required") as string)
+      );
+      // Opcional: mover foco al error
+      const err = document.getElementById("privacy-error");
+      err?.focus();
+      return;
+    }
+
+    // Aquí dispara tu flujo real de checkout/Braintree
+    router.push("/checkout");
+  };
+
   if (!isVisible) return null;
 
   const panel = (
@@ -152,8 +178,17 @@ export default function CartModal({
               <div aria-live="polite">{itemList}</div>
 
               <div className="mt-8">
-                <div className="flex items-start gap-2 mb-4">
-                  <input type="checkbox" id="privacy" className="mt-1 cursor-pointer" />
+                {/* ✅ Checkbox + error accesible */}
+                <div className="flex items-start gap-2 mb-2">
+                  <input
+                    type="checkbox"
+                    id="privacy"
+                    className="mt-1 cursor-pointer"
+                    checked={privacyAccepted}
+                    onChange={onChangePrivacy}
+                    aria-invalid={!!privacyError}
+                    aria-describedby={privacyError ? "privacy-error" : undefined}
+                  />
                   <label htmlFor="privacy" className="text-sm">
                     {t("bag.read_accepted") + " "}
                     <Link
@@ -168,16 +203,28 @@ export default function CartModal({
                   </label>
                 </div>
 
+                {privacyError && (
+                  <p
+                    id="privacy-error"
+                    role="alert"
+                    tabIndex={-1}
+                    className="text-sm text-red-600 mb-4"
+                  >
+                    {privacyError}
+                  </p>
+                )}
+
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-2xl font-handwritten">{t("bag.total")}:</span>
                   <span className="text-2xl font-handwritten">€{total.toFixed(2)}</span>
                 </div>
 
                 <button
-                className="border border-black rounded-md py-12 mt-2 w-full cursor-pointer font-semibold hover:bg-black hover:text-white transition"
-              >
-                {t("bag.checkout").toUpperCase()}
-              </button>
+                  onClick={onCheckoutClick}
+                  className="border border-black rounded-md py-12 mt-2 w-full cursor-pointer font-semibold hover:bg-black hover:text-white transition"
+                >
+                  {String(t("bag.checkout")).toUpperCase()}
+                </button>
               </div>
             </>
           )}
