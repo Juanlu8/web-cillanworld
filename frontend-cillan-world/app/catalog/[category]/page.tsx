@@ -1,127 +1,60 @@
-"use client";
+// app/catalog/[category]/page.tsx
+import type { Metadata, ResolvingMetadata } from "next";
+import CatalogClient from "./CatalogClient";
 
-import { useEffect, useMemo, useState } from "react";
-import { useGetProducts } from "@/api/useGetProducts";
-import NavBar from "@/components/ui/navbar";
-import Footer from "@/components/Footer";
-import { ProductType } from "@/types/product";
-import { useRouter, useParams } from "next/navigation";
-import ProductCard from "@/components/ProductCard";
-import { useTranslation } from "react-i18next";
-import Image from "next/image";
+type Params = { category?: string };
 
-export default function CatalogPage() {
-  const router = useRouter();
-  const { t } = useTranslation();
+const TITLE_BASE = "Cillán World — Catalog";
+const DESC_BASE =
+  "Discover our full catalog of designer apparel: tops, bottoms and runway pieces. Limited drops, crafted details.";
 
-  // Restaurar scroll al entrar
-  useEffect(() => {
-    const scrollY = sessionStorage.getItem("catalogScroll");
-    if (scrollY) window.scrollTo(0, Number(scrollY));
-  }, []);
+function titleForCategory(slug?: string) {
+  if (!slug || slug === "view-all") return `${TITLE_BASE} — All`;
+  if (slug === "tops") return `${TITLE_BASE} — Tops`;
+  if (slug === "bottoms") return `${TITLE_BASE} — Bottoms`;
+  if (slug === "runaway-pieces") return `${TITLE_BASE} — Runway Pieces`;
+  return TITLE_BASE;
+}
 
-  // Guardar scroll al salir
-  useEffect(() => {
-    const saveScroll = () => {
-      sessionStorage.setItem("catalogScroll", String(window.scrollY));
-    };
-    window.addEventListener("beforeunload", saveScroll);
-    return () => window.removeEventListener("beforeunload", saveScroll);
-  }, []);
+function descriptionForCategory(slug?: string) {
+  if (!slug || slug === "view-all") return DESC_BASE;
+  if (slug === "tops") return "Shop all tops: tees, shirts and more.";
+  if (slug === "bottoms") return "Shop all bottoms: trousers, skirts and more.";
+  if (slug === "runaway-pieces") return "Exclusive runway pieces. Limited availability.";
+  return DESC_BASE;
+}
 
-  const { category } = useParams<{ category: string }>();
+export async function generateMetadata(
+  { params }: { params: Promise<Params> },
+  _parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { category } = await params;
 
-  const goToHome = () => router.push(`/`);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.cillan.world";
+  const path = category ? `/catalog/${category}` : "/catalog";
+  const url = new URL(path, baseUrl).toString();
 
-  // Resultado estable de productos
-  const { result } = useGetProducts();
-  const products: ProductType[] = useMemo(
-    () => (Array.isArray(result) ? result : []),
-    [result]
-  );
+  const title = titleForCategory(category);
+  const description = descriptionForCategory(category);
 
-  // Mantén el estado sincronizado con la URL
-  const [activeCategory, setActiveCategory] = useState<string | null>(category || null);
-  useEffect(() => {
-    setActiveCategory(category || null);
-  }, [category]);
+  return {
+    title,
+    description,
+    metadataBase: new URL(baseUrl),
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      url,
+      title,
+      description,
+      siteName: "Cillán World",
+      images: [{ url: "/og/catalog.jpg", width: 1200, height: 630, alt: "Cillán World — Catalog" }],
+    },
+    robots: { index: true, follow: true },
+  };
+}
 
-  // Orden por 'order'
-  const orderedResult = useMemo(() => {
-    return products
-      .slice()
-      .sort((a, b) => {
-        const orderA = a.attributes.order;
-        const orderB = b.attributes.order;
-        if (orderA == null && orderB == null) return 0;
-        if (orderA == null) return 1;
-        if (orderB == null) return -1;
-        return orderA - orderB;
-      });
-  }, [products]);
-
-  // Filtro por categoría
-  const filteredProducts = useMemo(() => {
-    if (!activeCategory || activeCategory === "view-all") return orderedResult;
-    return orderedResult.filter((product) => {
-      const cats = product.attributes.categories?.data ?? [];
-      return cats.some((c) => c.attributes.slug === activeCategory);
-    });
-  }, [orderedResult, activeCategory]);
-
-  // Título (cálculo directo, sin useMemo)
-  const pageTitle =
-    !activeCategory || activeCategory === "view-all"
-      ? t("general.all_catalogue").toUpperCase()
-      : activeCategory === "tops"
-      ? t("navbar.tops").toUpperCase()
-      : activeCategory === "bottoms"
-      ? t("navbar.bottoms").toUpperCase()
-      : activeCategory === "runaway-pieces"
-      ? t("navbar.runaway_pieces").toUpperCase()
-      : t("general.all_catalogue").toUpperCase();
-
-  return (
-    <div className="relative">
-      {/* Fondo decorativo anilla */}
-      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
-        <Image
-          src="/images/anilla.webp"
-          alt="Fondo anilla"
-          width={943}
-          height={943}
-          className="w-4/5 max-w-[450px] md:w-full md:max-w-[600px] h-auto opacity-20 select-none object-contain mt-0 md:mt-48 md:ms-42"
-          priority={false}
-        />
-      </div>
-
-      {/* Marca de agua */}
-      <div className="pt-14 md:pt-10 left-0 w-full flex justify-center z-0">
-        <Image
-          src="/images/logo-top.webp"
-          alt="Marca de agua"
-          width={1600}
-          height={900}
-          className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105 cursor-pointer"
-          onClick={goToHome}
-          priority
-        />
-      </div>
-
-      <div className="z-0">
-        <NavBar />
-      </div>
-
-      <div className="px-4 md:px-10 py-12 md:py-24">
-        <h1 className="text-2xl mb-4 tracking-wide">{pageTitle}</h1>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </div>
-
-      <Footer />
-    </div>
-  );
+export default async function Page({ params }: { params: Promise<Params> }) {
+  const { category } = await params;
+  return <CatalogClient initialCategory={category ?? null} />;
 }
