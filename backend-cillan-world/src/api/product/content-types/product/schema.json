@@ -63,18 +63,6 @@
     "garmentCare_en": {
       "type": "text"
     },
-    "relatedColors": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::product.product",
-      "inversedBy": "product"
-    },
-    "product": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::product.product",
-      "mappedBy": "relatedColors"
-    },
     "categories": {
       "type": "relation",
       "relation": "manyToMany",

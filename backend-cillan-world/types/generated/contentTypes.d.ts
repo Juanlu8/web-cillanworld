@@ -510,13 +510,8 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     materials_en: Schema.Attribute.Text;
     order: Schema.Attribute.Integer;
     price: Schema.Attribute.Decimal;
-    product: Schema.Attribute.Relation<'oneToOne', 'api::product.product'>;
     productName: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    relatedColors: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::product.product'
-    >;
     slug: Schema.Attribute.UID<'productName'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

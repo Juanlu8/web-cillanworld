@@ -194,20 +194,19 @@ export default function ProductPageClient({ slug }: { slug: string }) {
               className="fixed inset-0 bg-[rgba(0,0,0,0.8)] flex items-center justify-center z-[9999]"
               onClick={() => setModalImage(null)}
             >
-              <div
-                className="relative max-w-4xl w-[90vw] max-h-[90vh] p-4"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="relative w-full h-[80vh]">
+              <div className="relative max-w-4xl w-[90vw] max-h-[90vh]">
+               <div className="flex items-center justify-center w-full h-[80vh]">
+                <div onClick={e => e.stopPropagation()}>
                   <Image
                     src={modalImage}
                     alt="Imagen ampliada"
-                    fill
-                    sizes="90vw"
-                    className="object-contain rounded"
+                    width={900}
+                    height={900}
+                    className="object-contain rounded max-h-[80vh] max-w-full"
                     priority
                   />
                 </div>
+              </div>
               </div>
             </div>
           )}

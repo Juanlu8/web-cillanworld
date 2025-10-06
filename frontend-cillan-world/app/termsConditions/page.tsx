@@ -83,7 +83,7 @@ export default function TermsConditionsPage() {
           <p className="mb-6 text-gray-800">En ningún caso seremos responsables por pérdidas indirectas, lucro cesante o daños derivados de fallos técnicos del sitio web.</p>
 
           <h2 className="text-xl font-semibold mt-8 mb-2">9. Protección de datos</h2>
-          <p className="mb-6 text-gray-800">Respetamos tu privacidad y tratamos tus datos personales conforme a nuestra <Link href="/privacy-policy" className="text-blue-600 underline">Política de Privacidad</Link>.</p>
+          <p className="mb-6 text-gray-800">Respetamos tu privacidad y tratamos tus datos personales conforme a nuestra <Link href="/privacyPolicy" className="text-blue-600 underline">Política de Privacidad</Link>.</p>
 
           <h2 className="text-xl font-semibold mt-8 mb-2">10. Modificaciones</h2>
           <p className="mb-6 text-gray-800">Nos reservamos el derecho a modificar estos Términos y Condiciones en cualquier momento. Los cambios se harán efectivos desde su publicación en esta página.</p>
