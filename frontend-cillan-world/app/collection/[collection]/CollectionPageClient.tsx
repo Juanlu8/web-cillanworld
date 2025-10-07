@@ -104,16 +104,11 @@ export default function CollectionPageClient({ slug }: { slug: string }) {
 
   const [modalImage, setModalImage] = useState<string | null>(null);
 
-  const { filteredCollections, title } = useMemo(() => {
-    const titleBySlug: Record<string, string> = {
-      idkkid: "IDKKID",
-      miedos: "MIEDOS",
-      opncplddupslnusaddmpc: "OPNCPLDDUPSLNUSADDMPC",
-    };
+  const { filteredCollections, title } = useMemo(() => {    
     const filtered = collections.filter((c) => getSlug(c).toLowerCase() === slug);
     return {
       filteredCollections: filtered,
-      title: titleBySlug[slug] ?? slug.toUpperCase(),
+      title: filtered.length > 0 ? getName(filtered[0]).toUpperCase() || slug.toUpperCase() : slug.toUpperCase(),
     };
   }, [collections, slug]);
 
