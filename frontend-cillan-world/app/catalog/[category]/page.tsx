@@ -6,13 +6,13 @@ type Params = { category?: string };
 
 const TITLE_BASE = "Cillán World — Catalog";
 const DESC_BASE =
-  "Discover our full catalog of designer apparel: tops, bottoms and runway pieces. Limited drops, crafted details.";
+  "Discover our full catalog of designer apparel: tops, bottoms and runaway pieces. Limited drops, crafted details.";
 
 function titleForCategory(slug?: string) {
   if (!slug || slug === "view-all") return `${TITLE_BASE} — All`;
   if (slug === "tops") return `${TITLE_BASE} — Tops`;
   if (slug === "bottoms") return `${TITLE_BASE} — Bottoms`;
-  if (slug === "runaway-pieces") return `${TITLE_BASE} — Runway Pieces`;
+  if (slug === "runaway-pieces") return `${TITLE_BASE} — Runaway Pieces`;
   return TITLE_BASE;
 }
 
@@ -20,7 +20,7 @@ function descriptionForCategory(slug?: string) {
   if (!slug || slug === "view-all") return DESC_BASE;
   if (slug === "tops") return "Shop all tops: tees, shirts and more.";
   if (slug === "bottoms") return "Shop all bottoms: trousers, skirts and more.";
-  if (slug === "runaway-pieces") return "Exclusive runway pieces. Limited availability.";
+  if (slug === "runaway-pieces") return "Exclusive runaway pieces. Limited availability.";
   return DESC_BASE;
 }
 

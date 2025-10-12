@@ -47,11 +47,14 @@ export default function CatalogClient({ initialCategory }: Props) {
   }, []);
 
   useEffect(() => {
-    const saveScroll = () => {
-      sessionStorage.setItem("catalogScroll", String(window.scrollY));
+    const save = () => sessionStorage.setItem("catalogScroll", String(window.scrollY));
+    window.addEventListener("beforeunload", save);
+    const onVis = () => document.visibilityState === "hidden" && save();
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      window.removeEventListener("beforeunload", save);
+      document.removeEventListener("visibilitychange", onVis);
     };
-    window.addEventListener("beforeunload", saveScroll);
-    return () => window.removeEventListener("beforeunload", saveScroll);
   }, []);
 
   // --- state synced with route param ---------------------------------------
@@ -98,7 +101,7 @@ export default function CatalogClient({ initialCategory }: Props) {
       ? t("navbar.tops").toUpperCase()
       : activeCategory === "bottoms"
       ? t("navbar.bottoms").toUpperCase()
-      : activeCategory === "runaway-pieces"
+      : activeCategory === "runaway-pieces" // <-- solicitado
       ? t("navbar.runaway_pieces").toUpperCase()
       : t("general.all_catalogue").toUpperCase();
 
@@ -124,8 +127,7 @@ export default function CatalogClient({ initialCategory }: Props) {
       itemListElement: filteredProducts.map((p, idx) => {
         const slug = p?.attributes?.slug;
         const name =
-          getLocalized(p?.attributes as any, "productName", lang) ??
-          "Product";
+          getLocalized(p?.attributes as any, "productName", lang) ?? "Product";
         const firstImage = p?.attributes?.images?.data?.[0]?.attributes?.url as
           | string
           | undefined;
@@ -145,7 +147,6 @@ export default function CatalogClient({ initialCategory }: Props) {
       }),
     };
 
-    // Envolvemos en CollectionPage para enriquecer
     const collectionPage = {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
@@ -187,7 +188,8 @@ export default function CatalogClient({ initialCategory }: Props) {
         />
       </div>
 
-      <div className="z-0">
+      {/* Navbar por encima del fondo */}
+      <div className="relative z-10">
         <NavBar />
       </div>
 

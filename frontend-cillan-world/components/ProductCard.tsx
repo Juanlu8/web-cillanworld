@@ -1,51 +1,52 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { ProductType } from "@/types/product";
-import { Eye } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import Link from "next/link";
 import Image from "next/image";
+import { ProductType } from "@/types/product";
+import { useTranslation } from "react-i18next";
 import { toMediaUrl } from "@/lib/media";
 
 type Props = { product: ProductType };
 
 export default function ProductCard({ product }: Props) {
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [clicked, setClicked] = useState(false);
-  const router = useRouter();
   const { t } = useTranslation();
 
-  const rawUrl = product.attributes.images?.data?.[0]?.attributes?.url as string | undefined;
-  const src = toMediaUrl(rawUrl);
   const slug = product.attributes.slug;
+  const href = `/product/${slug}`;
 
-  const handleClick = () => {
-    setClicked(true);
-    router.push(`/product/${slug}`);
-  };
+  const raw1 = product.attributes.images?.data?.[0]?.attributes?.url as string | undefined;
+  const raw2 = product.attributes.images?.data?.[1]?.attributes?.url as string | undefined;
+  const src1 = toMediaUrl(raw1);
+  const src2 = toMediaUrl(raw2);
+
+  const [loaded1, setLoaded1] = useState(false);
+  const [loaded2, setLoaded2] = useState(false);
 
   return (
-    <div className="group w-full aspect-square bg-white p-2 border rounded shadow-sm relative overflow-hidden cursor-pointer">
+    <Link
+      href={href}
+      className="group block w-full aspect-square bg-white p-2 border rounded shadow-sm relative overflow-hidden"
+      aria-label={product.attributes.productName}
+      prefetch
+    >
       {/* Skeleton */}
-      {!isImageLoaded && (
+      {!loaded1 && (
         <div className="absolute inset-0 animate-pulse bg-gray-200 rounded z-0" />
       )}
 
-      {/* Imagen */}
-      {src ? (
+      {/* Imagen base */}
+      {src1 ? (
         <div className="absolute inset-0">
           <Image
-            src={src}
+            src={src1}
             alt={product.attributes.productName}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
-            className={`object-contain transition duration-300 ease-in-out group-hover:scale-105 ${
-              isImageLoaded ? "opacity-100" : "opacity-0"
-            }`}
-            onLoad={() => setIsImageLoaded(true)}
-            onClick={handleClick}
+            className={`object-contain transition duration-300 ease-in-out ${loaded1 ? "opacity-100" : "opacity-0"}`}
+            onLoad={() => setLoaded1(true)}
             loading="lazy"
+            priority={false}
           />
         </div>
       ) : (
@@ -54,15 +55,22 @@ export default function ProductCard({ product }: Props) {
         </div>
       )}
 
-      {/* Overlay botón/ícono */}
-      <button
-        type="button"
-        className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black/40 z-10"
-        onClick={handleClick}
-        aria-label={t("general.view") as string}
-      >
-        <Eye className={`text-white w-6 h-6 transition ${clicked ? "scale-y-0" : "scale-100"}`} />
-      </button>
-    </div>
+      {/* Hover swap (segunda imagen por encima) */}
+      {src2 && (
+        <div className="absolute inset-0">
+          <Image
+            src={src2}
+            alt={`${product.attributes.productName} — alternate`}
+            fill
+            sizes="(max-width: 768px) 50vw, 25vw"
+            className={`object-contain transition duration-300 ease-in-out bg-white
+                        ${loaded2 ? "opacity-0 group-hover:opacity-100 group-hover:scale-105" : "opacity-0"}`}
+            onLoad={() => setLoaded2(true)}
+            loading="lazy"
+            priority={false}
+          />
+        </div>
+      )}
+    </Link>
   );
 }
