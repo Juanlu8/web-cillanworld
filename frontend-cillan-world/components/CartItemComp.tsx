@@ -3,6 +3,8 @@
 import { memo, useCallback } from "react";
 import { useCart } from "@/hooks/use-cart";
 import type { CartItemType } from "@/types/cartItem";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { toMediaUrl } from "@/lib/media";
@@ -14,6 +16,8 @@ interface CartItemProps {
 const CartItemComp = ({ item }: CartItemProps) => {
   const { t } = useTranslation();
   const { removeItem, updateQuantity } = useCart();
+  const [clicked, setClicked] = useState(false);
+  const router = useRouter();
 
   const attrs = item.product.attributes;
   const firstImgUrl =
@@ -32,6 +36,10 @@ const CartItemComp = ({ item }: CartItemProps) => {
     () => removeItem(attrs.slug, item.size),
     [attrs.slug, item.size, removeItem]
   );
+  const handleClick = () => {
+    setClicked(true);
+    router.push(`/product/${attrs.slug}`);
+  };
 
   return (
     <div className="flex items-center justify-between border-b pb-4 mb-4">
@@ -43,7 +51,8 @@ const CartItemComp = ({ item }: CartItemProps) => {
             alt={attrs.productName}
             fill
             sizes="96px"
-            className="object-cover"
+            className="object-cover cursor-pointer"
+            onClick={handleClick}
             loading="lazy"
           />
         ) : (
