@@ -3,7 +3,6 @@
 // @ts-nocheck  // evita conflictos de tipos entre ESM y CJS
 
 const Stripe = require('stripe').default;  // ⚡ importa la clase real
-const stripe = new Stripe(process.env.STRIPE_KEY);
 
 const { createCoreController } = require('@strapi/strapi').factories;
 
@@ -12,6 +11,13 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
     const { products } = ctx.request.body; // [{ id, quantity? }]
 
     try {
+       if (!process.env.STRIPE_KEY) {
+        ctx.response.status = 500;
+        return { error: 'Stripe key not configured' };
+      }
+
+      const stripe = new Stripe(process.env.STRIPE_KEY);
+
       const lineItems = await Promise.all(
         products.map(async (p) => {
           // Busca el producto en Strapi
