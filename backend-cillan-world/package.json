@@ -7,7 +7,7 @@
     "build": "strapi build",
     "console": "strapi console",
     "deploy": "strapi deploy",
-    "dev": "strapi develop",
+    "dev:inspect": "node --inspect=9229 ./node_modules/@strapi/strapi/bin/strapi.js develop",
     "develop": "strapi develop",
     "start": "strapi start",
     "typecheck": "tsc --noEmit || echo 'skip'",
@@ -19,12 +19,15 @@
   "dependencies": {
     "@strapi/plugin-cloud": "5.19.0",
     "@strapi/plugin-users-permissions": "5.19.0",
+    "@strapi/provider-email-nodemailer": "^5.29.0",
     "@strapi/strapi": "5.19.0",
     "better-sqlite3": "11.3.0",
+    "nodemailer": "^7.0.10",
     "pg": "^8.16.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
+    "stripe": "^19.1.0",
     "styled-components": "^6.0.0"
   },
   "engines": {

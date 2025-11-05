@@ -23,7 +23,10 @@
     "total": "Total",
     "checkout": "Finalizar compra",
     "size": "Talla",
-    "remove": "Eliminar"
+    "remove": "Eliminar",
+    "success_title": "¡Gracias por tu compra!",
+    "success_message": "Hemos recibido tu pedido y estamos procesándolo. Te enviaremos un correo electrónico de confirmación con los detalles de tu compra.",
+    "success_back_to_shop": "Volver a la tienda"
   },
   "collection": {
     "no_images_found": "No se han encontrado imágenes para esta colección"

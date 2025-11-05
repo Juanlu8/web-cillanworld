@@ -8,11 +8,12 @@ import CartItem from "@/components/CartItemComp";
 import type { CartItemType } from "@/types/cartItem";
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import { makePaymentRequest } from "@/api/payment";
 
 interface CartModalProps {
-  isVisible: boolean;           // monta/desmonta UI (pero no hooks)
-  isCartOpen: boolean;          // controla animación
+  isVisible: boolean;
+  isCartOpen: boolean;
   cartRef: React.RefObject<HTMLDivElement | null>;
   closeCart: () => void;
   cartItems: CartItemType[];
@@ -28,19 +29,17 @@ export default function CartModal({
   cartRef,
   closeCart,
   cartItems,
-  total,
+  total
 }: CartModalProps) {
   const { t } = useTranslation();
-  const router = useRouter();
 
-  // ✅ Estado de privacidad + error
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [privacyError, setPrivacyError] = useState<string | null>(null);
 
-  // hooks al tope
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const initialFocusRef = useRef<HTMLButtonElement | null>(null);
 
+  // Bloquea scroll al abrir
   useEffect(() => {
     if (!(isVisible && isCartOpen)) return;
     const prev = document.body.style.overflow;
@@ -50,6 +49,7 @@ export default function CartModal({
     };
   }, [isVisible, isCartOpen]);
 
+  // Focus trap + ESC
   useEffect(() => {
     if (!(isVisible && isCartOpen)) return;
 
@@ -95,7 +95,8 @@ export default function CartModal({
     [closeCart]
   );
 
-  const itemList = useMemo(
+  // UI: lista de items como componentes (NO se envía al backend)
+  const itemsUI = useMemo(
     () =>
       cartItems
         .filter((it) => it.product?.attributes)
@@ -108,27 +109,57 @@ export default function CartModal({
     [cartItems]
   );
 
-  // ✅ Handler de checkbox
+  // Stripe.js
+  const stripePromise = loadStripe(
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
+  );
+
+  // Payload plano para Strapi: { products: [{ id, quantity }] }
+  const buildOrderPayload = () => {
+    const products = cartItems
+      .filter((it) => typeof it.product?.id === "number")
+      .map((it) => ({
+        id: it.product!.id,
+        quantity: it.quantity ?? 1,
+        // Puedes añadir campos para guardarlos en la orden:
+        // size: it.size,
+        // slug: it.product?.attributes?.slug,
+      }));
+
+    return { products };
+  };
+
+  
+  const buyStripe = async () => {
+    try {
+      const payload = buildOrderPayload();
+      const { data } = await makePaymentRequest.post("/api/orders", payload);
+
+      const url =
+        data?.stripeSession?.url || data?.url; // según lo que devuelva tu API
+      if (!url) throw new Error("Stripe session URL missing");
+
+      // Redirección nativa
+      window.location.assign(url); // o window.location.href = url; 
+    } catch (error) {
+      console.error("Error during Stripe checkout:", error);
+    }
+  };
+
+  // Privacidad
   const onChangePrivacy = (e: React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
     setPrivacyAccepted(checked);
     if (checked) setPrivacyError(null);
   };
 
-  // ✅ Validación previa al checkout
   const onCheckoutClick = () => {
     if (!privacyAccepted) {
-      setPrivacyError(
-        (t("bag.privacy_required") as string)
-      );
-      // Opcional: mover foco al error
-      const err = document.getElementById("privacy-error");
-      err?.focus();
+      setPrivacyError(String(t("bag.privacy_required")));
+      document.getElementById("privacy-error")?.focus();
       return;
     }
-
-    // Aquí dispara tu flujo real de checkout/Braintree
-    router.push("/checkout");
+    buyStripe(); // <- ahora SÍ ejecuta
   };
 
   if (!isVisible) return null;
@@ -175,10 +206,9 @@ export default function CartModal({
             <p className="text-sm text-gray-500">{t("bag.bag_is_empty")}</p>
           ) : (
             <>
-              <div aria-live="polite">{itemList}</div>
+              <div aria-live="polite">{itemsUI}</div>
 
               <div className="mt-8">
-                {/* ✅ Checkbox + error accesible */}
                 <div className="flex items-start gap-2 mb-2">
                   <input
                     type="checkbox"
@@ -215,8 +245,12 @@ export default function CartModal({
                 )}
 
                 <div className="flex justify-between items-center mb-6">
-                  <span className="text-2xl font-handwritten">{t("bag.total")}:</span>
-                  <span className="text-2xl font-handwritten">€{total.toFixed(2)}</span>
+                  <span className="text-2xl font-handwritten">
+                    {t("bag.total")}:
+                  </span>
+                  <span className="text-2xl font-handwritten">
+                    €{total.toFixed(2)}
+                  </span>
                 </div>
 
                 <button
