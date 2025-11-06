@@ -26,7 +26,12 @@
     "remove": "Remove",
     "success_title": "Thank you for your purchase!",
     "success_message": "We have received your order and are processing it. We will send you a confirmation email with the details of your purchase.",
-    "success_back_to_shop": "Return to store"
+    "success_back_to_shop": "Return to store",
+    "item_added": "Product added to your bag",
+    "view_bag": "View bag ",
+    "max_quantity_reached": "Maximum quantity for this item reached",
+    "product_removed": "Product removed from your bag"
+
   },
   "collection": {
     "no_images_found": "No images found for this collection."

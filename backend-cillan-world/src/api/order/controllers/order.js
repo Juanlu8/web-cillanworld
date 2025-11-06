@@ -56,8 +56,10 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
             // Asia más relevante comercialmente
             'CN','JP','KR','HK','SG','TW','IN','TH','MY','VN','PH','ID','AE','SA','QA','KW','BH','OM'
         ] },
+        invoice_creation: { enabled: true },   // <- clave para la factura
+        automatic_tax: { enabled: true },      // <- si usas Stripe Tax
         success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.CLIENT_URL}/successError`,
+        cancel_url: `${process.env.CLIENT_URL}/`,
         line_items: lineItems,
         });
 

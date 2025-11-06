@@ -33,7 +33,7 @@ const CartItemComp = ({ item }: CartItemProps) => {
     [attrs.slug, item.size, item.quantity, updateQuantity]
   );
   const handleRemove = useCallback(
-    () => removeItem(attrs.slug, item.size),
+    () => removeItem(attrs.slug, item.size, t),
     [attrs.slug, item.size, removeItem]
   );
   const handleClick = () => {

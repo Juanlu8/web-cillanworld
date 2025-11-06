@@ -26,7 +26,11 @@
     "remove": "Eliminar",
     "success_title": "¡Gracias por tu compra!",
     "success_message": "Hemos recibido tu pedido y estamos procesándolo. Te enviaremos un correo electrónico de confirmación con los detalles de tu compra.",
-    "success_back_to_shop": "Volver a la tienda"
+    "success_back_to_shop": "Volver a la tienda",
+    "item_added": "Producto añadido a tu cesta",
+    "view_bag": "Ver cesta",
+    "max_quantity_reached": "Se ha alcanzado la cantidad máxima para este artículo",
+    "product_removed": "Producto eliminado de tu cesta"
   },
   "collection": {
     "no_images_found": "No se han encontrado imágenes para esta colección"

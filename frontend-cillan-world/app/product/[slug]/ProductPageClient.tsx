@@ -333,7 +333,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                     quantity: 1,
                     size: selectedSize,
                   };
-                  addItem(added, selectedSize);
+                  addItem(added, selectedSize, t);
                   setSelectedSize(null);
                 }
               }}

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { toMediaUrl } from "@/lib/media";
 import { CartItemType } from "@/types/cartItem";
+import { useTranslation } from "react-i18next";
 
 // Ítem en carrito (producto + talla + cantidad)
 export interface CartItem extends CartItemType {
@@ -17,8 +18,8 @@ export interface CartItem extends CartItemType {
 interface CartStore {
   items: CartItem[];
   isHydrated: boolean;
-  addItem: (data: CartItemType, size: string) => void;
-  removeItem: (slug: string, size: string) => void;
+  addItem: (data: CartItemType, size: string, t: (key: string) => string) => void;
+  removeItem: (slug: string, size: string, t: (key: string) => string) => void;
   removeAll: () => void;
   increaseQuantity: (slug: string, size: string) => void;
   decreaseQuantity: (slug: string, size: string) => void;
@@ -56,7 +57,7 @@ export const useCart = create<CartStore>()(
       items: [],
       isHydrated: false,
 
-      addItem: (itemProduct: CartItemType, size: string) => {
+      addItem: (itemProduct: CartItemType, size: string, t: (key: string) => string) => {
         const currentItems = get().items;
         const existingItemIndex = currentItems.findIndex(
           (item) =>
@@ -73,7 +74,7 @@ export const useCart = create<CartStore>()(
         const frame = (
           <div className="text-black w-[320px] min-h-[220px] p-8 flex flex-col justify-center items-center">
             <div className="flex items-center mb-2 w-full">
-              <span className="font-bold">item added to your cart</span>
+              <span className="font-bold">{t("bag.item_added")}</span>
               <button className="ml-auto text-lg" onClick={() => toast.dismiss()}>
                 ×
               </button>
@@ -92,7 +93,7 @@ export const useCart = create<CartStore>()(
                 <div className="font-bold line-clamp-2">
                   {itemProduct.product?.attributes?.productName}
                 </div>
-                <div className="text-sm">Size: {size}</div>
+                <div className="text-sm">{t("bag.size")}: {size}</div>
               </div>
             </div>
             <button
@@ -102,24 +103,24 @@ export const useCart = create<CartStore>()(
                 document.querySelector<HTMLElement>('[aria-label="Cart"]')?.click();
               }}
             >
-              View cart ({nextLinesCount})
+              {t("bag.view_bag")} ({nextLinesCount})
             </button>
-            <button
-              className="border border-black rounded-md py-4 mt-2 w-full font-semibold hover:bg-black hover:text-white transition"
-              onClick={() => {
-                toast.dismiss();
-                window.location.href = "/checkout";
-              }}
-            >
-              Check out
-            </button>
+            {/* <button
+                  className="border border-black rounded-md py-4 mt-2 w-full font-semibold hover:bg-black hover:text-white transition"
+                  onClick={() => {
+                    toast.dismiss();
+                    window.location.href = "/checkout";
+                  }}
+                >
+                  Check out
+                </button> */}
           </div>
         );
 
         if (existingItemIndex !== -1) {
           const existingItem = currentItems[existingItemIndex];
           if (existingItem.quantity >= 20) {
-            toast.error("Maximum quantity for this item reached");
+            toast.error(t("bag.max_quantity_reached"));
             return;
           }
           const updatedItems = [...currentItems];
@@ -135,14 +136,14 @@ export const useCart = create<CartStore>()(
         }
       },
 
-      removeItem: (slug: string, size: string) => {
+      removeItem: (slug: string, size: string, t: (key: string) => string) => {
         set({
           items: get().items.filter(
             (item) =>
               item.product?.attributes?.slug !== slug || item.size !== size
           ),
         });
-        toast.info("Product removed from cart");
+        toast.info(t("bag.product_removed"));
       },
 
       increaseQuantity: (slug: string, size: string) => {
