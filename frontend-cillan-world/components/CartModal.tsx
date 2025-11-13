@@ -8,7 +8,7 @@ import CartItem from "@/components/CartItemComp";
 import type { CartItemType } from "@/types/cartItem";
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
 import { makePaymentRequest } from "@/api/payment";
 
 interface CartModalProps {
@@ -35,6 +35,16 @@ export default function CartModal({
 
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [privacyError, setPrivacyError] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const checkoutFallbackMessage = useMemo(
+    () =>
+      String(
+        t("bag.checkout_error", {
+          defaultValue: "No hemos podido iniciar el pago. Inténtalo de nuevo.",
+        })
+      ),
+    [t]
+  );
 
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const initialFocusRef = useRef<HTMLButtonElement | null>(null);
@@ -109,11 +119,6 @@ export default function CartModal({
     [cartItems]
   );
 
-  // Stripe.js
-  const stripePromise = loadStripe(
-    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
-  );
-
   // Payload plano para Strapi: { products: [{ id, quantity }] }
   const buildOrderPayload = () => {
     const products = cartItems
@@ -132,17 +137,27 @@ export default function CartModal({
   
   const buyStripe = async () => {
     try {
+      setCheckoutError(null);
       const payload = buildOrderPayload();
-      const { data } = await makePaymentRequest.post("/api/orders", payload);
+      const { data } = await makePaymentRequest.post("/orders", { data: payload });
 
-      const url =
-        data?.stripeSession?.url || data?.url; // según lo que devuelva tu API
-      if (!url) throw new Error("Stripe session URL missing");
+      const sessionUrl = data?.stripeSession?.url || data?.url;
 
-      // Redirección nativa
-      window.location.assign(url); // o window.location.href = url; 
+      if (!sessionUrl) {
+        throw new Error("Stripe session URL missing");
+      }
+
+      window.location.assign(sessionUrl);
     } catch (error) {
       console.error("Error during Stripe checkout:", error);
+      if (axios.isAxiosError(error)) {
+        const apiMessage =
+          (error.response?.data as { error?: string })?.error ||
+          error.message;
+        setCheckoutError(apiMessage || checkoutFallbackMessage);
+      } else {
+        setCheckoutError(checkoutFallbackMessage);
+      }
     }
   };
 
@@ -244,6 +259,12 @@ export default function CartModal({
                   </p>
                 )}
 
+                {checkoutError && (
+                  <p className="text-sm text-red-600 mb-4" role="alert">
+                    {checkoutError}
+                  </p>
+                )}
+
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-2xl font-handwritten">
                     {t("bag.total")}:
@@ -255,7 +276,7 @@ export default function CartModal({
 
                 <button
                   onClick={onCheckoutClick}
-                  className="border border-black rounded-md py-12 mt-2 w-full cursor-pointer font-semibold hover:bg-black hover:text-white transition"
+                  className="border border-black rounded-md py-3 mt-2 w-full cursor-pointer font-semibold hover:bg-black hover:text-white transition"
                 >
                   {String(t("bag.checkout")).toUpperCase()}
                 </button>

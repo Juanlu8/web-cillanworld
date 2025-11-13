@@ -1,61 +1,50 @@
-# 🚀 Getting started with Strapi
+# Backend – Cillan World (Strapi)
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+Instancia de Strapi responsable de gestionar el catálogo, colecciones y órdenes de compra del e-commerce. Incluye la lógica para crear sesiones de Stripe Checkout y registrar las órdenes en la base de datos.
 
-### `develop`
+## Requisitos previos
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+- Node.js 18+
+- PostgreSQL (o la base de datos que definas en `DATABASE_CLIENT`)
+- Claves de Stripe con permisos de Checkout
 
-```
-npm run develop
-# or
-yarn develop
-```
+## Configuración
 
-### `start`
+1. Copia el archivo de variables de entorno y rellena los valores obligatorios:
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+   ```bash
+   cp .env.example .env
+   ```
 
-```
-npm run start
-# or
-yarn start
-```
+   Variables críticas:
 
-### `build`
+   | Variable | Descripción |
+   | --- | --- |
+   | `APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `JWT_SECRET` | Claves necesarias para arrancar Strapi con seguridad. Usa valores únicos por entorno. |
+   | `STRIPE_KEY` | Clave secreta de Stripe utilizada para crear sesiones de checkout. |
+   | `CLIENT_URL` | URL pública del frontend (usada para redirecciones de éxito/cancelación). |
+   | `DATABASE_*` | Credenciales de la base de datos. No se proporcionan valores por defecto para evitar exponer secretos. |
 
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
+2. Instala dependencias:
 
-```
-npm run build
-# or
-yarn build
-```
+   ```bash
+   npm install
+   ```
 
-## ⚙️ Deployment
+3. Arranca Strapi en modo desarrollo:
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+   ```bash
+   npm run develop
+   ```
 
-```
-yarn strapi deploy
-```
+   El panel de administración estará disponible en `http://localhost:1337/admin`.
 
-## 📚 Learn more
+## Notas de seguridad
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+- No dejes credenciales ni claves en el repositorio. Usa variables de entorno o gestores de secretos.
+- El endpoint `api::order.order` espera que las peticiones incluyan un token de API (`Authorization: Bearer <token>`). Configura los roles o tokens necesarios en el panel de Strapi.
+- Asegúrate de rotar cualquier contraseña que se haya publicado previamente.
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+## Despliegue
 
-## ✨ Community
-
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
-
----
-
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+Consulta la [documentación oficial de Strapi](https://docs.strapi.io/dev-docs/deployment) para revisar las opciones de despliegue (Strapi Cloud, plataformas PaaS, contenedores, etc.). Durante el despliegue asegúrate de suministrar todas las variables del archivo `.env.example`.

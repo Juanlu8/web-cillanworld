@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend – Cillan World
 
-## Getting Started
+Aplicación web construida con **Next.js 14**, **TypeScript** y **TailwindCSS**. Consume el contenido editorial y de catálogo publicado en Strapi y delega el checkout en Stripe a través de un endpoint interno.
 
-First, run the development server:
+## Requisitos previos
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18+
+- Acceso a una instancia de Strapi con el content-type `order` publicado y permisos para crear pedidos mediante un token de API
+- Claves de Stripe (publishable + secret)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuración
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Copia el archivo de ejemplo `.env.example` y rellénalo con tus valores reales:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   cp .env.example .env.local
+   ```
 
-## Learn More
+   Variables principales:
 
-To learn more about Next.js, take a look at the following resources:
+   | Variable | Descripción |
+   | --- | --- |
+   | `NEXT_PUBLIC_BACKEND_URL` | URL pública del CMS Strapi desde la que se sirven productos e imágenes. |
+   | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Clave publicable de Stripe usada por Stripe.js en el navegador. |
+   | `STRAPI_URL` | URL de Strapi accesible desde el servidor (puede coincidir con la pública). |
+   | `STRAPI_API_TOKEN` | Token de API de Strapi con permiso para crear órdenes. No debe marcarse como `NEXT_PUBLIC`. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Instala dependencias:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   npm install
+   ```
 
-## Deploy on Vercel
+3. Inicia el servidor de desarrollo:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   La aplicación estará disponible en `http://localhost:3000`.
+
+## Flujo de pagos
+
+El componente `CartModal` llama a `/api/orders`, un handler de Next.js que reenvía la orden al endpoint de Strapi usando `STRAPI_API_TOKEN`. Esta capa evita exponer la clave secreta en el bundle público.
+
+Asegúrate de que tu token de Strapi incluya permisos de creación sobre `api::order.order` y que el backend tenga configurado `STRIPE_KEY` y `CLIENT_URL`.
+
+## Scripts disponibles
+
+- `npm run dev`: arranca el entorno de desarrollo.
+- `npm run build`: genera el build para producción.
+- `npm run start`: ejecuta el servidor en modo producción (requiere `npm run build` previo).
+
+## Despliegue
+
+Consulta la [documentación oficial de Next.js](https://nextjs.org/docs/app/building-your-application/deploying) para detalles sobre despliegue en plataformas como Vercel. No olvides proporcionar las variables de entorno anteriores tanto en tiempo de build como en tiempo de ejecución.
