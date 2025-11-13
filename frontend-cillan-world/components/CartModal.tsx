@@ -10,6 +10,7 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import axios from "axios";
 import { makePaymentRequest } from "@/api/payment";
+import { name } from "ntcjs";
 
 interface CartModalProps {
   isVisible: boolean;
@@ -112,7 +113,7 @@ export default function CartModal({
         .filter((it) => it.product?.attributes)
         .map((it) => (
           <CartItem
-            key={`${it.product.attributes.slug}-${it.size}`}
+            key={`${it.product.attributes.slug}-${it.size}-${it.color}`}
             item={it}
           />
         )),
@@ -125,10 +126,10 @@ export default function CartModal({
       .filter((it) => typeof it.product?.id === "number")
       .map((it) => ({
         id: it.product!.id,
+        name: it.product!.attributes.productName,
         quantity: it.quantity ?? 1,
-        // Puedes añadir campos para guardarlos en la orden:
-        // size: it.size,
-        // slug: it.product?.attributes?.slug,
+        size: it.size,
+        color: it.color,
       }));
 
     return { products };

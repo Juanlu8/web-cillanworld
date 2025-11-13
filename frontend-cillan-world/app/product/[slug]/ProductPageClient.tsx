@@ -13,6 +13,105 @@ import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import Link from "next/link";
 import { toMediaUrl } from "@/lib/media";
+import ntc from "ntcjs";
+
+function getColorName(hex: string | undefined): string {
+  if (!hex) return "desconocido";
+  const result = ntc.name(hex);
+  return result[1]; // Devuelve el nombre del color en inglés
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
+}
+
+function rgbToHsl(r: number, g: number, b: number): { h: number; s: number; l: number } {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0,
+    s = 0,
+    l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+    switch (max) {
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+        break;
+      case g:
+        h = ((b - r) / d + 2) / 6;
+        break;
+      case b:
+        h = ((r - g) / d + 4) / 6;
+        break;
+    }
+  }
+
+  return { h: h * 360, s: s * 100, l: l * 100 };
+}
+
+function getBasicColorName(hex: string | undefined): string {
+  if (!hex) return "unknown";
+
+  // Si contiene un guión, procesa cada color por separado
+  if (hex.includes("-")) {
+    const colors = hex.split("-").map(c => getSingleBasicColorName(c.trim()));
+    return colors.join("-");
+  }
+
+  return getSingleBasicColorName(hex);
+}
+
+function getSingleBasicColorName(hex: string): string {
+  if (!hex) return "unknown";
+
+  const rgb = hexToRgb(hex);
+  if (!rgb) return "unknown";
+
+  const { r, g, b } = rgb;
+  const { h, s, l } = rgbToHsl(r, g, b);
+
+  // ✅ Detecta grises acromáticos (R = G = B) ANTES de cualquier otra cosa
+  if (r === g && g === b) {
+    if (l < 15) return "black";
+    if (l > 90) return "white";
+    return "gray";
+  }
+
+  // ✅ Colores muy oscuros = negro (aunque tengan algo de saturación)
+  if (l < 15) return "black";
+
+  // Grises con baja saturación
+  if (s < 10) {
+    if (l > 90) return "white";
+    return "gray";
+  }
+
+  // Colores principales por tono (hue)
+  if (h < 15 || h >= 345) return "red";
+  if (h < 45) return "orange";
+  if (h < 75) return "yellow";
+  if (h < 150) return "green";
+  if (h < 200) return "cyan";
+  if (h < 260) return "blue";
+  if (h < 290) return "purple";
+  if (h < 330) return "pink";
+  
+  return "red"; // Por defecto (ciclo completo)
+}
 
 export default function ProductPageClient({ slug }: { slug: string }) {
   const slugFromParams = Array.isArray(slug) ? slug[0] : slug;
@@ -77,10 +176,18 @@ export default function ProductPageClient({ slug }: { slug: string }) {
 
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [showValidation, setShowValidation] = useState(false);
   const { addItem } = useCart();
 
   const goToHome = () => router.push(`/`);
+
+  useEffect(() => {
+    if (product?.attributes?.color) {
+      const colorName = getBasicColorName(product.attributes.color.trim());
+      setSelectedColor(colorName);
+    }
+  }, [product]);
 
   if (!result) {
     return (
@@ -235,14 +342,15 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                   p.attributes?.slug === baseSlug
               );
               return colorVariants.map((variant) => {
-                const colorValue = variant.attributes?.color;
+                const colorValue = variant.attributes?.color.trim();
                 const variantSlug = variant.attributes?.slug ?? "";
+                const colorName = getBasicColorName(colorValue);
                 return (
                   <Link
                     key={variant.id}
                     href={`/product/${variantSlug}`}
                     className="transition-transform duration-200 ease-in-out hover:scale-125"
-                    title={colorValue}
+                    title={colorName}
                     aria-label={variantSlug}
                     prefetch
                     style={{
@@ -332,6 +440,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                     product,
                     quantity: 1,
                     size: selectedSize,
+                    color: selectedColor || ""
                   };
                   addItem(added, selectedSize, t);
                   setSelectedSize(null);

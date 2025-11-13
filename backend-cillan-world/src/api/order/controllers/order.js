@@ -55,8 +55,11 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
             price_data: {
               currency: 'eur',
               product_data: {
-                // ajusta el campo si tu colección usa otro nombre
-                name: item.productName,
+                name: `${item.productName} (${p.size || 'N/A'}, ${p.color || 'N/A'})`,
+                metadata: {
+                  size: p.size || 'N/A',
+                  color: p.color || 'N/A',
+                },
               },
               unit_amount: Math.round(item.price * 100),
             },
@@ -94,7 +97,13 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
       // Guarda la orden en tu BD de Strapi
       await strapi.entityService.create('api::order.order', {
         data: {
-          products,             // lo que envió el cliente (id/qty, etc.)
+          products: products.map(p => ({
+            id: p.id,
+            name: p.name,
+            quantity: p.quantity,
+            size: p.size || 'N/A',
+            color: p.color || 'N/A',
+          })),
           stripeId: session.id, // referencia de Stripe
         },
       });

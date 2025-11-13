@@ -16,6 +16,7 @@
   },
   "bag": {
     "your_bag": "Tu Cesta",
+    "color": "Color",
     "bag_is_empty": "Tu cesta está vacía (por ahora)",
     "read_accepted": "Declaro haber leído y aceptado la",
     "privacy_policy": "Politica de Privacidad",

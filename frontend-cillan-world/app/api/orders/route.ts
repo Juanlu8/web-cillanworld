@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-type OrderProduct = { id: number; quantity?: number };
+type OrderProduct = { id: number; quantity?: number; size?: string; color?: string };
 type OrderPayload = { products: OrderProduct[] };
 
 const STRAPI_URL =

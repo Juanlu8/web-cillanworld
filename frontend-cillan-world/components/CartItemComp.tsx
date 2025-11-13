@@ -66,7 +66,7 @@ const CartItemComp = ({ item }: CartItemProps) => {
       <div className="flex-1 px-4 min-w-0">
         <h3 className="font-bold text-sm line-clamp-2">{attrs.productName}</h3>
         <p className="text-xs mt-1">
-          {t("bag.size")}: {item.size}
+          {t("bag.size")}: {item.size} {item.color ? `| ${t("bag.color")}: ${item.color}` : ""}
         </p>
 
         <div className="flex items-center gap-2 mt-2">
