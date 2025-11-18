@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useGetProducts } from "@/api/useGetProducts";
 import NavBar from "@/components/ui/navbar";
 import Footer from "@/components/Footer";
 import { ProductType } from "@/types/product";
@@ -10,7 +9,10 @@ import ProductCard from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 
+// ✅ Definir el tipo de las props
 type Props = {
+  initialProducts: ProductType[];
+  categories: any[];
   initialCategory: string | null;
 };
 
@@ -36,7 +38,12 @@ function toAbsoluteMedia(url?: string | null) {
   return `${base}${url}`;
 }
 
-export default function CatalogClient({ initialCategory }: Props) {
+// ✅ Actualizar la función para recibir props del servidor
+export default function CatalogClient({ 
+  initialProducts, 
+  categories, 
+  initialCategory 
+}: Props) {
   const router = useRouter();
   const { t, i18n } = useTranslation();
 
@@ -65,12 +72,8 @@ export default function CatalogClient({ initialCategory }: Props) {
 
   const goToHome = () => router.push(`/`);
 
-  // --- data ----------------------------------------------------------------
-  const { result } = useGetProducts();
-  const products: ProductType[] = useMemo(
-    () => (Array.isArray(result) ? result : []),
-    [result]
-  );
+  // ✅ Usar los datos que vienen del servidor (sin useGetProducts)
+  const products: ProductType[] = useMemo(() => initialProducts ?? [], [initialProducts]);
 
   // order by `attributes.order` (nulls last)
   const orderedResult = useMemo(() => {
@@ -101,71 +104,71 @@ export default function CatalogClient({ initialCategory }: Props) {
       ? t("navbar.tops").toUpperCase()
       : activeCategory === "bottoms"
       ? t("navbar.bottoms").toUpperCase()
-      : activeCategory === "runaway-pieces" // <-- solicitado
+      : activeCategory === "runaway-pieces"
       ? t("navbar.runaway_pieces").toUpperCase()
       : t("general.all_catalogue").toUpperCase();
 
   // --- JSON-LD: ItemList for catalog ---------------------------------------
   const jsonLd = useMemo(() => {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.cillan.world";
-  const catalogPath = activeCategory ? `/catalog/${activeCategory}` : "/catalog";
-  const lang = i18n.resolvedLanguage || i18n.language || "es";
+    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.cillan.world";
+    const catalogPath = activeCategory ? `/catalog/${activeCategory}` : "/catalog";
+    const lang = i18n.resolvedLanguage || i18n.language || "es";
 
-  // ✅ URL correcta del producto
-  const toProductUrl = (slug?: string) =>
-    slug ? `${base}/product/${slug}` : `${base}/product`;
+    // ✅ URL correcta del producto
+    const toProductUrl = (slug?: string) =>
+      slug ? `${base}/product/${slug}` : `${base}/product`;
 
-  const itemList = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name:
-      !activeCategory || activeCategory === "view-all"
-        ? "Catalog — All"
-        : `Catalog — ${activeCategory}`,
-    url: `${base}${catalogPath}`,
-    numberOfItems: filteredProducts.length,
-    itemListElement: filteredProducts.map((p, idx) => {
-      const slug = p?.attributes?.slug;
-      const name =
-        getLocalized(p?.attributes as any, "productName", lang) ?? "Product";
-      const firstImage = p?.attributes?.images?.data?.[0]?.attributes?.url as
-        | string
-        | undefined;
-      const imageUrl = toAbsoluteMedia(firstImage);
-      
-      // ✅ Añadir precio y disponibilidad
-      const price = p?.attributes?.price ?? 0;
+    const itemList = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name:
+        !activeCategory || activeCategory === "view-all"
+          ? "Catalog — All"
+          : `Catalog — ${activeCategory}`,
+      url: `${base}${catalogPath}`,
+      numberOfItems: filteredProducts.length,
+      itemListElement: filteredProducts.map((p, idx) => {
+        const slug = p?.attributes?.slug;
+        const name =
+          getLocalized(p?.attributes as any, "productName", lang) ?? "Product";
+        const firstImage = p?.attributes?.images?.data?.[0]?.attributes?.url as
+          | string
+          | undefined;
+        const imageUrl = toAbsoluteMedia(firstImage);
+        
+        // ✅ Añadir precio y disponibilidad
+        const price = p?.attributes?.price ?? 0;
 
-      return {
-        "@type": "ListItem",
-        position: idx + 1,
-        url: toProductUrl(slug),
-        item: {
-          "@type": "Product",
-          name,
-          image: imageUrl ? [imageUrl] : undefined,
+        return {
+          "@type": "ListItem",
+          position: idx + 1,
           url: toProductUrl(slug),
-          // ✅ Añadido: precio y disponibilidad
-          offers: {
-            "@type": "Offer",
-            price: price.toFixed(2),
-            priceCurrency: "EUR"
+          item: {
+            "@type": "Product",
+            name,
+            image: imageUrl ? [imageUrl] : undefined,
+            url: toProductUrl(slug),
+            // ✅ Añadido: precio y disponibilidad
+            offers: {
+              "@type": "Offer",
+              price: price.toFixed(2),
+              priceCurrency: "EUR",
+            },
           },
-        },
-      };
-    }),
-  };
+        };
+      }),
+    };
 
-  const collectionPage = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: itemList.name,
-    url: itemList.url,
-    hasPart: itemList,
-  };
+    const collectionPage = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: itemList.name,
+      url: itemList.url,
+      hasPart: itemList,
+    };
 
-  return JSON.stringify(collectionPage);
-}, [filteredProducts, activeCategory, i18n.language, i18n.resolvedLanguage]);
+    return JSON.stringify(collectionPage);
+  }, [filteredProducts, activeCategory, i18n.language, i18n.resolvedLanguage]);
 
   return (
     <div className="relative">

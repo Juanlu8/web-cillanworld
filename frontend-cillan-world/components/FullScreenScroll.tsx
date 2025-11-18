@@ -2,15 +2,44 @@
 
 import React from 'react';
 import NavBar from '@/components/ui/navbar';
-import { useGetHomeImages } from '@/api/useGetHomeImages';
 import { HomeImageType } from '@/types/homeImage';
 import HomeImageCard from './HomeImageCard';
 
 const SPEED_PX_PER_SEC = 40;    // Velocidad del autoscroll
 const FRAME_FALLBACK_MS = 16;   // ~60fps
 
-const VerticalSnapCarousel: React.FC = () => {
-  const result: HomeImageType[] = useGetHomeImages().result ?? [];
+// ✅ Definir el tipo de las props
+type Props = {
+  initialImages: any; // Los datos de home-image desde Strapi
+};
+
+// ✅ Actualizar la función para recibir props del servidor
+const VerticalSnapCarousel: React.FC<Props> = ({ initialImages }) => {
+  // ❌ ELIMINADO: const result: HomeImageType[] = useGetHomeImages().result ?? [];
+  
+  // ✅ Usar los datos que vienen del servidor
+  const result: HomeImageType[] = React.useMemo(() => {
+    if (!initialImages) return [];
+    
+    // Si initialImages es un array directo
+    if (Array.isArray(initialImages)) return initialImages;
+    
+    // Si viene como { data: [...] }
+    if (initialImages.data && Array.isArray(initialImages.data)) {
+      return initialImages.data;
+    }
+    
+    // Si es un objeto con atributos (single type de Strapi)
+    if (initialImages.attributes) {
+      // Intentar extraer imágenes del single type
+      const attrs = initialImages.attributes;
+      if (attrs.images?.data && Array.isArray(attrs.images.data)) {
+        return attrs.images.data;
+      }
+    }
+    
+    return [];
+  }, [initialImages]);
 
   // Refs
   const containerRef = React.useRef<HTMLDivElement>(null);

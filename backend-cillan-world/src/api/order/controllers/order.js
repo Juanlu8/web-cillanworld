@@ -45,11 +45,24 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
 
       const lineItems = await Promise.all(
         products.map(async (p) => {
-          // Busca el producto en Strapi
           const item = await strapi.entityService.findOne('api::product.product', p.id);
           if (!item) {
             throw new Error(`Product ${p.id} not found`);
           }
+
+          // ✅ Normalizar el precio a número
+          const price = Number(item.price);
+          
+          // ✅ Validar que sea un número finito y mayor a 0
+          if (!Number.isFinite(price) || price <= 0) {
+            throw new Error(`Invalid price for product ${p.id}: ${item.price}`);
+          }
+
+          // ✅ Convertir a centavos (entero)
+          const unitAmount = Math.round(price * 100);
+
+          // ✅ Guardar los datos del producto para el webhook
+          p._productData = item;
 
           return {
             price_data: {
@@ -57,11 +70,12 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
               product_data: {
                 name: `${item.productName} (${p.size || 'N/A'}, ${p.color || 'N/A'})`,
                 metadata: {
+                  productId: String(p.id),
                   size: p.size || 'N/A',
                   color: p.color || 'N/A',
                 },
               },
-              unit_amount: Math.round(item.price * 100),
+              unit_amount: unitAmount, // ✅ Ahora es un entero válido
             },
             quantity: Math.max(1, p.quantity ?? 1),
           };

@@ -1,6 +1,5 @@
 "use client";
 
-import { useGetCollections } from "@/api/useGetCollections";
 import Footer from "@/components/Footer";
 import NavBar from "@/components/ui/navbar";
 import { CollectionType } from "@/types/collection";
@@ -90,50 +89,44 @@ function getImageUrl(img: ImageLike): string | undefined {
   return direct ?? nested;
 }
 
-// -----------------------------------------------------------------------------
+// ✅ Definir el tipo de las props
+type Props = {
+  collection: any; // La colección individual ya filtrada por slug en el servidor
+};
 
-export default function CollectionPageClient({ slug }: { slug: string }) {
+// ✅ Actualizar la función para recibir props del servidor
+export default function CollectionPageClient({ collection }: Props) {
   const router = useRouter();
   const goToHome = () => router.push(`/`);
   const { t, i18n } = useTranslation();
   const currentLanguage = (i18n.resolvedLanguage || i18n.language || "es")
     .slice(0, 2) as "es" | "en";
 
-  const { result } = useGetCollections();
-  const collections: CollectionLike[] = useMemo(() => result ?? [], [result]);
-
+  // ✅ Usar la colección que viene del servidor
   const [modalImage, setModalImage] = useState<string | null>(null);
 
-  const { filteredCollections, title } = useMemo(() => {    
-    const filtered = collections.filter((c) => getSlug(c).toLowerCase() === slug);
-    return {
-      filteredCollections: filtered,
-      title: filtered.length > 0 ? getName(filtered[0]).toUpperCase() || slug.toUpperCase() : slug.toUpperCase(),
-    };
-  }, [collections, slug]);
+  const title = useMemo(() => {
+    return getName(collection).toUpperCase() || getSlug(collection).toUpperCase();
+  }, [collection]);
 
   // -------- JSON-LD (Collection) --------------------------------------------
   const canonical = typeof window !== "undefined" ? window.location.href : "";
-  // Usa la primera colección filtrada como “principal” para nombre/desc
-  const mainCol = filteredCollections[0];
-  const collectionName = mainCol ? getName(mainCol) || title : title;
-  const collectionDesc =
-    mainCol ? getDescription(mainCol, currentLanguage) : "";
+  const collectionName = getName(collection) || title;
+  const collectionDesc = getDescription(collection, currentLanguage);
 
   // Reunimos imágenes (hasta 24 p.ej. para no inflar)
-  const imageUrls =
-    (mainCol ? getImagesData(mainCol) : [])
-      .map((img) => toMediaUrl(getImageUrl(img)))
-      .filter(Boolean)
-      .slice(0, 24);
+  const imageUrls = getImagesData(collection)
+    .map((img) => toMediaUrl(getImageUrl(img)))
+    .filter(Boolean)
+    .slice(0, 24);
 
   const jsonLd = {
     "@context": "https://schema.org/",
-    "@type": "Collection", // Web semántica: una colección de elementos/obras
+    "@type": "Collection",
     name: collectionName,
     description: collectionDesc,
     url: canonical || undefined,
-    image: imageUrls, // array con urls válidas
+    image: imageUrls,
     isPartOf: { "@type": "WebSite", name: "Cillán World" },
   };
   // --------------------------------------------------------------------------
@@ -180,85 +173,67 @@ export default function CollectionPageClient({ slug }: { slug: string }) {
               {title}
             </h1>
 
-            {filteredCollections.map((collection) => {
-              const description = getDescription(collection, currentLanguage) || "";
-              const paragraphs: string[] = description ? description.split(/\n\s*\n/) : [description];
-
-              return (
-                <div key={(collection as UnknownRecord).id as number | string} className="space-y-4 md:space-y-5">
-                  {paragraphs.map((p: string, i: number) => (
-                    <p
-                      key={i}
-                      className="text-[15px] md:text-xl leading-relaxed text-white text-outline-black text-justify"
-                      style={{ fontFamily: "inherit" }}
-                    >
-                      {p}
-                    </p>
-                  ))}
-                </div>
-              );
-            })}
+            <div className="space-y-4 md:space-y-5">
+              {collectionDesc.split(/\n\s*\n/).map((p: string, i: number) => (
+                <p
+                  key={i}
+                  className="text-[15px] md:text-xl leading-relaxed text-white text-outline-black text-justify"
+                  style={{ fontFamily: "inherit" }}
+                >
+                  {p}
+                </p>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* GALERÍA */}
       <section className="w-full">
-        {filteredCollections.map((collection) => {
-          const name = getName(collection) || "Collection";
-          const imagesData = getImagesData(collection);
+        <div className="w-full">
+          <div className="flex flex-wrap w-full gap-0">
+            {getImagesData(collection).length > 0 ? (
+              getImagesData(collection).map((img: ImageLike, idx: number) => {
+                const raw = getImageUrl(img);
+                const src = toMediaUrl(raw);
 
-          if (imagesData.length === 0) {
-            console.warn("No images found for collection:", name, collection);
-          }
+                const imgId =
+                  typeof img.id === "number" || typeof img.id === "string" ? img.id : undefined;
+                const key: string | number = imgId ?? `${collectionName}-${idx}`;
 
-          return (
-            <div key={(collection as UnknownRecord).id as number | string} className="w-full">
-              <div className="flex flex-wrap w-full gap-0">
-                {imagesData.length > 0 ? (
-                  imagesData.map((img: ImageLike, idx: number) => {
-                    const raw = getImageUrl(img);
-                    const src = toMediaUrl(raw);
-
-                    const imgId =
-                      typeof img.id === "number" || typeof img.id === "string" ? img.id : undefined;
-                    const key: string | number = imgId ?? `${name}-${idx}`;
-
-                    return (
-                      <div key={key} className="w-full md:w-1/2">
-                        {/* Caja con ratio estable */}
-                        <div
-                          className="relative aspect-[3/4] bg-white rounded-none overflow-hidden shadow-none"
-                          style={{ minHeight: "40vw", maxHeight: "150vh" }}
-                        >
-                          {src ? (
-                            <Image
-                              src={src}
-                              alt={`${name} ${idx + 1}`}
-                              fill
-                              sizes="(max-width: 768px) 100vw, 50vw"
-                              className="object-cover transition duration-300 ease-in-out group-hover:scale-110 cursor-pointer"
-                              loading="lazy"
-                              onClick={() => setModalImage(src)}
-                            />
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
-                              {t("general.image_missing")}
-                            </div>
-                          )}
+                return (
+                  <div key={key} className="w-full md:w-1/2">
+                    {/* Caja con ratio estable */}
+                    <div
+                      className="relative aspect-[3/4] bg-white rounded-none overflow-hidden shadow-none"
+                      style={{ minHeight: "40vw", maxHeight: "150vh" }}
+                    >
+                      {src ? (
+                        <Image
+                          src={src}
+                          alt={`${collectionName} ${idx + 1}`}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="object-cover transition duration-300 ease-in-out group-hover:scale-110 cursor-pointer"
+                          loading="lazy"
+                          onClick={() => setModalImage(src)}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
+                          {t("general.image_missing")}
                         </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="w-full h-40 flex items-center justify-center text-gray-400 text-lg">
-                    {t("general.image_missing")}
+                      )}
+                    </div>
                   </div>
-                )}
+                );
+              })
+            ) : (
+              <div className="w-full h-40 flex items-center justify-center text-gray-400 text-lg">
+                {t("general.image_missing")}
               </div>
-            </div>
-          );
-        })}
+            )}
+          </div>
+        </div>
 
         {/* Modal imagen ampliada */}
         {modalImage && (

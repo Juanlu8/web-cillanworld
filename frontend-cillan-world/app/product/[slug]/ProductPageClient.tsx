@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useGetProducts } from "@/api/useGetProducts";
 import NavBar from "@/components/ui/navbar";
 import Footer from "@/components/Footer";
 import { ProductType } from "@/types/product";
@@ -13,13 +12,6 @@ import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import Link from "next/link";
 import { toMediaUrl } from "@/lib/media";
-import ntc from "ntcjs";
-
-function getColorName(hex: string | undefined): string {
-  if (!hex) return "desconocido";
-  const result = ntc.name(hex);
-  return result[1]; // Devuelve el nombre del color en inglés
-}
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -113,9 +105,14 @@ function getSingleBasicColorName(hex: string): string {
   return "red"; // Por defecto (ciclo completo)
 }
 
-export default function ProductPageClient({ slug }: { slug: string }) {
-  const slugFromParams = Array.isArray(slug) ? slug[0] : slug;
+// ✅ Definir el tipo de las props
+type Props = {
+  initialProduct: any;
+  allProducts: any[];
+};
 
+// ✅ Actualizar la función para recibir props
+export default function ProductPageClient({ initialProduct, allProducts }: Props) {
   const imgRef = useRef<HTMLImageElement | null>(null);
   const { t, i18n } = useTranslation();
   const currentLanguage = (i18n.resolvedLanguage || i18n.language || "es")
@@ -136,6 +133,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
     beige: "beige",
     celeste: "skyblue",
   };
+
   function getCssColor(color: string | undefined): string {
     if (!color) return "#ccc";
     if (color.startsWith("linear-gradient")) return color;
@@ -145,13 +143,9 @@ export default function ProductPageClient({ slug }: { slug: string }) {
 
   const router = useRouter();
 
-  // Datos
-  const { result } = useGetProducts();
-  const products: ProductType[] = useMemo(() => result ?? [], [result]);
-  const product = useMemo(
-    () => products.find((p) => p.attributes?.slug === slugFromParams) || null,
-    [products, slugFromParams]
-  );
+  // ✅ Usar los datos que vienen del servidor
+  const product = initialProduct;
+  const products: ProductType[] = useMemo(() => allProducts ?? [], [allProducts]);
 
   // Carousel
   const [api, setApi] = useState<CarouselApi | null>(null);
@@ -189,14 +183,6 @@ export default function ProductPageClient({ slug }: { slug: string }) {
     }
   }, [product]);
 
-  if (!result) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>{t("product.loading_product")}</p>
-      </div>
-    );
-  }
-
   if (!product) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -215,13 +201,14 @@ export default function ProductPageClient({ slug }: { slug: string }) {
     garmentCare_en,
     price,
     images,
+    slug: productSlug,
   } = product.attributes;
 
   // --- JSON-LD (Product) ----------------------------------------------------
   const canonical = typeof window !== "undefined" ? window.location.href : "";
   const imageUrls =
     images?.data
-      ?.map((img) => toMediaUrl(img?.attributes?.url))
+      ?.map((img: any) => toMediaUrl(img?.attributes?.url))
       .filter(Boolean) ?? [];
 
   const jsonLd = {
@@ -247,7 +234,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
       <div className="pt-14 md:pt-10 left-0 w-full flex justify-center z-20">
         <Image
           src="/images/logo-top.webp"
-          alt="Cillán"
+          alt="Cillán World Logo"
           width={1600}
           height={900}
           className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105 cursor-pointer"
@@ -264,7 +251,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
         <div>
           <Carousel opts={{ align: "start", loop: false }} setApi={setApi} className="w-full">
             <CarouselContent>
-              {images?.data.map((image, idx) => {
+              {images?.data.map((image: any, idx: number) => {
                 const src = toMediaUrl(image?.attributes?.url);
                 return (
                   <CarouselItem key={image.id} className="basis-full">
@@ -320,7 +307,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
 
           {/* Dots */}
           <div className="flex justify-center gap-2 mt-4 pb-3">
-            {images?.data.map((_, index) => (
+            {images?.data.map((_: any, index: number) => (
               <button
                 key={index}
                 onClick={() => api?.scrollTo(index)}
@@ -335,14 +322,14 @@ export default function ProductPageClient({ slug }: { slug: string }) {
           {/* Anillas de color (variantes por slug base) */}
           <div className="flex justify-center gap-2 mt-4">
             {(() => {
-              const baseSlug = slugFromParams.split("-")[0];
+              const baseSlug = productSlug.split("-")[0];
               const colorVariants = products.filter(
                 (p) =>
                   p.attributes?.slug?.startsWith(`${baseSlug}-`) ||
                   p.attributes?.slug === baseSlug
               );
               return colorVariants.map((variant) => {
-                const colorValue = variant.attributes?.color.trim();
+                const colorValue = variant.attributes?.color?.trim();
                 const variantSlug = variant.attributes?.slug ?? "";
                 const colorName = getBasicColorName(colorValue);
                 return (
@@ -478,7 +465,7 @@ export default function ProductPageClient({ slug }: { slug: string }) {
                 {currentLanguage === "es" ? materials : materials_en}
               </p>
             </details>
-            <details className="mt-1 border px-4 py-3 rounded-md transform transition-transform duración-200 hover:scale-[0.98]">
+            <details className="mt-1 border px-4 py-3 rounded-md transform transition-transform duration-200 hover:scale-[0.98]">
               <summary className="cursor-pointer font-semibold flex items-center justify-between">
                 {t("product.garment_care")}
                 <span className="toggle-icon" />

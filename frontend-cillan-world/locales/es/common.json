@@ -23,6 +23,7 @@
     "privacy_required": "Debes aceptar la política de privacidad para continuar",
     "total": "Total",
     "checkout": "Finalizar compra",
+    "checkout_error": "No hemos podido iniciar el pago. Inténtalo de nuevo.",
     "size": "Talla",
     "remove": "Eliminar",
     "success_title": "¡Gracias por tu compra!",

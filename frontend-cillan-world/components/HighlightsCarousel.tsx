@@ -1,119 +1,105 @@
-'use client';
+"use client";
 
-import { useGetFeaturedProducts } from '@/api/useGetFeaturedProducts';
-import React, { useRef, useState, useEffect } from 'react';
-import { Carousel, CarouselContent, CarouselItem } from './ui/carousel';
-import { ProductType } from '@/types/product';
-import { Card, CardContent } from './ui/card';
-import { useTranslation } from 'react-i18next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { toMediaUrl } from '@/lib/media';
+import { useMemo, useState, useEffect } from "react";
+import { ProductType } from "@/types/product";
+import { useTranslation } from "react-i18next";
+import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
+import ProductCard from "./ProductCard";
 
-const HighlightsCarousel = () => {
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
-  const [dragged, setDragged] = useState(false);
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging.current || !carouselRef.current) return;
-      const x = e.pageX - carouselRef.current.offsetLeft;
-      const walk = (x - startX.current) * 1.5;
-      if (Math.abs(walk) > 5) setDragged(true);
-      carouselRef.current.scrollLeft = scrollLeft.current - walk;
-    };
-
-    const handleMouseUp = () => {
-      if (isDragging.current) {
-        isDragging.current = false;
-        setTimeout(() => setDragged(false), 0);
-      }
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, []);
-
-  // ✅ No uses ResponseType aquí; toma solo lo que necesitas
-  const { result } = useGetFeaturedProducts();
-
-  return (
-    <div className="w-full px-4 sm:px-8 py-12 sm:py-16 z-12">
-      <h2 className="text-2xl mb-4 tracking-wide">
-        {t('general.highlights').toUpperCase()}
-      </h2>
-
-      <Carousel>
-        <CarouselContent ref={carouselRef} className="-ml-2 md:-ml-4">
-          {Array.isArray(result) &&
-            result.length > 0 &&
-            result.map((product: ProductType) => {
-              const { id, attributes } = product;
-              const { images, productName, slug } = attributes;
-
-              const lastImg =
-                images?.data?.[images.data.length - 1]?.attributes?.url;
-              const src = toMediaUrl(lastImg);
-
-              return (
-                <CarouselItem
-                  key={id}
-                  className="
-                    basis-[165px]
-                    sm:basis-[250px]
-                    md:basis-[300px]
-                    xl:basis-[350px]
-                    group
-                  "
-                >
-                  <div className="p-1">
-                    <Card className="h-[250px] sm:h-[350px] md:h-[450px] xl:h-[500px] flex items-center justify-center border border-gray-200 overflow-hidden">
-                      <CardContent className="flex items-center justify-center h-full w-full">
-                        {src ? (
-                          <Link
-                            href={`/product/${slug}`}
-                            className="block h-full w-full"
-                            onClick={(e) => {
-                              if (dragged) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                              }
-                            }}
-                          >
-                            <div className="relative h-full w-full">
-                              {/* Si prefieres ratio fijo: añade aspect-[3/4] */}
-                              <Image
-                                src={src}
-                                alt={productName ?? 'Product image'}
-                                fill
-                                sizes="(max-width: 640px) 80vw, (max-width: 1024px) 40vw, 25vw"
-                                className="object-cover transition duration-300 ease-in-out rounded group-hover:scale-110 cursor-pointer"
-                              />
-                            </div>
-                          </Link>
-                        ) : (
-                          <div className="w-full h-full shadow-md bg-gray-100 flex items-center justify-center text-sm text-gray-500">
-                            {t('general.image_missing')}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              );
-            })}
-        </CarouselContent>
-      </Carousel>
-    </div>
-  );
+// ✅ Definir el tipo de las props
+type Props = {
+  initialProducts: ProductType[];
 };
 
-export default HighlightsCarousel;
+// ✅ Actualizar la función para recibir props del servidor
+export default function HighlightsCarousel({ initialProducts }: Props) {
+  const { t } = useTranslation();
+  
+  // ❌ ELIMINADO: const { data: featuredProducts } = useGetFeaturedProducts();
+  
+  // ✅ Usar los datos que vienen del servidor
+  const products = useMemo(() => {
+    if (!initialProducts) return [];
+    
+    // Si viene como { data: [...] }
+    if (Array.isArray(initialProducts)) return initialProducts;
+    
+    return [];
+  }, [initialProducts]);
+
+  const [api, setApi] = useState<CarouselApi | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+    
+    const handleChange = () => {
+      setCurrentSlide(api.selectedScrollSnap());
+    };
+    
+    api.on("select", handleChange);
+    handleChange(); // Sincronizar estado inicial
+    
+    return () => {
+      api.off?.("select", handleChange);
+    };
+  }, [api]);
+
+  // Ordenar por campo `order` (nulls last)
+  const orderedProducts = useMemo(() => {
+    return [...products].sort((a, b) => {
+      const orderA = a?.attributes?.order ?? null;
+      const orderB = b?.attributes?.order ?? null;
+      if (orderA == null && orderB == null) return 0;
+      if (orderA == null) return 1;
+      if (orderB == null) return -1;
+      return orderA - orderB;
+    });
+  }, [products]);
+
+  if (!orderedProducts || orderedProducts.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="py-12 md:py-24 px-4 md:px-10 bg-white">
+      <h2 className="text-2xl font-bold mb-8 tracking-wide">
+        {t("general.highlights").toUpperCase()}
+      </h2>
+
+      <Carousel
+        opts={{
+          align: "start",
+          loop: false,
+        }}
+        setApi={setApi}
+        className="w-full"
+      >
+        <CarouselContent className="-ml-2 md:-ml-4">
+          {orderedProducts.map((product) => (
+            <CarouselItem
+              key={product.id}
+              className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 lg:basis-1/4"
+            >
+              <ProductCard product={product} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+
+      {/* Dots de navegación */}
+      <div className="flex justify-center gap-2 mt-6">
+        {orderedProducts.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => api?.scrollTo(index)}
+            className={`w-2 h-2 rounded-full transition-all ${
+              index === currentSlide ? "bg-black scale-125" : "bg-gray-300"
+            }`}
+            aria-label={`Ir a producto ${index + 1}`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}

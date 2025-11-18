@@ -10,7 +10,6 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import axios from "axios";
 import { makePaymentRequest } from "@/api/payment";
-import { name } from "ntcjs";
 
 interface CartModalProps {
   isVisible: boolean;
@@ -40,9 +39,7 @@ export default function CartModal({
   const checkoutFallbackMessage = useMemo(
     () =>
       String(
-        t("bag.checkout_error", {
-          defaultValue: "No hemos podido iniciar el pago. Inténtalo de nuevo.",
-        })
+        t("bag.checkout_error")
       ),
     [t]
   );

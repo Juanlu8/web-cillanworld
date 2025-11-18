@@ -1,10 +1,20 @@
+import { Suspense } from 'react';
+import { getFeaturedProducts, getHomeImages } from '@/lib/strapi-server';
 import FullScreenScroll from "@/components/FullScreenScroll";
 import HighlightsCarousel from "@/components/HighlightsCarousel";
 import Footer from "@/components/Footer";
-import * as React from "react"
 import NextImage from "next/image";
 
-export default function Home() {
+export default async function HomePage() {
+  // ✅ Fetch datos en el servidor (en paralelo)
+  const [featuredProductsResponse, homeImagesResponse] = await Promise.all([
+    getFeaturedProducts(),
+    getHomeImages(),
+  ]);
+
+  const featuredProducts = featuredProductsResponse.data || [];
+  const homeImages = homeImagesResponse.data || null;
+
   return (
     <main>
       <NextImage
@@ -13,10 +23,15 @@ export default function Home() {
         width={1600}
         height={900}
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-25 w-164 sm:w-184 md:w-224 lg:w-244 pointer-events-none select-none z-11"
+        priority
       />
-      <FullScreenScroll />
-      <HighlightsCarousel />
-      <Footer />
+      
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        {/* ✅ Pasar datos del servidor a los componentes */}
+        <FullScreenScroll initialImages={homeImages} />
+        <HighlightsCarousel initialProducts={featuredProducts} />
+        <Footer />
+      </Suspense>
     </main>
   );
 }
