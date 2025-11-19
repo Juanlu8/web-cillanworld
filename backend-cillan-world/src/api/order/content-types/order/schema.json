@@ -7,15 +7,76 @@
     "displayName": "Order"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
     "stripeId": {
-      "type": "string"
+      "type": "string",
+      "required": true,
+      "options": {
+        "index": true,
+        "unique": true
+      }
     },
     "products": {
+      "type": "json",
+      "required": true
+    },
+    "paymentIntentId": {
+      "type": "string",
+      "options": {
+        "index": true,
+        "unique": true
+      }
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "processing",
+        "paid",
+        "failed",
+        "refunded"
+      ],
+      "default": "pending",
+      "options": {
+        "index": true
+      }
+    },
+    "totalAmount": {
+      "type": "decimal"
+    },
+    "currency": {
+      "type": "string",
+      "default": "EUR"
+    },
+    "customerEmail": {
+      "type": "email",
+      "options": {
+        "index": true
+      }
+    },
+    "customerName": {
+      "type": "string"
+    },
+    "customerPhone": {
+      "type": "string"
+    },
+    "billingAddress": {
       "type": "json"
+    },
+    "shippingAddress": {
+      "type": "json"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "orderedAt": {
+      "type": "datetime"
     }
   }
 }
