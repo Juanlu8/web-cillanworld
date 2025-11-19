@@ -36,7 +36,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
 
   // Fetch productos con filtro opcional de categoría
   const filters = category && category !== 'view-all'
-    ? { category: { slug: { $eq: category } } }
+    ? { categories: { slug: { $eq: category } } }
     : {};
 
   const productsResponse = await getProducts(filters);

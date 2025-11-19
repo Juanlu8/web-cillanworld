@@ -2,6 +2,11 @@
 import qs from 'qs';
 
 const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
+const STRAPI_SERVER_TOKEN =
+  process.env.STRAPI_SERVER_API_TOKEN ||
+  process.env.STRAPI_READ_API_TOKEN ||
+  process.env.STRAPI_SERVER_TOKEN ||
+  undefined;
 
 type FetchOptions = {
   revalidate?: number;
@@ -14,9 +19,17 @@ async function fetchStrapi<T>(
 ): Promise<T> {
   const { revalidate = 3600, tags = [] } = options;
   const url = `${STRAPI_URL}/api${path}`;
+  const headers: HeadersInit = {
+    Accept: 'application/json',
+  };
+
+  if (STRAPI_SERVER_TOKEN) {
+    headers.Authorization = `Bearer ${STRAPI_SERVER_TOKEN}`;
+  }
 
   try {
     const res = await fetch(url, {
+      headers,
       next: {
         revalidate,
         tags,
@@ -34,10 +47,12 @@ async function fetchStrapi<T>(
   }
 }
 
+const PRODUCT_POPULATE = ['images', 'categories'];
+
 export async function getProducts(filters?: Record<string, any>) {
   const query = qs.stringify(
     {
-      populate: ['images', 'category'],
+      populate: PRODUCT_POPULATE,
       filters: filters || {},
       pagination: { limit: 100 },
     },
@@ -53,7 +68,7 @@ export async function getProducts(filters?: Record<string, any>) {
 export async function getProductBySlug(slug: string) {
   const query = qs.stringify(
     {
-      populate: ['images', 'category'],
+      populate: PRODUCT_POPULATE,
       filters: { slug: { $eq: slug } },
     },
     { encodeValuesOnly: true }
@@ -70,7 +85,7 @@ export async function getProductBySlug(slug: string) {
 export async function getFeaturedProducts() {
   const query = qs.stringify(
     {
-      populate: ['images', 'category'],
+      populate: PRODUCT_POPULATE,
       filters: { isFeatured: { $eq: true } },
       pagination: { limit: 10 },
     },
@@ -86,7 +101,7 @@ export async function getFeaturedProducts() {
 export async function getCollections() {
   const query = qs.stringify(
     {
-      populate: ['image'],
+      populate: ['images'],
       pagination: { limit: 50 },
     },
     { encodeValuesOnly: true }
@@ -101,7 +116,7 @@ export async function getCollections() {
 export async function getCollectionBySlug(slug: string) {
   const query = qs.stringify(
     {
-      populate: ['image', 'products.images'],
+      populate: ['images'],
       filters: { slug: { $eq: slug } },
     },
     { encodeValuesOnly: true }
