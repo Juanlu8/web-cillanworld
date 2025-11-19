@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { randomUUID } from "crypto";
 
 type OrderProduct = { id: number; quantity?: number; size?: string; color?: string };
 type OrderPayload = { products: OrderProduct[] };
@@ -9,6 +11,41 @@ const STRAPI_URL =
   process.env.NEXT_PUBLIC_STRAPI_URL ||
   process.env.NEXT_PUBLIC_API_URL;
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
+const ORDER_ALLOWED_ORIGINS = (process.env.ORDER_ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+const ORDER_RATE_LIMIT = Number(process.env.ORDER_RATE_LIMIT ?? 10); // default 10 requests
+const ORDER_RATE_WINDOW_MS = Number(
+  process.env.ORDER_RATE_WINDOW_MS ?? 10 * 60 * 1000
+); // default 10 minutes
+const ORDER_SESSION_COOKIE = "cw_order_session";
+
+type RateBucket = { count: number; start: number };
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __orderRateLimiter: Map<string, RateBucket> | undefined;
+}
+
+const rateStore =
+  globalThis.__orderRateLimiter ?? new Map<string, RateBucket>();
+globalThis.__orderRateLimiter = rateStore;
+
+function isRateLimited(id: string) {
+  if (!ORDER_RATE_LIMIT || ORDER_RATE_LIMIT <= 0) return false;
+  const now = Date.now();
+  const entry = rateStore.get(id);
+  if (!entry || now - entry.start > ORDER_RATE_WINDOW_MS) {
+    rateStore.set(id, { count: 1, start: now });
+    return false;
+  }
+  if (entry.count >= ORDER_RATE_LIMIT) {
+    return true;
+  }
+  entry.count += 1;
+  return false;
+}
 
 export async function POST(request: Request) {
   if (!STRAPI_URL) {
@@ -22,6 +59,44 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Strapi API token not configured" },
       { status: 500 }
+    );
+  }
+
+  const origin = request.headers.get("origin") || "";
+  if (
+    ORDER_ALLOWED_ORIGINS.length > 0 &&
+    origin &&
+    !ORDER_ALLOWED_ORIGINS.includes(origin)
+  ) {
+    return NextResponse.json(
+      { error: "Origin not allowed" },
+      { status: 403 }
+    );
+  }
+
+  const cookieStore = cookies();
+  let sessionId = cookieStore.get(ORDER_SESSION_COOKIE)?.value;
+  if (!sessionId) {
+    sessionId = randomUUID();
+    cookieStore.set(ORDER_SESSION_COOKIE, sessionId, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+  }
+  const forwardedFor =
+    request.headers.get("x-forwarded-for") ||
+    request.headers.get("cf-connecting-ip") ||
+    "";
+  const clientIp = forwardedFor.split(",")[0]?.trim() || "unknown";
+  const limiterKey = `${clientIp}:${sessionId}`;
+
+  if (isRateLimited(limiterKey)) {
+    return NextResponse.json(
+      { error: "Too many checkout attempts. Please wait a moment." },
+      { status: 429 }
     );
   }
 
