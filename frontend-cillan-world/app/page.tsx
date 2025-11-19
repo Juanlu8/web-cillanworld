@@ -22,7 +22,7 @@ export default async function HomePage() {
         alt="Marca de agua"
         width={1600}
         height={900}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-25 w-164 sm:w-184 md:w-224 lg:w-244 pointer-events-none select-none z-11"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-25 w-[41rem] sm:w-[46rem] md:w-[56rem] lg:w-[61rem] pointer-events-none select-none z-[11]"
         priority
       />
       

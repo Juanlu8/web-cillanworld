@@ -182,7 +182,7 @@ export default function CatalogClient({
           alt="Fondo anilla"
           width={943}
           height={943}
-          className="w-4/5 max-w-[450px] md:w-full md:max-w-[600px] h-auto opacity-20 select-none object-contain mt-0 md:mt-48 md:ms-42"
+          className="w-4/5 max-w-[450px] md:w-full md:max-w-[600px] h-auto opacity-20 select-none object-contain mt-0 md:mt-48 md:ms-[10.5rem]"
           priority={false}
         />
       </div>
@@ -194,7 +194,7 @@ export default function CatalogClient({
           alt="Marca de agua"
           width={1600}
           height={900}
-          className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105 cursor-pointer"
+          className="w-64 sm:w-[21rem] md:w-[26rem] lg:w-[31rem] object-contain transition duration-300 ease-in-out hover:scale-105 cursor-pointer"
           onClick={goToHome}
           priority
         />

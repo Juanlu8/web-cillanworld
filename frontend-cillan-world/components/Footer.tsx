@@ -21,7 +21,7 @@ const Footer = () => {
   const { t } = useTranslation();
 
   return (
-    <footer className="relative bg-black text-white py-10 overflow-hidden z-12 w-full flex flex-col items-center justify-center">
+    <footer className="relative bg-black text-white py-10 overflow-hidden z-[12] w-full flex flex-col items-center justify-center">
       {/* Marca de agua de fondo */}
       <NextImage
         src="/images/white-logo-cillan.webp"

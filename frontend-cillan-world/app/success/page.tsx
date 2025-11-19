@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -35,16 +35,16 @@ export default function SuccessPage() {
             alt="Fondo anilla"
             width={943}
             height={943}
-            className="w-4/5 max-w-[450px] md:w-full md:max-w-[600px] h-auto opacity-20 select-none object-contain mt-0 md:mt-48 md:ms-42"
+            className="w-4/5 max-w-[450px] md:w-full md:max-w-[600px] h-auto opacity-20 select-none object-contain mt-0 md:mt-48 md:ms-[10.5rem]"
             />
         </div>
-      <div className="fixed pt-14 md:pt-10 left-0 w-full flex justify-center z-00">
+      <div className="fixed pt-14 md:pt-10 left-0 w-full flex justify-center z-0">
         <NextImage
           src="/images/logo-top.webp"
           alt="Marca de agua"
           width={1600}
           height={900}
-          className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105"
+          className="w-64 sm:w-[21rem] md:w-[26rem] lg:w-[31rem] object-contain transition duration-300 ease-in-out hover:scale-105"
           onClick={goToHome}
         />
       </div>
@@ -52,7 +52,7 @@ export default function SuccessPage() {
         <NavBar />
       </div>
 
-      <div className="px-8 md:px-10 lg:px-32 xl:px-120 pt-48 md:pt-70 pb-12 md:pb-24">
+      <div className="px-8 md:px-10 lg:px-32 xl:px-[30rem] pt-48 md:pt-[17.5rem] pb-12 md:pb-24">
         <div>
           <h1 className="text-3xl font-bold mb-4 text-center">{t("bag.success_title")}</h1>
           <p className="mb-6 text-gray-800">{t("bag.success_message")}</p>
@@ -69,3 +69,4 @@ export default function SuccessPage() {
     </div>
   );
 }
+

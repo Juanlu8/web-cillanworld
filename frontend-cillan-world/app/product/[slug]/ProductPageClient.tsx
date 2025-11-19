@@ -237,7 +237,7 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
           alt="Cillán World Logo"
           width={1600}
           height={900}
-          className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105 cursor-pointer"
+          className="w-64 sm:w-[21rem] md:w-[26rem] lg:w-[31rem] object-contain transition duration-300 ease-in-out hover:scale-105 cursor-pointer"
           onClick={goToHome}
           priority
         />

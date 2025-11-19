@@ -18,20 +18,20 @@ export default function PrivacyPolicyPage() {
     return (
     <div className="relative text-justify">
       {/* Marca de agua */}
-      <div className="fixed pt-14 md:pt-10 left-0 w-full flex justify-center z-00">
+      <div className="fixed pt-14 md:pt-10 left-0 w-full flex justify-center z-0">
         <NextImage
           src="/images/logo-top.webp"
           alt="Marca de agua"
           width={1600}
           height={900}
-          className="w-64 sm:w-84 md:w-104 lg:w-124 object-contain transition duration-300 ease-in-out hover:scale-105"
+          className="w-64 sm:w-[21rem] md:w-[26rem] lg:w-[31rem] object-contain transition duration-300 ease-in-out hover:scale-105"
           onClick={() => goToHome()}
         />
       </div>
       <div className="z-0">
         <NavBar />
       </div>
-      <div className="px-8 md:px-10 lg:px-32 xl:px-120 pt-48 md:pt-70 pb-12 md:pb-24">
+      <div className="px-8 md:px-10 lg:px-32 xl:px-[30rem] pt-48 md:pt-[17.5rem] pb-12 md:pb-24">
         <div>
           <p className="dropcap-logo leading-7 text-base md:text-lg">
             {t("about.is_the")} <strong>{t("about.inner_world").toUpperCase()}</strong> {t("about.p_1_1")} <strong>{t("about.never").toUpperCase()}</strong> {t("about.p_1_2")}
@@ -43,7 +43,7 @@ export default function PrivacyPolicyPage() {
             alt="foto nene"
             width={1352}
             height={1920}
-            className="w-24 sm:w-42 md:w-48 lg:w-64 cursor-pointer rounded-full"
+            className="w-24 sm:w-[10.5rem] md:w-48 lg:w-64 cursor-pointer rounded-full"
             onClick={() => goToHome()}
           />
           <div className="leading-7 text-base md:text-lg">  
