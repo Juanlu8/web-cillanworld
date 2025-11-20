@@ -20,10 +20,11 @@ Aplicación web construida con **Next.js 14**, **TypeScript** y **TailwindCSS**.
 
    | Variable | Descripción |
    | --- | --- |
-   | `NEXT_PUBLIC_BACKEND_URL` | URL pública del CMS Strapi desde la que se sirven productos e imágenes. |
-   | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Clave publicable de Stripe usada por Stripe.js en el navegador. |
-   | `STRAPI_URL` | URL de Strapi accesible desde el servidor (puede coincidir con la pública). |
-   | `STRAPI_API_TOKEN` | Token de API de Strapi con permiso para crear órdenes. No debe marcarse como `NEXT_PUBLIC`. |
+| `NEXT_PUBLIC_BACKEND_URL` | URL pública del CMS Strapi desde la que se sirven productos e imágenes. |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Clave publicable de Stripe usada por Stripe.js en el navegador. |
+| `STRAPI_URL` | URL de Strapi accesible desde el servidor (puede coincidir con la pública). |
+| `STRAPI_API_TOKEN` | Token de API de Strapi con permiso para crear órdenes. No debe marcarse como `NEXT_PUBLIC`. |
+| `STRIPE_SECRET_KEY` | Clave secreta de Stripe usada por el endpoint `/api/orders/session` para comprobar el estado real de un checkout. |
 
 2. Instala dependencias:
 

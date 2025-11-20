@@ -32,8 +32,15 @@
     "item_added": "Product added to your bag",
     "view_bag": "View bag ",
     "max_quantity_reached": "Maximum quantity for this item reached",
-    "product_removed": "Product removed from your bag"
-
+    "product_removed": "Product removed from your bag",
+    "payment_pending_title": "We're still verifying your payment",
+    "payment_pending_message": "Your checkout session is still pending. If you already completed the payment, please wait a few minutes or contact us with the payment ID below.",
+    "payment_failed_title": "We couldn't confirm your payment",
+    "payment_failed_message": "Stripe marked this session as cancelled or failed. Please try again or reach out with the payment ID below.",
+    "payment_status_label": "Status",
+    "payment_amount_label": "Amount",
+    "payment_id_label": "Payment ID",
+    "payment_try_again": "If the charge appears on your statement, contact us and share the ID above."
   },
   "collection": {
     "no_images_found": "No images found for this collection."

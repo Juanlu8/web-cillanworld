@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
+import { toMediaUrl } from "@/lib/media";
 
 // ✅ Definir el tipo de las props
 type Props = {
@@ -28,14 +29,6 @@ function getLocalized<T extends Record<string, any>>(
   const isEN = lang.toLowerCase().startsWith("en");
   const enKey = `${baseKey}_en`;
   return (isEN ? obj[enKey] : obj[baseKey]) ?? obj[baseKey] ?? obj[enKey];
-}
-
-/** Absolutiza una URL de Strapi si viene relativa */
-function toAbsoluteMedia(url?: string | null) {
-  if (!url) return undefined;
-  if (/^https?:\/\//i.test(url)) return url;
-  const base = process.env.NEXT_PUBLIC_STRAPI_URL ?? "";
-  return `${base}${url}`;
 }
 
 // ✅ Actualizar la función para recibir props del servidor
@@ -134,7 +127,7 @@ export default function CatalogClient({
         const firstImage = p?.attributes?.images?.data?.[0]?.attributes?.url as
           | string
           | undefined;
-        const imageUrl = toAbsoluteMedia(firstImage);
+        const imageUrl = firstImage ? toMediaUrl(firstImage) : undefined;
         
         // ✅ Añadir precio y disponibilidad
         const price = p?.attributes?.price ?? 0;

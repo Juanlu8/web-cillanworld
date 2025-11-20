@@ -32,7 +32,15 @@
     "item_added": "Producto añadido a tu cesta",
     "view_bag": "Ver cesta",
     "max_quantity_reached": "Se ha alcanzado la cantidad máxima para este artículo",
-    "product_removed": "Producto eliminado de tu cesta"
+    "product_removed": "Producto eliminado de tu cesta",
+    "payment_pending_title": "Estamos verificando tu pago",
+    "payment_pending_message": "Tu sesión de pago todavía no figura como pagada. Si ya completaste el proceso, espera unos minutos o contacta con nosotros con el ID de pago.",
+    "payment_failed_title": "No hemos podido confirmar tu pago",
+    "payment_failed_message": "La sesión aparece como cancelada o fallida. Si crees que es un error, vuelve a intentarlo o escríbenos indicando el ID de pago.",
+    "payment_status_label": "Estado",
+    "payment_amount_label": "Importe",
+    "payment_id_label": "ID de pago",
+    "payment_try_again": "Si ves el cargo en tu cuenta, escríbenos e indica el ID anterior."
   },
   "collection": {
     "no_images_found": "No se han encontrado imágenes para esta colección"
