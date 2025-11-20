@@ -58,7 +58,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
   const allProducts = await getProducts();
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
       {/* ✅ Pasar datos al Client Component */}
       <ProductPageClient 
         initialProduct={product}
