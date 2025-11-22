@@ -26,7 +26,7 @@ export default async function HomePage() {
         priority
       />
       
-      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Cargando...</div>}>
         {/* ✅ Pasar datos del servidor a los componentes */}
         <FullScreenScroll initialImages={homeImages} />
         <HighlightsCarousel initialProducts={featuredProducts} />

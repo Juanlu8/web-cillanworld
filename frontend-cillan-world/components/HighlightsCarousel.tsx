@@ -30,6 +30,18 @@ export default function HighlightsCarousel({ initialProducts }: Props) {
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // Ordenar por campo `order` (nulls last)
+  const orderedProducts = useMemo(() => {
+    return [...products].sort((a, b) => {
+      const orderA = a?.attributes?.order ?? null;
+      const orderB = b?.attributes?.order ?? null;
+      if (orderA == null && orderB == null) return 0;
+      if (orderA == null) return 1;
+      if (orderB == null) return -1;
+      return orderA - orderB;
+    });
+  }, [products]);
+
   useEffect(() => {
     if (!api) return;
     
@@ -45,17 +57,20 @@ export default function HighlightsCarousel({ initialProducts }: Props) {
     };
   }, [api]);
 
-  // Ordenar por campo `order` (nulls last)
-  const orderedProducts = useMemo(() => {
-    return [...products].sort((a, b) => {
-      const orderA = a?.attributes?.order ?? null;
-      const orderB = b?.attributes?.order ?? null;
-      if (orderA == null && orderB == null) return 0;
-      if (orderA == null) return 1;
-      if (orderB == null) return -1;
-      return orderA - orderB;
-    });
-  }, [products]);
+  // Autoplay sencillo: avanza cada 5s y vuelve al inicio al llegar al final
+  useEffect(() => {
+    if (!api || orderedProducts.length <= 1) return;
+
+    const id = setInterval(() => {
+      if (api.canScrollNext()) {
+        api.scrollNext();
+      } else {
+        api.scrollTo(0);
+      }
+    }, 5000);
+
+    return () => clearInterval(id);
+  }, [api, orderedProducts.length]);
 
   if (!orderedProducts || orderedProducts.length === 0) {
     return null;

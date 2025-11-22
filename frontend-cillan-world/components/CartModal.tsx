@@ -36,6 +36,7 @@ export default function CartModal({
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [privacyError, setPrivacyError] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [showPaymentNotice, setShowPaymentNotice] = useState(false);
   const checkoutFallbackMessage = useMemo(
     () =>
       String(
@@ -167,12 +168,13 @@ export default function CartModal({
   };
 
   const onCheckoutClick = () => {
-    if (!privacyAccepted) {
-      setPrivacyError(String(t("bag.privacy_required")));
-      document.getElementById("privacy-error")?.focus();
-      return;
-    }
-    buyStripe(); // <- ahora SÍ ejecuta
+    //if (!privacyAccepted) {
+    //  setPrivacyError(String(t("bag.privacy_required")));
+    //  document.getElementById("privacy-error")?.focus();
+    //  return;
+    //}
+    //buyStripe();
+    setShowPaymentNotice(true);
   };
 
   if (!isVisible) return null;
@@ -282,6 +284,31 @@ export default function CartModal({
             </>
           )}
         </div>
+
+        {showPaymentNotice && (
+          <div
+            className="absolute inset-0 bg-black/60 flex items-center justify-center px-4"
+            role="alertdialog"
+            aria-modal="true"
+          >
+            <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center space-y-4">
+              <p className="text-base">
+                {t("general.temporal_txt_checkout1")}
+                <br/>
+                {t("general.temporal_txt_checkout2")} 
+                <Link href="https://www.instagram.com/sergio.cillan?igsh=MXkxNngwMjZkZXU1dQ==" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Instagram.</Link>
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => setShowPaymentNotice(false)}
+                  className="border border-black rounded-md px-6 py-2 font-semibold hover:bg-black hover:text-white transition"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

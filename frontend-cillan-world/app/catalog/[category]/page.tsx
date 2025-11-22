@@ -43,7 +43,7 @@ export default async function CatalogPage({ params }: { params: Promise<Params> 
   const categoriesResponse = await getCategories();
 
   return (
-    <Suspense fallback={<div>Loading catalog...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Cargando...</div>}>
       <CatalogClient 
         initialProducts={productsResponse.data || []}
         categories={categoriesResponse.data || []}

@@ -3,7 +3,10 @@
     "image_missing": "Image missing",
     "terms_conditions": "terms & conditions",
     "highlights": "highlights",
-    "all_catalogue": "all catalogue"
+    "all_catalogue": "all catalogue",
+    "loading": "Loading...",
+    "temporal_txt_checkout1": "At this time, it is not possible to make purchases directly from the website.",
+    "temporal_txt_checkout2": "If you want to place an order, contact us through "
   },
   "navbar": {
     "shop": "shop",

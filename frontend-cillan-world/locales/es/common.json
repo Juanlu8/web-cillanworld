@@ -3,7 +3,10 @@
     "image_missing": "Falta la imagen",
     "terms_conditions": "términos y condiciones",
     "highlights": "destacados",
-    "all_catalogue": "todo el catálogo"
+    "all_catalogue": "todo el catálogo",
+    "loading": "Cargando...",
+    "temporal_txt_checkout1": "Por el momento no es posible realizar compras directamente desde la web.",
+    "temporal_txt_checkout2": "Si deseas realizar un pedido, contáctanos a través de "
   },
   "navbar": {
     "shop": "tienda",

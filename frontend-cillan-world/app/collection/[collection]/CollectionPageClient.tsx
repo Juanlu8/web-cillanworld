@@ -151,7 +151,7 @@ export default function CollectionPageClient({ collection }: Props) {
               <source src="/video/video-miedos.MP4" type="video/mp4" />
             </video>
           ) : (
-            <div className="absolute text-black inset-0 w-full h-full bg-gray-100 opacity-50 z-0" />
+            <div className="absolute text-black inset-0 w-full h-full bg-white opacity-50 z-0" />
           )}
 
           {/* Logo centrado */}
