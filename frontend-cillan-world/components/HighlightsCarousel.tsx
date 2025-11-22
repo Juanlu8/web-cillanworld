@@ -62,7 +62,7 @@ export default function HighlightsCarousel({ initialProducts }: Props) {
   }
 
   return (
-    <section className="py-12 md:py-24 px-4 md:px-10 bg-white">
+    <section className="py-12 md:py-24 px-4 md:px-10 bg-white relative z-12">
       <h2 className="text-2xl font-bold mb-8 tracking-wide">
         {t("general.highlights").toUpperCase()}
       </h2>
