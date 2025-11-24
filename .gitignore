@@ -22,3 +22,4 @@ bin/
 obj/
 #.vs/frontend-cillan-world/public/video/*
 #*.mp4
+"frontend-cillan-world/node_modules_old/" 
