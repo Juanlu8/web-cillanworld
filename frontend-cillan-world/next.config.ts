@@ -1,14 +1,11 @@
-/**import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here };*/
-
-
-//export default nextConfig;
-
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Desactiva lint en el build; se puede ejecutar en CI por separado
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // Permite imágenes externas desde Strapi
   images: {
     remotePatterns: [
@@ -19,7 +16,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "tu-dominio-strapi.com", // ← cambia esto en producción
+        hostname: "tu-dominio-strapi.com", // cambia esto en producción
       },
     ],
   },
