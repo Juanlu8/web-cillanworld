@@ -1,14 +1,13 @@
-# Backend – Cillan World (Strapi)
+# Backend - Cillan World (Strapi)
 
-Instancia de Strapi responsable de gestionar el catálogo, colecciones y órdenes de compra del e-commerce. Incluye la lógica para crear sesiones de Stripe Checkout y registrar las órdenes en la base de datos.
+Instancia de Strapi responsable de gestionar el catalogo, colecciones y ordenes de compra del e-commerce.
 
 ## Requisitos previos
 
 - Node.js 18+
 - PostgreSQL (o la base de datos que definas en `DATABASE_CLIENT`)
-- Claves de Stripe con permisos de Checkout
 
-## Configuración
+## Configuracion
 
 1. Copia el archivo de variables de entorno y rellena los valores obligatorios:
 
@@ -16,13 +15,11 @@ Instancia de Strapi responsable de gestionar el catálogo, colecciones y órdene
    cp .env.example .env
    ```
 
-   Variables críticas:
+   Variables criticas:
 
-   | Variable | Descripción |
+   | Variable | Descripcion |
    | --- | --- |
-   | `APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `JWT_SECRET` | Claves necesarias para arrancar Strapi con seguridad. Usa valores únicos por entorno. |
-   | `STRIPE_KEY` | Clave secreta de Stripe utilizada para crear sesiones de checkout. |
-   | `CLIENT_URL` | URL pública del frontend (usada para redirecciones de éxito/cancelación). |
+   | `APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `JWT_SECRET` | Claves necesarias para arrancar Strapi con seguridad. Usa valores unicos por entorno. |
    | `DATABASE_*` | Credenciales de la base de datos. No se proporcionan valores por defecto para evitar exponer secretos. |
 
 2. Instala dependencias:
@@ -37,14 +34,14 @@ Instancia de Strapi responsable de gestionar el catálogo, colecciones y órdene
    npm run develop
    ```
 
-   El panel de administración estará disponible en `http://localhost:1337/admin`.
+   El panel de administracion estara disponible en `http://localhost:1337/admin`.
 
 ## Notas de seguridad
 
 - No dejes credenciales ni claves en el repositorio. Usa variables de entorno o gestores de secretos.
 - El endpoint `api::order.order` espera que las peticiones incluyan un token de API (`Authorization: Bearer <token>`). Configura los roles o tokens necesarios en el panel de Strapi.
-- Asegúrate de rotar cualquier contraseña que se haya publicado previamente.
+- Asegurate de rotar cualquier contrasena que se haya publicado previamente.
 
 ## Despliegue
 
-Consulta la [documentación oficial de Strapi](https://docs.strapi.io/dev-docs/deployment) para revisar las opciones de despliegue (Strapi Cloud, plataformas PaaS, contenedores, etc.). Durante el despliegue asegúrate de suministrar todas las variables del archivo `.env.example`.
+Consulta la [documentacion oficial de Strapi](https://docs.strapi.io/dev-docs/deployment) para revisar las opciones de despliegue (Strapi Cloud, plataformas PaaS, contenedores, etc.). Durante el despliegue asegurate de suministrar todas las variables del archivo `.env.example`.

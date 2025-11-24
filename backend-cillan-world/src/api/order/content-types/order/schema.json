@@ -11,24 +11,9 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "stripeId": {
-      "type": "string",
-      "required": true,
-      "options": {
-        "index": true,
-        "unique": true
-      }
-    },
     "products": {
       "type": "json",
       "required": true
-    },
-    "paymentIntentId": {
-      "type": "string",
-      "options": {
-        "index": true,
-        "unique": true
-      }
     },
     "status": {
       "type": "enumeration",

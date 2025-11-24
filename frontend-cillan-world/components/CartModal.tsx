@@ -8,8 +8,6 @@ import CartItem from "@/components/CartItemComp";
 import type { CartItemType } from "@/types/cartItem";
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import axios from "axios";
-import { makePaymentRequest } from "@/api/payment";
 
 interface CartModalProps {
   isVisible: boolean;
@@ -35,15 +33,7 @@ export default function CartModal({
 
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [privacyError, setPrivacyError] = useState<string | null>(null);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [showPaymentNotice, setShowPaymentNotice] = useState(false);
-  const checkoutFallbackMessage = useMemo(
-    () =>
-      String(
-        t("bag.checkout_error")
-      ),
-    [t]
-  );
 
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const initialFocusRef = useRef<HTMLButtonElement | null>(null);
@@ -118,48 +108,6 @@ export default function CartModal({
     [cartItems]
   );
 
-  // Payload plano para Strapi: { products: [{ id, quantity }] }
-  const buildOrderPayload = () => {
-    const products = cartItems
-      .filter((it) => typeof it.product?.id === "number")
-      .map((it) => ({
-        id: it.product!.id,
-        name: it.product!.attributes.productName,
-        quantity: it.quantity ?? 1,
-        size: it.size,
-        color: it.color,
-      }));
-
-    return { products };
-  };
-
-  
-  const buyStripe = async () => {
-    try {
-      setCheckoutError(null);
-      const payload = buildOrderPayload();
-      const { data } = await makePaymentRequest.post("/orders", { data: payload });
-
-      const sessionUrl = data?.stripeSession?.url || data?.url;
-
-      if (!sessionUrl) {
-        throw new Error("Stripe session URL missing");
-      }
-
-      window.location.assign(sessionUrl);
-    } catch (error) {
-      console.error("Error during Stripe checkout:", error);
-      if (axios.isAxiosError(error)) {
-        const apiMessage =
-          (error.response?.data as { error?: string })?.error ||
-          error.message;
-        setCheckoutError(apiMessage || checkoutFallbackMessage);
-      } else {
-        setCheckoutError(checkoutFallbackMessage);
-      }
-    }
-  };
-
   // Privacidad
   const onChangePrivacy = (e: React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
@@ -173,7 +121,6 @@ export default function CartModal({
     //  document.getElementById("privacy-error")?.focus();
     //  return;
     //}
-    //buyStripe();
     setShowPaymentNotice(true);
   };
 
@@ -256,12 +203,6 @@ export default function CartModal({
                     className="text-sm text-red-600 mb-4"
                   >
                     {privacyError}
-                  </p>
-                )}
-
-                {checkoutError && (
-                  <p className="text-sm text-red-600 mb-4" role="alert">
-                    {checkoutError}
                   </p>
                 )}
 

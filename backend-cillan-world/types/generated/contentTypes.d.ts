@@ -496,7 +496,6 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     metadata: Schema.Attribute.JSON;
     notes: Schema.Attribute.Text;
     orderedAt: Schema.Attribute.DateTime;
-    paymentIntentId: Schema.Attribute.String;
     products: Schema.Attribute.JSON & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     shippingAddress: Schema.Attribute.JSON;
@@ -504,7 +503,6 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       ['pending', 'processing', 'paid', 'failed', 'refunded']
     > &
       Schema.Attribute.DefaultTo<'pending'>;
-    stripeId: Schema.Attribute.String & Schema.Attribute.Required;
     totalAmount: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
