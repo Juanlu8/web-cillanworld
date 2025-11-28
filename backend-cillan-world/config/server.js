@@ -10,7 +10,7 @@ module.exports = ({ env }) => ({
   },
   transfer: {
   token: {
-    salt: env('STRAPI_TRANSFER_TOKEN_SALT'),
+    salt: env('TRANSFER_TOKEN_SALT', env('STRAPI_TRANSFER_TOKEN_SALT')),
   },
   enabled: true,
 },
