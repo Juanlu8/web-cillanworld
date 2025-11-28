@@ -1,3 +1,10 @@
+console.log('TRANSFER DEBUG', {
+  enableTransfers: process.env.STRAPI_ENABLE_TRANSFERS,
+  enableRemote: process.env.STRAPI_ENABLE_REMOTE_DATA_TRANSFER,
+  salt: process.env.TRANSFER_TOKEN_SALT,
+  saltStrapi: process.env.STRAPI_TRANSFER_TOKEN_SALT,
+});
+
 module.exports = ({ env }) => ({
   host: env('HOST', '0.0.0.0'),
   port: env.int('PORT', 1337),
