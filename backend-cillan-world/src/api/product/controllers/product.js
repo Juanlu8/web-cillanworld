@@ -8,6 +8,7 @@ const makeToAbsUrl = (strapi) => {
   const base =
     strapi.config.get('server.url') ||
     process.env.PUBLIC_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
     'http://localhost:1337';
 
   return (url) => {

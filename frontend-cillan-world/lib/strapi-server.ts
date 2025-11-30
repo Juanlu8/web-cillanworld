@@ -1,7 +1,7 @@
 // lib/strapi-server.ts
 import qs from 'qs';
 
-const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
+const STRAPI_URL = process.env.STRAPI_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:1337';
 const STRAPI_SERVER_TOKEN =
   process.env.STRAPI_SERVER_API_TOKEN ||
   process.env.STRAPI_READ_API_TOKEN ||
