@@ -18,6 +18,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "tu-dominio-strapi.com", // cambia esto en producción
       },
+      {
+        protocol: "https",
+        hostname: "web-cillanworld.onrender.com", // backend Strapi
+      },
+      {
+        protocol: "https",
+        hostname: "web-cillanworld.vercel.app", // si sirves imágenes desde el front
+      },
     ],
   },
 
