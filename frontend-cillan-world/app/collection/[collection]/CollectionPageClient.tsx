@@ -144,11 +144,11 @@ export default function CollectionPageClient({ collection }: Props) {
           {/* Video background (o fondo gris) */}
           {title === "IDKKID" ? (
             <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
-              <source src="/video/video-IDKKID.MP4" type="video/mp4" />
+              <source src="https://res.cloudinary.com/dsyvrdb00/video/upload/q_auto,f_auto/IDKKID_Fashion_film_dcyqgz" type="video/mp4" />
             </video>
           ) : title === "MIEDOS" ? (
             <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
-              <source src="/video/video-miedos.MP4" type="video/mp4" />
+              <source src="https://res.cloudinary.com/dsyvrdb00/video/upload/q_auto,f_auto/Miedos720_ydzx2l" type="video/mp4" />
             </video>
           ) : (
             <div className="absolute text-black inset-0 w-full h-full bg-white opacity-50 z-0" />

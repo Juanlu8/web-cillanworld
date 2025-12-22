@@ -171,7 +171,7 @@ const VerticalSnapCarousel: React.FC<Props> = ({ initialImages }) => {
     <div className="min-h-screen flex flex-col">
       <video
         className="absolute scroll-container top-0 left-0 w-full h-full object-cover z-0"
-        src="/video/video-miedos.mp4"
+        src="https://res.cloudinary.com/dsyvrdb00/video/upload/q_auto,f_auto/Miedos720_ydzx2l"
         autoPlay
         muted
         loop
