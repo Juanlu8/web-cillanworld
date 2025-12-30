@@ -37,6 +37,9 @@
     },
     "order": {
       "type": "integer"
+    },
+    "imageUrl": {
+      "type": "json"
     }
   }
 }

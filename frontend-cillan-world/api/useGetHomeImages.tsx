@@ -13,7 +13,7 @@ export function useGetHomeImages() {
     (async () => {
       try {
         const json = await fetchFromApi<{ data: HomeImageType[] }>(
-          "/api/home-images?populate=*",
+          "/api/home-images",
           { signal: controller.signal }
         );
         setResult(json.data);

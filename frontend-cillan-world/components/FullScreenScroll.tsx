@@ -22,13 +22,6 @@ const VerticalSnapCarousel: React.FC<Props> = ({ initialImages }) => {
       return initialImages.data;
     }
 
-    if (initialImages.attributes) {
-      const attrs = initialImages.attributes;
-      if (attrs.images?.data && Array.isArray(attrs.images.data)) {
-        return attrs.images.data;
-      }
-    }
-
     return [];
   }, [initialImages]);
 

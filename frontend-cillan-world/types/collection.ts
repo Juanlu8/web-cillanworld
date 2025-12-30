@@ -5,10 +5,5 @@ export type CollectionType = {
     description:string;
     description_en:string;
     order: number;
-    images: {
-        data: {
-            id: number;
-            url: string;
-        }[]
-    };
+    imageUrl?: string[] | string;
 };

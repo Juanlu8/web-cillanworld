@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ProductType } from "@/types/product";
 import { useTranslation } from "react-i18next";
-import { toMediaUrl } from "@/lib/media";
+import { getProductImageUrls } from "@/lib/product-images";
 
 type Props = { product: ProductType };
 
@@ -15,10 +15,9 @@ export default function ProductCard({ product }: Props) {
   const slug = product.attributes.slug;
   const href = `/product/${slug}`;
 
-  const raw1 = product.attributes.images?.data?.[0]?.attributes?.url as string | undefined;
-  const raw2 = product.attributes.images?.data?.[1]?.attributes?.url as string | undefined;
-  const src1 = toMediaUrl(raw1);
-  const src2 = toMediaUrl(raw2);
+  const imageUrls = getProductImageUrls(product);
+  const src1 = imageUrls[0];
+  const src2 = imageUrls[1];
 
   const [loaded1, setLoaded1] = useState(false);
   const [loaded2, setLoaded2] = useState(false);

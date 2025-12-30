@@ -47,7 +47,7 @@ async function fetchStrapi<T>(
   }
 }
 
-const PRODUCT_POPULATE = ['images', 'categories'];
+const PRODUCT_POPULATE = ['categories'];
 
 export async function getProducts(filters?: Record<string, any>) {
   const query = qs.stringify(
@@ -101,7 +101,6 @@ export async function getFeaturedProducts() {
 export async function getCollections() {
   const query = qs.stringify(
     {
-      populate: ['images'],
       pagination: { limit: 50 },
     },
     { encodeValuesOnly: true }
@@ -116,7 +115,6 @@ export async function getCollections() {
 export async function getCollectionBySlug(slug: string) {
   const query = qs.stringify(
     {
-      populate: ['images'],
       filters: { slug: { $eq: slug } },
     },
     { encodeValuesOnly: true }
@@ -135,7 +133,7 @@ export async function getCollectionBySlug(slug: string) {
  */
 export async function getHomeImages() {
   // ✅ CORREGIDO: home-images (plural)
-  return fetchStrapi<any>('/home-images?populate=*', {
+  return fetchStrapi<any>('/home-images', {
     revalidate: 1800,
     tags: ['home'],
   });

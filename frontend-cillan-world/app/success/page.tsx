@@ -26,7 +26,7 @@ export default function SuccessPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const sp = useSearchParams();
-  const sessionId = sp.get("session_id");
+  const sessionId = sp?.get("session_id") ?? "";
   const { removeAll } = useCart();
 
   const [sessionData, setSessionData] = useState<SessionCheckResponse | null>(

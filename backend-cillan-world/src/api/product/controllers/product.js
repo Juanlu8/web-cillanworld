@@ -25,13 +25,17 @@ const makeToAbsUrl = (strapi) => {
 };
 
 /** Helpers de shape */
-const shapeImages = (imgs, toAbs) =>
-  Array.isArray(imgs)
-    ? imgs.map((img) => ({
-        id: img.id,
-        attributes: { url: toAbs(img.url) },
-      }))
-    : [];
+const shapeImageUrl = (value, toAbs) => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.map((url) => toAbs(url)).filter(Boolean);
+  if (typeof value === 'string') {
+    return value
+      .split(/\s+/)
+      .map((url) => toAbs(url))
+      .filter(Boolean);
+  }
+  return [];
+};
 
 const shapeCategories = (cats) =>
   Array.isArray(cats)
@@ -54,7 +58,7 @@ const shapeLightProduct = (p, toAbs, NEW_CAT_FIELD) => {
       color: pa.color,
       price: pa.price,
       order: pa.order,
-      images: { data: shapeImages(pa.images, toAbs) },
+      imageUrl: shapeImageUrl(pa.imageUrl, toAbs),
       categories: { data: shapeCategories(pa[NEW_CAT_FIELD]) },
     },
   };
@@ -74,10 +78,10 @@ module.exports = createCoreController('api::product.product', ({ strapi }) => ({
       const hasNewCategories = Boolean(model?.attributes?.[NEW_CAT_FIELD]);
 
       // populate consistente
-      const populate = { images: true };
+      const populate = {};
       if (hasNewCategories) populate[NEW_CAT_FIELD] = true;
       if (hasRelatedField) {
-        populate[REL_FIELD] = { populate: { images: true } };
+        populate[REL_FIELD] = { populate: {} };
         if (hasNewCategories) {
           populate[REL_FIELD].populate[NEW_CAT_FIELD] = true;
         }
@@ -95,7 +99,6 @@ module.exports = createCoreController('api::product.product', ({ strapi }) => ({
         /** @type {any} */
         const p = product;
 
-        const imagesArr      = Array.isArray(p.images) ? p.images : [];
         const manyCategories = hasNewCategories ? p[NEW_CAT_FIELD] : [];
 
         const related =
@@ -119,7 +122,7 @@ module.exports = createCoreController('api::product.product', ({ strapi }) => ({
             garmentCare: p.garmentCare,
             garmentCare_en: p.garmentCare_en,
             color:       p.color,
-            images:      { data: shapeImages(imagesArr, toAbs) },
+            imageUrl:    shapeImageUrl(p.imageUrl, toAbs),
             categories:  { data: shapeCategories(manyCategories) },
             [REL_FIELD]: { data: related },
           },
@@ -146,10 +149,10 @@ module.exports = createCoreController('api::product.product', ({ strapi }) => ({
       const hasRelatedField  = Boolean(model?.attributes?.[REL_FIELD]);
       const hasNewCategories = Boolean(model?.attributes?.[NEW_CAT_FIELD]);
 
-      const populate = { images: true };
+      const populate = {};
       if (hasNewCategories) populate[NEW_CAT_FIELD] = true;
       if (hasRelatedField) {
-        populate[REL_FIELD] = { populate: { images: true } };
+        populate[REL_FIELD] = { populate: {} };
         if (hasNewCategories) {
           populate[REL_FIELD].populate[NEW_CAT_FIELD] = true;
         }
@@ -182,7 +185,7 @@ module.exports = createCoreController('api::product.product', ({ strapi }) => ({
           garmentCare:   r.garmentCare,
           garmentCare_en:r.garmentCare_en,
           color:         r.color,
-          images:      { data: shapeImages(Array.isArray(r.images) ? r.images : [], toAbs) },
+          imageUrl:    shapeImageUrl(r.imageUrl, toAbs),
           categories:  { data: shapeCategories(hasNewCategories ? r[NEW_CAT_FIELD] : []) },
           [REL_FIELD]: {
             data:

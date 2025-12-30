@@ -8,16 +8,10 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { toMediaUrl } from "@/lib/media";
+import { normalizeImageUrlField } from "@/lib/product-images";
 
 // --- Tipos auxiliares (evitan any) ------------------------------------------
 type UnknownRecord = Record<string, unknown>;
-
-type ImageLike =
-  | { id?: number | string; url?: string }
-  | { id?: number | string; attributes?: { url?: string } }
-  | UnknownRecord;
-
-type ImagesField = { data?: ImageLike[] } | ImageLike[] | undefined;
 
 type CollectionLike =
   | CollectionType
@@ -27,13 +21,13 @@ type CollectionLike =
       collectionName?: string;
       description?: string;
       description_en?: string;
-      images?: ImagesField;
+      imageUrl?: string[] | string;
       attributes?: {
         slug?: string;
         collectionName?: string;
         description?: string;
         description_en?: string;
-        images?: ImagesField;
+        imageUrl?: string[] | string;
       };
     };
 
@@ -70,23 +64,16 @@ function getDescription(c: CollectionLike, lang: "es" | "en"): string {
   return direct ?? nested ?? "";
 }
 
-function getImagesData(c: CollectionLike): ImageLike[] {
+function getImageUrls(c: CollectionLike): string[] {
   const anyC = c as UnknownRecord;
-  const direct = anyC.images as ImagesField;
-  const nested = (anyC.attributes as UnknownRecord | undefined)?.images as ImagesField;
-
-  const field = direct ?? nested;
-  if (!field) return [];
-  if (Array.isArray(field)) return field as ImageLike[];
-  if (Array.isArray(field.data)) return field.data as ImageLike[];
-  return [];
-}
-
-function getImageUrl(img: ImageLike): string | undefined {
-  const anyImg = img as UnknownRecord;
-  const direct = anyImg.url as string | undefined;
-  const nested = (anyImg.attributes as UnknownRecord | undefined)?.url as string | undefined;
-  return direct ?? nested;
+  const direct = anyC.imageUrl as string[] | string | undefined;
+  const nested = (anyC.attributes as UnknownRecord | undefined)?.imageUrl as
+    | string[]
+    | string
+    | undefined;
+  return normalizeImageUrlField(direct ?? nested)
+    .map((url) => toMediaUrl(url))
+    .filter(Boolean);
 }
 
 // ✅ Definir el tipo de las props
@@ -115,10 +102,7 @@ export default function CollectionPageClient({ collection }: Props) {
   const collectionDesc = getDescription(collection, currentLanguage);
 
   // Reunimos imágenes (hasta 24 p.ej. para no inflar)
-  const imageUrls = getImagesData(collection)
-    .map((img) => toMediaUrl(getImageUrl(img)))
-    .filter(Boolean)
-    .slice(0, 24);
+  const imageUrls = getImageUrls(collection).slice(0, 24);
 
   const jsonLd = {
     "@context": "https://schema.org/",
@@ -192,15 +176,9 @@ export default function CollectionPageClient({ collection }: Props) {
       <section className="w-full">
         <div className="w-full">
           <div className="flex flex-wrap w-full gap-0">
-            {getImagesData(collection).length > 0 ? (
-              getImagesData(collection).map((img: ImageLike, idx: number) => {
-                const raw = getImageUrl(img);
-                const src = toMediaUrl(raw);
-
-                const imgId =
-                  typeof img.id === "number" || typeof img.id === "string" ? img.id : undefined;
-                const key: string | number = imgId ?? `${collectionName}-${idx}`;
-
+            {imageUrls.length > 0 ? (
+              imageUrls.map((src: string, idx: number) => {
+                const key = `${collectionName}-${idx}`;
                 return (
                   <div key={key} className="w-full md:w-1/2">
                     {/* Caja con ratio estable */}

@@ -11,7 +11,7 @@ import { CartItemType } from "@/types/cartItem";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import Link from "next/link";
-import { toMediaUrl } from "@/lib/media";
+import { getProductImageUrls } from "@/lib/product-images";
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -200,16 +200,12 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
     garmentCare,
     garmentCare_en,
     price,
-    images,
     slug: productSlug,
   } = product.attributes;
 
   // --- JSON-LD (Product) ----------------------------------------------------
   const canonical = typeof window !== "undefined" ? window.location.href : "";
-  const imageUrls =
-    images?.data
-      ?.map((img: any) => toMediaUrl(img?.attributes?.url))
-      .filter(Boolean) ?? [];
+  const imageUrls = getProductImageUrls(product);
 
   const jsonLd = {
     "@context": "https://schema.org/",
@@ -251,12 +247,12 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
         <div>
           <Carousel opts={{ align: "start", loop: false }} setApi={setApi} className="w-full">
             <CarouselContent>
-              {images?.data.map((image: any, idx: number) => {
-                const src = toMediaUrl(image?.attributes?.url);
+              {imageUrls.map((src: string, idx: number) => {
+                const imageKey = `${product?.id ?? "product"}-${idx}`;
                 return (
-                  <CarouselItem key={image.id} className="basis-full">
+                  <CarouselItem key={imageKey} className="basis-full">
                     <div className="relative flex justify-center items-center h-[500px] rounded overflow-hidden">
-                      {!loaded[image.id] && (
+                      {!loaded[idx] && (
                         <div className="absolute inset-0 animate-pulse bg-gray-100 opacity-50" />
                       )}
                       {src && (
@@ -267,10 +263,10 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
                           fill
                           sizes="(max-width: 768px) 100vw, 50vw"
                           className={`object-contain rounded cursor-pointer transition-opacity duration-300 ${
-                            loaded[image.id] ? "opacity-100" : "opacity-0"
+                            loaded[idx] ? "opacity-100" : "opacity-0"
                           }`}
-                          onLoad={() => setLoaded((prev) => ({ ...prev, [image.id]: true }))}
-                          onError={() => setLoaded((prev) => ({ ...prev, [image.id]: true }))}
+                          onLoad={() => setLoaded((prev) => ({ ...prev, [idx]: true }))}
+                          onError={() => setLoaded((prev) => ({ ...prev, [idx]: true }))}
                           onClick={() => setModalImage(src)}
                           priority={idx === 0}
                         />
@@ -307,7 +303,7 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
 
           {/* Dots */}
           <div className="flex justify-center gap-2 mt-4 pb-3">
-            {images?.data.map((_: any, index: number) => (
+            {imageUrls.map((_: string, index: number) => (
               <button
                 key={index}
                 onClick={() => api?.scrollTo(index)}

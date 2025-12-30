@@ -5,8 +5,5 @@ export type HomeImageType = {
     active: boolean;
     order: number;
     productSlug: string;
-    image: {
-        id: number;
-        url: string;
-    };
+    imageUrl?: string[] | string;
 };

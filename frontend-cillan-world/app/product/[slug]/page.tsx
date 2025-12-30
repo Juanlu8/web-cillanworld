@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { getProductBySlug, getProducts } from '@/lib/strapi-server';
 import ProductPageClient from './ProductPageClient';
 import type { Metadata } from 'next';
+import type { ProductType } from '@/types/product';
+import { getProductImageUrls } from '@/lib/product-images';
 
 type Params = { slug: string };
 
@@ -20,7 +22,7 @@ export async function generateMetadata(
 
   const title = product.attributes?.productName || 'Product';
   const description = product.attributes?.details || '';
-  const imageUrl = product.attributes?.images?.data?.[0]?.attributes?.url;
+  const imageUrl = getProductImageUrls(product as ProductType)[0];
 
   return {
     title: `${title} | Cillán World`,

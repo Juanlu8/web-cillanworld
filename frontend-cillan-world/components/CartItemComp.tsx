@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
-import { toMediaUrl } from "@/lib/media";
+import { getProductImageUrls } from "@/lib/product-images";
 
 interface CartItemProps {
   item: CartItemType;
@@ -20,9 +20,7 @@ const CartItemComp = ({ item }: CartItemProps) => {
   const router = useRouter();
 
   const attrs = item.product.attributes;
-  const firstImgUrl =
-    (attrs.images?.data?.[0]?.attributes?.url as string | undefined) ?? "";
-  const src = toMediaUrl(firstImgUrl);
+  const src = getProductImageUrls(item.product)[0] ?? "";
 
   const handleDec = useCallback(
     () => updateQuantity(attrs.slug, item.size, Math.max(1, item.quantity - 1)),

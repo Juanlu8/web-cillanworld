@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
-import { toMediaUrl } from "@/lib/media";
+import { getProductImageUrls } from "@/lib/product-images";
 
 // ✅ Definir el tipo de las props
 type Props = {
@@ -124,10 +124,7 @@ export default function CatalogClient({
         const slug = p?.attributes?.slug;
         const name =
           getLocalized(p?.attributes as any, "productName", lang) ?? "Product";
-        const firstImage = p?.attributes?.images?.data?.[0]?.attributes?.url as
-          | string
-          | undefined;
-        const imageUrl = firstImage ? toMediaUrl(firstImage) : undefined;
+        const imageUrl = getProductImageUrls(p)[0];
         
         // ✅ Añadir precio y disponibilidad
         const price = p?.attributes?.price ?? 0;

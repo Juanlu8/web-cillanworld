@@ -14,15 +14,7 @@ export type ProductType = {
     color: string;
     garmentCare: string;
     garmentCare_en: string;
-
-    images: {
-      data: {
-        id: number;
-        attributes: {
-          url: string;
-        };
-      }[];
-    };
+    imageUrl?: string[] | string;
 
     // NUEVO: lista de categorías (many-to-many)
     categories: {

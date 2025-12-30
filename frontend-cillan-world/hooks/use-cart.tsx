@@ -5,7 +5,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage, type PersistOptions } from "zustand/middleware";
 import { toast } from "sonner";
 import Image from "next/image";
-import { toMediaUrl } from "@/lib/media";
+import { getProductImageUrls } from "@/lib/product-images";
 import { CartItemType } from "@/types/cartItem";
 import { useTranslation } from "react-i18next";
 
@@ -65,9 +65,8 @@ export const useCart = create<CartStore>()(
               itemProduct.product?.attributes?.slug && item.size === size
         );
 
-        const firstUrl =
-          itemProduct.product?.attributes?.images?.data?.[0]?.attributes?.url;
-        const previewSrc = firstUrl ? toMediaUrl(firstUrl) : "/images/IMG_1.jpg";
+        const imageUrls = getProductImageUrls(itemProduct.product);
+        const previewSrc = imageUrls[0] || "/images/IMG_1.jpg";
         const nextLinesCount =
           existingItemIndex !== -1 ? currentItems.length : currentItems.length + 1;
 

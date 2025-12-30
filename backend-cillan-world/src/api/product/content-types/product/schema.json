@@ -68,6 +68,9 @@
       "relation": "manyToMany",
       "target": "api::category.category",
       "mappedBy": "products"
+    },
+    "imageUrl": {
+      "type": "json"
     }
   }
 }
