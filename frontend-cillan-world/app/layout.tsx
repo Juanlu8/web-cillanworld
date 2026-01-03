@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   description: "Welcome to Cillan World!",
   alternates: {
     canonical: "/",
+    languages: {
+      es: "/",
+      en: "/",
+      "x-default": "/",
+    },
   },
   openGraph: {
     type: "website",
@@ -37,10 +42,37 @@ export default async function RootLayout({
 }: { children: React.ReactNode }) {
   const cookieStore = await cookies(); // <- ahora sí, await
   const lng = (cookieStore.get("NEXT_LOCALE")?.value ?? "es") as "es" | "en";
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Cillan World",
+    url: siteUrl,
+    logo: `${siteUrl}/images/logo-top.webp`,
+    sameAs: ["https://www.instagram.com/sergio.cillan?igsh=MXkxNngwMjZkZXU1dQ=="],
+  };
+  const siteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Cillan World",
+    url: siteUrl,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/catalog/view-all?search={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
 
   return (
     <html lang={lng}>
       <body className="normal">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+        />
         <I18nProvider lang={lng}>
           {children}
           <Toaster position="top-right" />

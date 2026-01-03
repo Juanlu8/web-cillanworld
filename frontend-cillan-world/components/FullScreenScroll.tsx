@@ -108,7 +108,16 @@ const VerticalSnapCarousel: React.FC<Props> = ({ initialImages }) => {
 
   React.useEffect(() => {
     measureListHeight();
-    start();
+    const handleVisibility = () => {
+      if (document.hidden) {
+        pausedRef.current = true;
+        stopAnim();
+        return;
+      }
+      pausedRef.current = false;
+      start();
+    };
+    handleVisibility();
 
     const onResize = () => {
       const container = containerRef.current;
@@ -135,10 +144,12 @@ const VerticalSnapCarousel: React.FC<Props> = ({ initialImages }) => {
       }
     });
     if (listRef.current) ro.observe(listRef.current);
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       window.removeEventListener('resize', onResize);
       ro.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
       if (wrapTimeoutRef.current) {
         clearTimeout(wrapTimeoutRef.current);
       }
@@ -161,21 +172,22 @@ const VerticalSnapCarousel: React.FC<Props> = ({ initialImages }) => {
   const listOpacityClass = isWrapping ? 'opacity-0' : 'opacity-100';
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="relative h-screen overflow-hidden flex flex-col">
       <video
-        className="absolute scroll-container top-0 left-0 w-full h-full object-cover z-0"
+        className="absolute scroll-container inset-0 w-full h-full object-cover z-0"
         src="https://res.cloudinary.com/dsyvrdb00/video/upload/q_auto,f_auto/Miedos720_ydzx2l"
         autoPlay
         muted
         loop
         playsInline
+        preload="metadata"
       />
       <NavBar />
 
       <div
         ref={containerRef}
         className="
-          relative h-[100vh] overflow-y-auto
+          relative h-full overflow-y-auto
           snap-none
           px-4 py-24
         "

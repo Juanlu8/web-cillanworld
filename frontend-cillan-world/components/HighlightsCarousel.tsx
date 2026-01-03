@@ -61,15 +61,41 @@ export default function HighlightsCarousel({ initialProducts }: Props) {
   useEffect(() => {
     if (!api || orderedProducts.length <= 1) return;
 
-    const id = setInterval(() => {
-      if (api.canScrollNext()) {
-        api.scrollNext();
-      } else {
-        api.scrollTo(0);
-      }
-    }, 5000);
+    let intervalId: ReturnType<typeof setInterval> | null = null;
 
-    return () => clearInterval(id);
+    const start = () => {
+      if (intervalId) return;
+      intervalId = setInterval(() => {
+        if (document.hidden) return;
+        if (api.canScrollNext()) {
+          api.scrollNext();
+        } else {
+          api.scrollTo(0);
+        }
+      }, 5000);
+    };
+
+    const stop = () => {
+      if (!intervalId) return;
+      clearInterval(intervalId);
+      intervalId = null;
+    };
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        stop();
+        return;
+      }
+      start();
+    };
+
+    handleVisibility();
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [api, orderedProducts.length]);
 
   if (!orderedProducts || orderedProducts.length === 0) {
