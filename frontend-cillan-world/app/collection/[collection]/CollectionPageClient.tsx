@@ -111,7 +111,7 @@ export default function CollectionPageClient({ collection }: Props) {
     description: collectionDesc,
     url: canonical || undefined,
     image: imageUrls,
-    isPartOf: { "@type": "WebSite", name: "Cillán World" },
+    isPartOf: { "@type": "WebSite", name: "Cillan World" },
   };
   // --------------------------------------------------------------------------
 
@@ -142,7 +142,7 @@ export default function CollectionPageClient({ collection }: Props) {
           <div className="w-full flex justify-center pt-14 md:pt-10 relative z-10">
             <Image
               src="/images/logo-top.webp"
-              alt="Cillán"
+              alt="Cillan"
               width={1600}
               height={900}
               className="w-64 sm:w-[21rem] md:w-[26rem] lg:w-[31rem] object-contain transition duration-300 hover:scale-105 cursor-pointer"
