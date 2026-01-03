@@ -4,6 +4,12 @@ import FullScreenScroll from "@/components/FullScreenScroll";
 import HighlightsCarousel from "@/components/HighlightsCarousel";
 import Footer from "@/components/Footer";
 import NextImage from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Cillan World",
+  description: "Designer apparel and exclusive collections from Cillan World.",
+};
 
 export default async function HomePage() {
   // ✅ Fetch datos en el servidor (en paralelo)
@@ -17,6 +23,10 @@ export default async function HomePage() {
 
   return (
     <main>
+      <h1 className="sr-only">Cillan World</h1>
+      <p className="sr-only">
+        Designer apparel and exclusive collections from Cillan World.
+      </p>
       <NextImage
         src="/images/white-logo-cillan.webp"
         alt="Marca de agua"
