@@ -32,7 +32,6 @@ export async function generateMetadata(
       canonical: `/product/${slug}`,
     },
     openGraph: {
-      type: "product",
       url: canonical,
       siteName: "Cillan World",
       title,
