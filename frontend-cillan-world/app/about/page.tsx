@@ -18,7 +18,7 @@ export default function PrivacyPolicyPage() {
     return (
     <div className="relative text-justify">
       {/* Marca de agua */}
-      <div className="fixed pt-14 md:pt-10 left-0 w-full flex justify-center z-0">
+      <div className="fixed top-0 left-0 w-full flex justify-center static z-0 pt-14 md:pt-10">
         <NextImage
           src="/images/logo-top.webp"
           alt="Marca de agua"
@@ -31,7 +31,7 @@ export default function PrivacyPolicyPage() {
       <div className="z-0">
         <NavBar />
       </div>
-      <div className="px-8 md:px-10 lg:px-32 xl:px-[30rem] pt-48 md:pt-[17.5rem] pb-12 md:pb-24">
+      <div className="px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 pt-6 md:pt-[3.5rem] pb-12 md:pb-24">
         <div>
           <p className="dropcap-logo leading-7 text-base md:text-lg">
             {t("about.is_the")} <strong>{t("about.inner_world").toUpperCase()}</strong> {t("about.p_1_1")} <strong>{t("about.never").toUpperCase()}</strong> {t("about.p_1_2")}
