@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+﻿import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // Desactiva lint en el build; se puede ejecutar en CI por separado
@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // Permite imágenes externas desde Strapi
+  // Permite imケgenes externas desde Strapi
   images: {
     remotePatterns: [
       {
@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "tu-dominio-strapi.com", // cambia esto en producción
+        hostname: "tu-dominio-strapi.com", // cambia esto en producciИn
       },
       {
         protocol: "https",
@@ -28,12 +28,42 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "web-cillanworld.vercel.app", // si sirves imágenes desde el front
+        hostname: "web-cillanworld.vercel.app", // si sirves imケgenes desde el front
       },
     ],
   },
 
-  // Cabeceras de seguridad básicas
+  async redirects() {
+    return [
+      {
+        source: "/catalog",
+        destination: "/catalog/view-all",
+        permanent: true,
+      },
+      {
+        source: "/privacy-policy",
+        destination: "/privacyPolicy",
+        permanent: true,
+      },
+      {
+        source: "/terms-conditions",
+        destination: "/termsConditions",
+        permanent: true,
+      },
+      {
+        source: "/terms-and-conditions",
+        destination: "/termsConditions",
+        permanent: true,
+      },
+      {
+        source: "/about-us",
+        destination: "/about",
+        permanent: true,
+      },
+    ];
+  },
+
+  // Cabeceras de seguridad bケsicas
   async headers() {
     return [
       {
