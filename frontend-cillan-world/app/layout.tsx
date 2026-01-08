@@ -29,18 +29,12 @@ export const metadata: Metadata = {
     url: siteUrl,
     title: "Cillan World",
     description: "Welcome to Cillan World!",
-  icons: {
-    icon: "/favicon.ico",
-  },
     siteName: "Cillan World",
   },
   twitter: {
     card: "summary_large_image",
     title: "Cillan World",
     description: "Welcome to Cillan World!",
-  icons: {
-    icon: "/favicon.ico",
-  },
   },
 };
 
