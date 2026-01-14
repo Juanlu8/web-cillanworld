@@ -740,7 +740,7 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
 
             <h3 className="text-sm font-semibold mb-4">
 
-              <Link className="hover:underline" href="https://midominio.com">
+              <Link className="hover:underline" href="/" target="_blank" rel="noopener noreferrer">
 
                 {t("product.which_size")}
 

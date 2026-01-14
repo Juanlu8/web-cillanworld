@@ -56,6 +56,16 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/cookies-policy",
+        destination: "/cookiesPolicy",
+        permanent: true,
+      },
+      {
+        source: "/cookie-policy",
+        destination: "/cookiesPolicy",
+        permanent: true,
+      },
+      {
         source: "/about-us",
         destination: "/about",
         permanent: true,
