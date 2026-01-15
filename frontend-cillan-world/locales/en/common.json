@@ -166,7 +166,7 @@
     "security_retention": "Security and retention",
     "p6": "We apply TLS encryption, access controls, and periodic reviews to protect your data. We retain information only as long as necessary to provide the service and comply with legal obligations (e.g., invoices for five years).",
     "contact": "Contact",
-    "email": "Email:",
-    "address": "Address:"
+    "email": "Email",
+    "address": "Address"
   }
 }

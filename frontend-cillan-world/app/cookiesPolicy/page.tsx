@@ -20,7 +20,7 @@ export default function CookiesPolicyPage() {
           alt="Fondo anilla"
           width={943}
           height={943}
-          className="w-4/5 max-w-[450px] md:w-full md:max-w-[600px] h-auto opacity-20 select-none object-contain mt-0 md:mt-48 md:ms-[10.5rem]"
+          className="w-4/5 max-w-[450px] md:w-full md:max-w-[600px] h-auto opacity-20 select-none object-contain mt-0 md:mt-48"
         />
       </div>
 

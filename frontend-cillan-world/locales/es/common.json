@@ -163,7 +163,7 @@
     "security_retention": "Seguridad y conservacion",
     "p6": "Aplicamos cifrado TLS, control de accesos y revisiones periodicas para proteger tus datos. Conservamos la informacion el tiempo imprescindible para prestar el servicio y cumplir obligaciones legales (p. ej., facturas durante cinco anos).",
     "contact": "Contacto",
-    "email": "Email:",
-    "address": "Direccion:"
+    "email": "Email",
+    "address": "Direccion"
   }
 }
