@@ -54,37 +54,80 @@ export default function PrivacyPolicyPage() {
           </header>
 
           <p className="text-gray-800">
-            {t("privacy_policy.p1_1")} <strong>{COMPANY_NAME}</strong> ({COMPANY_ID}) {t("privacy_policy.p1_2")} {COMPANY_ADDRESS} {t("privacy_policy.p1_3")}{" "}
-            <strong>{CONTACT_EMAIL}</strong>. {t("privacy_policy.p1_4")}
+            {t("privacy_policy.p1")}
           </p>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.data_collected")}</h2>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle1")}</h2>
+             <p className="text-gray-800">
+                {t("privacy_policy.p2")}
+              </p>
             <ul className="list-disc list-inside text-gray-800 space-y-1">
               <li>{t("privacy_policy.p2_1")}</li>
               <li>{t("privacy_policy.p2_2")}</li>
-              <li>{t("privacy_policy.p2_3")}</li>
-              <li>{t("privacy_policy.p2_4")}</li>
             </ul>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.legal_base")}</h2>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle2")}</h2>
+             <p className="text-gray-800">
+                {t("privacy_policy.p3")}
+              </p>
             <ul className="list-disc list-inside text-gray-800 space-y-1">
               <li>{t("privacy_policy.p3_1")}</li>
               <li>{t("privacy_policy.p3_2")}</li>
-              <li>{t("privacy_policy.p3_4")}</li>
               <li>{t("privacy_policy.p3_3")}</li>
+              <li>{t("privacy_policy.p3_4")}</li>
+              <li>{t("privacy_policy.p3_5")}</li>
+              <li>{t("privacy_policy.p3_6")}</li>
             </ul>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.data_processors")}</h2>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle3")}</h2>
+             <p className="text-gray-800">
+                {t("privacy_policy.p4")}
+              </p>
             <ul className="list-disc list-inside text-gray-800 space-y-1">
               <li>{t("privacy_policy.p4_1")}</li>
               <li>{t("privacy_policy.p4_2")}</li>
+              <li>{t("privacy_policy.p4_3")}</li>
+              <li>{t("privacy_policy.p4_4")}</li>
+              <li>{t("privacy_policy.p4_5")}</li>
             </ul>
-            <p className="text-gray-800 mt-2">{t("privacy_policy.p4_3")}</p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle4")}</h2>
+             <p className="text-gray-800">
+                {t("privacy_policy.p5")}
+              </p>
+            <ul className="list-disc list-inside text-gray-800 space-y-1">
+              <li>{t("privacy_policy.p5_1")}</li>
+              <li>{t("privacy_policy.p5_2")}</li>
+              <li>{t("privacy_policy.p5_3")}</li>
+              <li>{t("privacy_policy.p5_4")}</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle5")}</h2>
+             <p className="text-gray-800">
+                {t("privacy_policy.p6")}
+             </p>
+            <ul className="list-disc list-inside text-gray-800 space-y-1">
+              <li>{t("privacy_policy.p6_1")}</li>
+            </ul>
+            <p className="text-gray-800">
+                {t("privacy_policy.p6_2")}
+             </p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle6")}</h2>
+             <p className="text-gray-800">
+                {t("privacy_policy.p7")}
+             </p>
           </div>
 
           <div>
@@ -106,10 +149,61 @@ export default function PrivacyPolicyPage() {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.contact")}</h2>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle7")}</h2>
+             <p className="text-gray-800">
+                {t("privacy_policy.p8_1")}
+             </p>
             <ul className="list-disc list-inside text-gray-800 space-y-1">
-              <li>{t("privacy_policy.email")}: {CONTACT_EMAIL}</li>
-              <li>{t("privacy_policy.address")}: {COMPANY_ADDRESS}</li>
+              <li>{t("privacy_policy.p8_2")}</li>
+              <li>{t("privacy_policy.p8_3")}</li>
+              <li>{t("privacy_policy.p8_4")}</li>
+              <li>{t("privacy_policy.p8_5")}</li>
+              <li>{t("privacy_policy.p8_6")}</li>
+            </ul>
+            <p className="text-gray-800">
+                {t("privacy_policy.p8_7")}
+             </p>
+             <p className="text-gray-800">
+                {t("privacy_policy.p8_8")}
+             </p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle8")}</h2>
+            <p className="text-gray-800">
+              {t("privacy_policy.p9")}
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle8")}</h2>
+            <p className="text-gray-800">
+              {t("privacy_policy.p9")}
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle9")}</h2>
+            <p className="text-gray-800">
+              {t("privacy_policy.p10")}
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle10")}</h2>
+            <p className="text-gray-800">
+              {t("privacy_policy.p11")}
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("privacy_policy.subtitle11")}</h2>
+            <p className="text-gray-800">
+              {t("privacy_policy.p12")}
+            </p>
+            <ul className="list-disc list-inside text-gray-800 space-y-1">
+              <li>{t("privacy_policy.email")}</li>
+              <li>{t("privacy_policy.address")}</li>
             </ul>
           </div>
         </section>

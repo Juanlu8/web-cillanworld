@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import NextImage from "next/image";
 import Link from "next/link";
 
-const COMPANY_NAME = "Cillan World S.L.";
+const COMPANY_NAME = "mundo CILLÁN";
 const COMPANY_ADDRESS = "Calle de la Moda 123, 28001 Madrid, España";
 const CONTACT_EMAIL = "cillan.world@gmail.com";
 const LOGISTICS_PROVIDER = "Correos Express Paquetería Urgente, S.A.";
@@ -54,64 +54,89 @@ export default function TermsConditionsPage() {
           </header>
 
           <p className="text-gray-800">
-            {t("terms_conditions.p1_1")} {COMPANY_NAME} {t("terms_conditions.p1_2")} {COMPANY_ADDRESS}.
-            {t("terms_conditions.p1_3")}
+            {t("terms_conditions.p1")}
           </p>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.contact")}</h2>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle1")}</h2>
             <ul className="list-disc list-inside text-gray-800 space-y-1">
+              <p className="text-gray-800">
+                {t("terms_conditions.p2")}
+              </p>
               <li>{t("terms_conditions.emails")}: {CONTACT_EMAIL}</li>
               <li>{t("terms_conditions.fiscal_direction")}: {COMPANY_ADDRESS}</li>
             </ul>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.selling_conditions")}</h2>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle2")}</h2>
             <ul className="list-disc list-inside text-gray-800 space-y-1">
-              <li>{t("terms_conditions.p2_1")}</li>
-              <li>{t("terms_conditions.p2_2")}</li>
-              <li>{t("terms_conditions.p2_3")}</li>
+              <p className="text-gray-800">{t("terms_conditions.p3_1")}</p>
+              <p className="text-gray-800">{t("terms_conditions.p3_2")}</p>
             </ul>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.shipping_returns")}</h2>
-            <p className="text-gray-800">
-              {t("terms_conditions.p3_1")} {LOGISTICS_PROVIDER}. {t("terms_conditions.p3_2")}
-              {CONTACT_EMAIL}. {t("terms_conditions.p3_3")}
-            </p>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle3")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P4_1")}</p>
+            <p className="text-gray-800">{t("terms_conditions.P4_2")}</p>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.intellectual_property")}</h2>
-            <p className="text-gray-800">
-              {t("terms_conditions.p4_1")} {COMPANY_NAME} {t("terms_conditions.p4_2")}
-            </p>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle4")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P5_1")}</p>
+            <p className="text-gray-800">{t("terms_conditions.P5_2")}</p>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.data_protection")}</h2>
-            <p className="text-gray-800">
-              {t("terms_conditions.p5")}{" "}
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle5")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P6_1")}</p>
+            <p className="text-gray-800">{t("terms_conditions.P6_2")}</p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle6")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P7_1")}</p>
+            <p className="text-gray-800">{t("terms_conditions.P7_2")}</p>
+            <p className="text-gray-800">{t("terms_conditions.P7_2")}</p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle7")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P7")}</p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle8")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P8_1")}</p>
+            <p className="text-gray-800">{t("terms_conditions.P8_2")}</p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle9")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P9")}{" "}
               <Link href="/privacyPolicy" className="text-blue-600 underline">
-                {t("bag.policy_privacy")}
+                {t("terms_conditions.privacy_policy")}
               </Link>.
             </p>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.applicable_law")}</h2>
-            <p className="text-gray-800">
-              {t("terms_conditions.p6")}
-            </p>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle10")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P10")}</p>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.contact_for_claims")}</h2>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle11")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P11")}</p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">{t("terms_conditions.subtitle12")}</h2>
+            <p className="text-gray-800">{t("terms_conditions.P12")}</p>
             <ul className="list-disc list-inside text-gray-800 space-y-1">
-              <li>{CONTACT_EMAIL}</li>
-              <li>{COMPANY_ADDRESS}</li>
+              <p className="text-gray-800">{t("terms_conditions.p12_1")}</p>
+              <p className="text-gray-800">{t("terms_conditions.p12_2")}</p>
             </ul>
           </div>
         </section>

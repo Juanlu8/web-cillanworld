@@ -42,13 +42,13 @@ const Footer = () => {
       {/* Contenido */}
       <div className="relative z-10 w-full max-w-6xl px-6 pt-16 pb-12 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-48 mx-auto">
         {/* Enlaces */}
-        <div className="flex flex-col items-start md:items-start space-y-2 text-sm sm:text-left md:text-left">
+        <div className="flex flex-col items-center md:items-start space-y-2 text-sm text-center md:text-left">
           <Link href="#" onClick={() => goToAbout()} className="hover:underline">{t("navbar.about")}</Link>
           <Link href="https://www.instagram.com/sergio.cillan?igsh=MXkxNngwMjZkZXU1dQ==" target="_blank" rel="noopener noreferrer" className="hover:underline">instagram</Link>
-          <Link href="#" onClick={() => goToTermsConditions()} className="hover:underline">{t("general.terms_conditions")}</Link>
           <Link href="#" onClick={() => goToLegalNotice()} className="hover:underline">{t("general.legal_notice")}</Link>
           <Link href="#" onClick={() => goToCookiesPolicy()} className="hover:underline">{t("general.cookies_policy")}</Link>
           <Link href="#" onClick={() => goToPrivacyPolicy()} className="hover:underline">{t("bag.privacy_policy")}</Link>
+          <Link href="#" onClick={() => goToTermsConditions()} className="hover:underline">{t("general.terms_conditions")}</Link> 
           <p>{t("general.contact")}: cillan.world@gmail.com</p>
         </div>
 
@@ -75,8 +75,8 @@ const Footer = () => {
       </div>
 
       {/* Créditos */}
-      <div className="absolute bottom-4 left-4 z-20 flex items-end">
-        <p className='flex flex-col items-start md:items-start space-y-2 text-sm sm:text-left md:text-left'>
+      <div className="absolute bottom-4 left-4 z-20 flex items-end max-w-56">
+        <p className='flex flex-col items-start md:items-start space-y-2 text-xs sm:text-left md:text-left'>
           © {new Date().getFullYear()} Cillan World. {t("general.rights_reserved")}
         </p>
       </div>
