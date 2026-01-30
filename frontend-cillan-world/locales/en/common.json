@@ -62,6 +62,12 @@
     "materials": "Materials",
     "garment_care": "Garment Care"
   },
+  "footer": {
+    "title": "Contact Cillán for any inquiries",
+    "comments": "Enter your comments",
+    "send": "SEND",
+    "email": "Enter your email"
+  },
   "about": {
     "is_the": "is the",
     "inner_world": "inner world",

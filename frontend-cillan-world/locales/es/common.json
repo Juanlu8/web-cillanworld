@@ -52,6 +52,12 @@
   "collection": {
     "no_images_found": "No se han encontrado imágenes para esta colección"
   },
+  "footer": {
+    "title": "Contacta con Cillán para cualquier consulta",
+    "comments": "Introduce tus comentarios",
+    "send": "ENVIAR",
+    "email": "Introduce tu correo electrónico"
+  },
   "product": {
     "add_to_bag": "añadir a la cesta",
     "loading_product": "Cargando producto...",
