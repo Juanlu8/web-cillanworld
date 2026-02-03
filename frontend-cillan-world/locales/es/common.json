@@ -66,7 +66,14 @@
     "select_size_validation": "Por favor, seleccione una talla antes de añadir a la cesta",
     "details": "Detalles",
     "materials": "Materiales",
-    "garment_care": "Cuidado de la prenda"
+    "garment_care": "Cuidado de la prenda",
+    "share": "Compartir",
+    "copy_link": "Copiar link",
+    "copied": "Enlace copiado",
+    "share_whatsapp": "Compartir en WhatsApp",
+    "share_x": "Compartir en X",
+    "share_instagram": "Compartir en Instagram",
+    "share_pinterest": "Compartir en Pinterest"
   },
   "about": {
     "is_the": "es el",

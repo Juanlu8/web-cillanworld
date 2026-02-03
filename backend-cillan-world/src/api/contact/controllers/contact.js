@@ -1,13 +1,11 @@
 'use strict';
 
-const nodemailer = require('nodemailer');
-
 module.exports = {
   async sendEmail(ctx) {
     try {
       const { from, comments } = ctx.request.body;
 
-      // Validación
+      // Validacion
       if (!from || !comments) {
         return ctx.badRequest('Email y comentarios son obligatorios');
       }
@@ -15,42 +13,51 @@ module.exports = {
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(from)) {
-        return ctx.badRequest('Formato de email inválido');
+        return ctx.badRequest('Formato de email invalido');
       }
 
-      // Configurar transporter de nodemailer
-      // IMPORTANTE: Configura estas variables de entorno en tu .env
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // true para 465, false para otros puertos
-        auth: {
-          user: process.env.EMAIL_USER || 'cillan.world@gmail.com',
-          pass: process.env.EMAIL_PASSWORD // Contraseña de aplicación de Gmail
+      const apiKey = process.env.RESEND_API_KEY;
+      if (!apiKey) {
+        console.error('Falta RESEND_API_KEY en el entorno');
+        return ctx.internalServerError('Servicio de email no configurado');
+      }
+
+      const toEmail = process.env.CONTACT_TO_EMAIL || 'cillan.world@gmail.com';
+      const fromEmail = process.env.CONTACT_FROM_EMAIL || 'onboarding@resend.dev';
+
+      const subject = `Nuevo mensaje desde el formulario de la web - ${from}`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>Nuevo mensaje desde el formulario de la web</h2>
+          <p><strong>De:</strong> ${from}</p>
+          <p><strong>Mensaje:</strong></p>
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px;">
+            ${comments.replace(/\n/g, '<br>')}
+          </div>
+        </div>
+      `;
+
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
         },
-        tls: {
-          rejectUnauthorized: false // Ignora errores de certificados en desarrollo
-        }
+        body: JSON.stringify({
+          from: fromEmail,
+          to: [toEmail],
+          subject,
+          html,
+          text: comments,
+          replyTo: from
+        })
       });
 
-      // Enviar email
-      await transporter.sendMail({
-        from: from,
-        to: 'cillan.world@gmail.com',
-        subject: `Nuevo mensaje desde el formulario de la web - ${from}`,
-        text: comments,
-        html: `
-          <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2>Nuevo mensaje desde el formulario de la web</h2>
-            <p><strong>De:</strong> ${from}</p>
-            <p><strong>Mensaje:</strong></p>
-            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px;">
-              ${comments.replace(/\n/g, '<br>')}
-            </div>
-          </div>
-        `,
-        replyTo: from
-      });
+      if (!response.ok) {
+        const body = await response.text();
+        console.error('Error al enviar email:', response.status, body);
+        return ctx.internalServerError('Error al enviar el email');
+      }
 
       ctx.send({ message: 'Email enviado correctamente' });
     } catch (error) {

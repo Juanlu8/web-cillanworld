@@ -60,7 +60,14 @@
     "select_size_validation": "Please select a size before adding to the bag",
     "details": "Details",
     "materials": "Materials",
-    "garment_care": "Garment Care"
+    "garment_care": "Garment Care",
+    "share": "Share",
+    "copy_link": "Copy link",
+    "copied": "Link copied",
+    "share_whatsapp": "Share on WhatsApp",
+    "share_x": "Share on X",
+    "share_instagram": "Share on Instagram",
+    "share_pinterest": "Share on Pinterest"
   },
   "footer": {
     "title": "Contact Cillán for any inquiries",

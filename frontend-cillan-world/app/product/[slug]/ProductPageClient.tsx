@@ -230,6 +230,8 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
 
   const imgRef = useRef<HTMLImageElement | null>(null);
 
+  const shareMenuRef = useRef<HTMLDivElement | null>(null);
+
   const { t, i18n } = useTranslation();
 
   const currentLanguage = (i18n.resolvedLanguage || i18n.language || "es")
@@ -346,6 +348,12 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
 
   const [showValidation, setShowValidation] = useState(false);
 
+  const [shareUrl, setShareUrl] = useState("");
+
+  const [copied, setCopied] = useState(false);
+
+  const [showShareOptions, setShowShareOptions] = useState(false);
+
   const { addItem } = useCart();
 
 
@@ -365,6 +373,96 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
     }
 
   }, [product]);
+
+  useEffect(() => {
+
+    const base =
+
+      process.env.NEXT_PUBLIC_SITE_URL ||
+
+      (typeof window !== "undefined" ? window.location.origin : "");
+
+    if (!base || !product?.attributes?.slug) return;
+
+    setShareUrl(`${base.replace(/\/$/, "")}/product/${product.attributes.slug}`);
+
+  }, [product?.attributes?.slug]);
+
+  const handleCopyLink = async () => {
+
+    if (!shareUrl) return;
+
+    try {
+
+      await navigator.clipboard.writeText(shareUrl);
+
+    } catch {
+
+      const textarea = document.createElement("textarea");
+
+      textarea.value = shareUrl;
+
+      textarea.style.position = "fixed";
+
+      textarea.style.opacity = "0";
+
+      document.body.appendChild(textarea);
+
+      textarea.select();
+
+      document.execCommand("copy");
+
+      document.body.removeChild(textarea);
+
+    }
+
+    setCopied(true);
+
+    window.setTimeout(() => setCopied(false), 1500);
+
+  };
+
+  const handleInstagramShare = async () => {
+
+    if (!shareUrl) return;
+
+    await handleCopyLink();
+
+    window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+
+  };
+
+
+
+  useEffect(() => {
+
+    const handleClickOutside = (event: MouseEvent) => {
+
+      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+
+        setShowShareOptions(false);
+
+      }
+
+    };
+
+
+
+    if (showShareOptions) {
+
+      document.addEventListener("mousedown", handleClickOutside);
+
+    }
+
+
+
+    return () => {
+
+      document.removeEventListener("mousedown", handleClickOutside);
+
+    };
+
+  }, [showShareOptions]);
 
 
 
@@ -732,22 +830,93 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
 
           <h2 className="text-4xl font-bold text-center">{price}€</h2>
 
-
-
-          {/* Tallas */}
-
-          <div>
-
-            <h3 className="text-sm font-semibold mb-4">
-
+          {/* Header con título y botón compartir */}
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-semibold">
               <Link className="hover:underline" href="/" target="_blank" rel="noopener noreferrer">
-
                 {t("product.which_size")}
-
               </Link>
-
             </h3>
 
+            {/* Botón de compartir */}
+            <div className="relative" ref={shareMenuRef}>
+              <button
+                type="button"
+                onClick={() => setShowShareOptions((prev) => !prev)}
+                className="w-10 h-10 border-0.5 rounded-md flex items-center justify-center hover:text-white transition cursor-pointer"
+                aria-label={t("product.share")}
+              >
+                <Image
+                  src="/images/participacion.png"
+                  alt="Compartir"
+                  width={20}
+                  height={20}
+                  className="w-5 h-5"
+                />
+              </button>
+              {showShareOptions && (
+                <div className="absolute right-0 mt-2 w-52 border border-black bg-white rounded-md shadow-sm z-20">
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="w-full text-left px-3 py-2 text-xs font-semibold uppercase tracking-wide hover:bg-black hover:text-white transition"
+                  >
+                    {copied ? t("product.copied") : t("product.copy_link")}
+                  </button>
+                  {shareUrl && (
+                    <>
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(
+                          `${productName} - ${shareUrl}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block px-3 py-2 text-xs font-semibold uppercase tracking-wide hover:bg-black hover:text-white transition"
+                        aria-label={t("product.share_whatsapp")}
+                      >
+                        WhatsApp
+                      </a>
+                      <a
+                        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                          shareUrl
+                        )}&text=${encodeURIComponent(productName ?? "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block px-3 py-2 text-xs font-semibold uppercase tracking-wide hover:bg-black hover:text-white transition"
+                        aria-label={t("product.share_x")}
+                      >
+                        X
+                      </a>
+                      <button
+                        type="button"
+                        onClick={handleInstagramShare}
+                        className="w-full text-left px-3 py-2 text-xs font-semibold uppercase tracking-wide hover:bg-black hover:text-white transition"
+                        aria-label={t("product.share_instagram")}
+                      >
+                        Instagram
+                      </button>
+                      <a
+                        href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(
+                          shareUrl
+                        )}&media=${encodeURIComponent(imageUrls[0] || "")}&description=${encodeURIComponent(
+                          productName ?? ""
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block px-3 py-2 text-xs font-semibold uppercase tracking-wide hover:bg-black hover:text-white transition"
+                        aria-label={t("product.share_pinterest")}
+                      >
+                        Pinterest
+                      </a>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Tallas */}
+          <div>
             <div className="grid grid-cols-4 gap-2">
 
               {["S", "M", "L", "XL"].map((size) => (
@@ -841,10 +1010,7 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
               </p>
 
             )}
-
           </div>
-
-
 
           {/* Secciones de detalle */}
 
