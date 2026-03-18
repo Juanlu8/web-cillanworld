@@ -25,9 +25,9 @@ module.exports = {
       const { orderId, customerName, customerEmail, customerPhone, totalAmount } = ctx.request.body;
 
       // Validar datos
-      if (!orderId || !customerEmail || !totalAmount || totalAmount <= 0) {
+      if (!orderId || !customerEmail) {
         ctx.response.status = 400;
-        return { error: 'Missing required fields: orderId, customerEmail, totalAmount' };
+        return { error: 'Missing required fields: orderId, customerEmail' };
       }
 
       // Obtener la order de Strapi
@@ -42,6 +42,33 @@ module.exports = {
         ctx.response.status = 400;
         return { error: 'Order already paid' };
       }
+
+      const resolveOrderTotal = async (orderData) => {
+        const orderProducts = Array.isArray(orderData?.products) ? orderData.products : [];
+        const productIds = orderProducts
+          .map((item) => Number(item?.id))
+          .filter((id) => Number.isFinite(id) && id > 0);
+
+        if (productIds.length === 0) {
+          return null;
+        }
+
+        const products = await strapi.entityService.findMany('api::product.product', {
+          filters: { id: { $in: productIds } },
+          fields: ['id', 'price'],
+        });
+
+        const priceById = new Map(
+          (products || []).map((product) => [Number(product.id), Number(product.price) || 0])
+        );
+
+        return orderProducts.reduce((sum, item) => {
+          const id = Number(item?.id);
+          const quantity = Number(item?.quantity) || 1;
+          const price = priceById.get(id) || 0;
+          return sum + price * quantity;
+        }, 0);
+      };
 
       // Obtener el servicio TPV
       const tpvService = strapi.service('api::order.tpv');
@@ -60,10 +87,14 @@ module.exports = {
         phone: customerPhone || '',
       };
 
-      const normalizedTotalAmount = Number(totalAmount);
+      const computedTotal = await resolveOrderTotal(order);
+      const normalizedTotalAmount = Number.isFinite(computedTotal) && computedTotal !== null
+        ? computedTotal
+        : Number(totalAmount);
+
       if (!Number.isFinite(normalizedTotalAmount) || normalizedTotalAmount <= 0) {
         ctx.response.status = 400;
-        return { error: 'Invalid totalAmount value' };
+        return { error: 'Order total is zero. Please check product prices.' };
       }
 
       const orderForPayment = {
