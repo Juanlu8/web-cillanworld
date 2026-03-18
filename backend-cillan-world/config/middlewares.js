@@ -3,10 +3,10 @@ module.exports = ({ env }) => [
   {
     name: "strapi::cors",
     config: {
-      origin: env.array("CORS_ORIGINS", ["http://localhost:3000"]),
+      origin: ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"],
+      credentials: true,
       headers: ["Content-Type", "Authorization", "Origin", "Accept"],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
-      // credentials: env.bool("CORS_CREDENTIALS", false),
     },
   },
   "strapi::security",

@@ -1,0 +1,2605 @@
+TPV-Virtual
+Guía SIS
+Versión: 2.2
+Fecha: 05/12/2019
+Referencia: RS.TE.CEL.MAN.0036
+Redsys, Servicios de Procesamiento, S.L. – c/ Francisco Sancha, 12 – 28034 Madrid (España)
+www.redsys.es
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:2 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Control de versión
+Versión Fecha Afecta Breve descripción del cambio
+1.0 01/06/2018 TODO Versión Inicial
+Plazo de validez de Preautorización,
+.s
+o 1.1 10/01/2019
+Punto 4.4, Punto 4.5
+importe 0 en Autenticación e inclusión
+re y Punto 12.
+c re del punto 12 (Guías de referencia).
+t
+a
+n
+ó Se incluye el tipo de operación
+is
+e 1.2 29/01/2019 Punto 4.1.1
+o
+c Anulación de Autorización.
+a
+tn
+e v Se modifica el importe a confirmar en
+,n
+ó ic 1.3 06/02/2019 Punto 4.5.1 las operaciones de confirmación de
+c
+u d autenticación.
+o
+rp
+e
+r u Añadida información sobre EMV 3DS y
+s
+a d PSD2
+ib
+ih
+o rp Añadida referencia a guía de integración
+a 2.0 27/03/2019 Varios puntos
+d REST.
+e
+u
+Q
+.s Eliminada referencia a guía de PUCE.
+y
+s
+d
+e
+R
+a
+e
+c
+e
+n Añadido comentario sobre
+e
+tre
+p
+2.1 04/10/2019 Punto 9
+Autenticación Delegada
+o
+tn
+e
+m 2.2 05/12/2019 Punto 10
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:3 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+ÍNDICE
+INTRODUCCIÓN 5
+CARACTERÍSTICAS PRINCIPALES DEL TPV-VIRTUAL 6
+.s MODELOS DE TPV-VIRTUAL 8
+o
+re
+c
+re
+t
+a n 3.1 MODELOS CON INTEGRACIÓN DEL COMERCIO 8
+ó
+is
+e
+3.1.1 MODELO ESTÁNDAR 8
+c
+o 3.1.2 INTEGRACIÓN MEDIANTE MÓDULO DE PAGO. 10
+a
+tn
+e
+3.1.3 INTEGRACIÓN IN-APP. 10
+v
+,n 3.1.4 INTEGRACIÓN PUCE 10
+ó
+ic
+c 3.2 MODELOS SIN INTEGRACIÓN DE TIENDA VIRTUAL 10
+u
+d
+o rp 3.2.1 PAGO POR E-MAIL/SMS (PAYGOLD) 10
+e r
+u
+3.2.2 PAGO MANUAL (PAGO MOTO) 11
+s
+a
+d
+ib
+ih TIPOS DE OPERACIONES 12
+o
+rp
+a
+d
+e
+u Q 4.1 AUTORIZACIÓN 12
+.s
+y 4.1.1 ANULACIÓN DE AUTORIZACIÓN 12
+s
+d
+e R 4.2 DEVOLUCIÓN (PARCIAL O TOTAL) 12
+a
+e 4.3 DEVOLUCIÓN SIN ORIGINAL 12
+c
+e
+n
+e
+4.4 PREAUTORIZACIÓN 13
+tre
+p 4.4.1 CONFIRMACIÓN DE PREAUTORIZACIÓN 13
+o
+tn 4.4.2 ANULACIÓN DE PREAUTORIZACIÓN 13
+e
+m
+u
+4.5 AUTENTICACIÓN 13
+c
+o d 4.5.1 CONFIRMACIÓN DE AUTENTICACIÓN 13
+e
+ts 4.6 ABONO DE PREMIO DE APUESTAS 14
+e
+e
+d
+la
+u
+tc TIPOS DE NOTIFICACIONES/RESPUESTAS 15
+e
+le
+tn
+i
+d
+a d 5.1 MODELOS CON INTEGRACIÓN DEL COMERCIO 15
+e
+ip
+o 5.1.1 ESTÁNDAR – REDIRECCIÓN 15
+rp
+a 5.1.2 ESTÁNDAR – HOST TO HOST 15
+L
+5.1.3 INTEGRACIÓN MEDIANTE MÓDULO DE PAGO 16
+5.1.4 INTEGRACIÓN IN-APP 16
+5.1.5 INTEGRACIÓN PUCE 16
+5.2 MODELOS SIN INTEGRACIÓN DEL COMERCIO 17
+MÉTODOS DE PAGO 18
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:4 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+6.1 PAGO CON TARJETA 18
+6.2 WALLET 18
+6.2.1 PAYPAL 18
+6.2.2 APPLEPAY 18
+6.2.3 MASTERPASS 18
+6.3 PAGOS CON CUENTA 18
+6.3.1 BIZUM 18
+6.3.2 TRANSFERENCIA 19
+.s
+o
+re
+c SERVICIOS DE VALOR AÑADIDO 20
+re
+t
+a
+n
+ó
+is e 7.1 PAGO 1-CLICK / TOKENIZACIÓN 20
+c
+o
+a
+7.2 DCC 20
+tn
+e
+v
+,n
+ó MÓDULO DE ADMINISTRACIÓN DEL TPV-VIRTUAL 21
+ic
+c
+u
+d
+o
+rp
+e IMPLICACIONES DE LA PSD2 (AVANCE) 22
+r
+u
+s
+a
+d
+ib
+ih PREGUNTAS FRECUENTES 24
+o
+rp
+a
+d
+e
+u ANEXOS 26
+Q
+.s
+y
+s
+d
+e
+R 11.1 IDIOMAS 26
+a
+e
+c
+11.2 MONEDAS 26
+e
+n
+e
+tre
+p
+o GLOSARIO 27
+tn
+e
+m
+u
+c
+o 12.1 PCI-DSS 27
+d
+e
+ts 12.2 PROTOCOLO PUC 27
+e
+e
+d
+12.3 3D SECURE 27
+la
+u 12.4 SCA 27
+tc
+e le 12.5 PSD2 28
+tn
+i
+d
+12.6 ENTIDAD ADQUIRENTE 28
+a
+d
+e
+ip
+o
+rp GUÍAS DE REFERENCIA 29
+a
+L
+13.1 INTEGRACIÓN DEL TPV-VIRTUAL 29
+13.2 MÉTODOS DE PAGO 29
+13.3 SERVICIOS DE VALOR AÑADIDO 29
+13.4 MÓDULO DE ADMINISTRACIÓN DEL SIS 29
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:5 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Introducción
+El TPV Virtual es un sistema que permite a un comercio con tienda online recibir los pagos de las compras
+que realizan sus clientes.
+El TPV Virtual de Redsys ofrece a los comercios una plataforma de comercio electrónico fiable, potente y
+sencilla de integrar con su página web. Ofrece distintos tipos de conexión que se adaptan a las
+.s necesidades de cualquier tipo de comercio. Además, dispone de módulos de conexión gratuitos para las
+o
+re principales tiendas online (Prestashop, Woocommerce, Magento, Oscommerce, Opencart, Virtuemart,
+c
+re
+t
+a
+Zencart).
+n
+ó
+is Permite integrar diferentes métodos de pago en la web del comercio, pago con tarjetas tanto de débito
+e
+c
+o como de crédito y de diferentes esquemas (Visa, Máster, Amex, Diners, JCB, UnionPay), Wallets,
+a
+tn
+e transferencia. Dispone de diferentes tipos de pago, pago 1-click y tokenización, pagos recurrentes,
+v
+,n suscripciones, pago telefónico, envíos de solicitud de cobro por e-mail/SMS.
+ó
+ic
+c
+u
+d Es un TPV Virtual Seguro, que dispone de Autenticación 3D Secure, Servicios de fraude y Control de
+o
+rp
+e Riesgos. Facilita al comercio el cumplimiento de PCI-DSS.
+r
+u
+s
+a Es una plataforma multidivisa y multilenguaje, personalizable para adaptarse a la imagen del comercio.
+d
+ib
+ih Dispone de una herramienta de gestión que permite la consulta y control de las ventas, generar informes
+o
+rp
+y estadísticas.
+a
+d
+e
+u
+Q Todas estas funcionalidades son combinables, ofreciendo una solución personalizada para las necesidades
+.s
+y de cada comercio.
+s
+d
+e
+R
+a Además, cuenta con un servicio de soporte 24*7 para resolver cualquier consulta/incidencia.
+e
+c
+e
+n e Para la contratación del TPV Virtual el comercio tiene que dirigirse a su Entidad Bancaria que será la que
+tre
+p establezca las condiciones de contratación. Para formalizar dicha contratación la entidad solicitará al
+o
+tn comercio algunos datos básicos de su negocio, y podrá solicitarle ver diseñada previamente la página web
+e
+m
+u de su comercio.
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+NOTA IMPORTANTE: Con motivo de la entrada en pleno vigor de la directiva de Europea de Pagos PSD2
+u
+tc a lo largo de 2020, se avanzan en esta guía algunas nuevas características y especificaciones técnicas
+e
+le
+tn que estarán disponibles a futuro (en 2020), para facilitar la preparación de los trabajos en aquellos
+i
+d a casos de comercios que deseen incorporar ciertas posibilidades a su operativa de pago, especialmente
+d
+e
+ip en lo referente a la gestión de las autenticaciones y exenciones a la autenticación que la PSD2
+o
+rp
+contempla. Dichos epígrafes están marcados en su caso como “AVANCE”.
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:6 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Características principales del TPV-Virtual
+A continuación, se enumeran las principales características del TPV Virtual:
+• Fácil de integrar: El TPV Virtual ofrece una serie de oportunidades que permiten al comercio
+crear su tienda web en función de sus necesidades.
+o Integración propia: El comercio puede realizar su integración propia. Esta opción
+.s
+o requiere un mayor conocimiento técnico, pero ofrece mayores posibilidades de
+re
+c re configuración y personalización en la realización de pagos en su tienda web. Además,
+t
+a
+n
+Redsys pone a disposición de los comercios una seria de API’s que proporcionan
+ó
+is grandes facilidades a los comercios para realizar la integración del TPV Virtual en su
+e
+c
+o tienda web.
+a
+tn
+e
+v o Integración con módulo de pago: Redsys proporciona una serie de módulos gratuitos
+,n
+ó ic para cualquier comercio que tenga su tienda web en: Prestashop, Woocommerce,
+c
+u
+d Magento, Oscommerce, Opencart, Virtuemart o Zencart. Para su integración tan solo es
+o
+rp
+e preciso instalar el módulo elegido y realizar una rápida configuración con los principales
+r
+u
+s valores identificativos del comercio.
+a
+d
+ib
+ih • Adaptado a dispositivos móviles: Nuestro TPV-Virtual presenta un diseño totalmente adaptado
+o
+rp
+a
+a dispositivos móviles. Para ello Redsys ofrece dos vías:
+d
+e
+u
+Q o Basada en el diseño responsive de nuestra pasarela de pago virtual. De este modo
+.s
+y s aquellos clientes que realicen pagos a través de su dispositivo móvil encontraran una
+d
+e
+R página totalmente adaptada.
+a
+e
+c
+e n o Ofrece SDK’s tanto para iOS como para Android. Estas SDK’s permiten la opción de
+e
+tre
+integrar la pasarela de pago dentro de la aplicación del comercio con amplias
+p
+o tn posibilidades de personalización.
+e
+m
+u • Gestión y control de su tienda web: Redsys pone a disposición de los comercios herramientas
+c
+o
+d
+e de gestión que proporcionan un control total de su actividad comercial mediante el TPV Virtual.
+ts
+e
+e d o Módulo de administración: Mediante el módulo de administración podrá tener total
+la
+u control sobre las operaciones realizadas mediante el TPV Virtual con opciones de
+tc
+e
+le consultar operaciones utilizando diferentes filtros y exportarlas a un fichero excel para
+tn
+i d generar sus propios informes, además de los informes de operativa y conversión de
+a
+d
+e operaciones que ofrece la propia herramienta.
+ip
+o
+rp
+a
+o Gestión de cartera de clientes de comercio: Esta herramienta es opcional y requiere ser
+L
+activada expresamente por la Entidad Adquirente.
+o Herramienta de Control de Riesgo: Herramienta de control de Riesgo para que el propio
+comercio, desde el módulo de administración del TPV-virtual, gestione una serie de
+reglas parametrizables que le permiten controlar la exposición al fraude.
+o Servicio de control de fraude: El tpv virtual de Redsys dispone de un servicio de control
+de transacciones para evitar actividades fraudulentas en su tienda web. Estos
+parámetros de control se deberán definir a través de la Entidad Adquirente.
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:7 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+• Seguro: El TPV Virtual cuenta con diferentes medidas de seguridad que garantizan que las
+operaciones se realizan de forma segura.
+o 3D Secure: Proceso que posibilita la realización de compras seguras en Internet y
+autentica al comprador como legítimo titular de la tarjeta que está utilizando.
+o Cumplimiento PCI-DSS: De este modo, Redsys cuenta con una autorización expresa para
+el almacenamiento de la información confidencial de las tarjetas.
+o Estándares de seguridad: El TPV Virtual implementa certificados SSL. Mas
+.s
+o re concretamente implementa TLS 1.2 en las comunicaciones de entrada y TLS 1.1 y TLS
+c
+re 1.2 en las comunicaciones de salida. La seguridad en la capa de transporte impide la
+t
+a
+n interceptación de la información por terceros, asegurando la confidencialidad en todas
+ó
+is
+e las comunicaciones que se establezcan durante la transacción.
+c
+o
+a
+tn • Personalización de la página de pago: Los comercios tendrán a su disposición una herramienta
+e
+v
+,n de personalización de la página de pago que les permitirá adaptarla a su propia imagen,
+ó
+ic mejorando y haciendo más fluida la navegación de sus clientes.
+c
+u
+d
+o
+rp NOTA: Los detalles sobre el uso de la herramienta de personalización se presentan en la guía
+e
+r
+u “TPV-Virtual- Herramienta Personalización_Manual Comercios”.
+s
+a
+d
+ib • Evolutivo y Adaptativo: El TPV Virtual es un sistema evolutivo que trata de proporcionar un
+ih
+o
+rp servicio a los comercios que se adapte a su actividad comercial sin causar impacto alguno.
+a
+d e Además, está adaptado con diferentes Wallets y pagos con cuenta como Bizum o PayPal.
+u
+Q
+.s y o Multi-idioma. Del mismo modo y puesto que es posible que el comprador esté en
+s
+d
+e cualquier parte del mundo, el TPV Virtual puede mostrar de forma independiente en
+R
+a
+e cada transacción la página de pago en cualquiera de los idiomas disponibles. El comercio
+c
+e
+n e será el que decida qué idioma mostrar en cada transacción (Ver Anexo 10.1).
+tre
+p
+o o Multidivisa y DCC. El TPV Virtual admite todas las monedas internacionales permitidas
+tn
+e en comercio electrónico por las marcas de tarjetas (Ver Anexo 10.2), y por tanto puede
+m
+u
+c ser utilizado por comercios que marcan sus precios en monedas distintas al Euro.
+o
+d
+e También dispone del servicio de conversión dinámica de moneda (DCC) para comercios
+ts
+e
+e con precios en Euros que se explicará más en detalle en el apartado Servicios de valor
+d
+la u añadido del presente documento.
+tc
+e
+le
+tn • Alta disponibilidad: Redsys garantiza una gran disponibilidad en el servicio a los comercios
+i
+d a mediante un servicio de soporte 24x7. Mediante este servicio podrán ser atendidas cualquier
+d
+e
+ip duda, consulta o solicitud que el comercio requiera independientemente del horario.
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:8 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Modelos de TPV-Virtual
+El banco deberá conocer en todo momento la operativa del comercio, porque en función de ella deberá
+configurar el TPV Virtual de una forma u otra. Estas configuraciones o modelos de TPV-Virtual no
+encasillan al comercio en una forma concreta de realizar sus ventas, ya que son perfectamente
+combinables.
+.s Estos modelos de terminal se clasifican en función de si se requiere o no una integración por parte del
+o
+re comercio, lo que trae consigo desarrollos de cierto nivel técnico. Según este aspecto se identifican 2
+c
+re
+t
+a
+grandes grupos de modelos de terminal: Modelos con integración del comercio y sin integración del
+n
+ó comercio.
+is
+e
+c
+o
+a 3.1 Modelos con integración del comercio
+tn
+e
+v
+,n Esta categoría requiere que el comercio realice desarrollos de cierto nivel técnico. Entre los modelos
+ó
+ic
+c con integración del comercio podemos encontrar los siguientes:
+u
+d
+o
+rp
+e 3.1.1 Modelo Estándar
+r
+u
+s
+a d Este modelo a su vez cuenta con diferentes tipos de integración:
+ib
+ih
+o rp • Conexión por Redirección a la página de pago
+a
+d
+e
+u Esta es la tipología más común de comercios ya que no es necesario tener validado el
+Q
+.s cuestionario PCI-DSS. En este tipo de comercio, una vez que el comprador pulsa el botón
+y
+s
+d
+e “Pagar” en la web del comercio será redirigido a la pasarela de pago del TPV-Virtual, donde
+R
+a
+e rellenará los datos de su tarjeta. El TPV gestionará el ciclo completo de la transacción
+c
+e
+n informando del resultado de la misma tanto al comercio como al titular.
+e
+tre
+p
+o Este tipo de conexión permite la autenticación del titular, para lo cual se deben configurar
+tn
+e los métodos de pago adecuados. Como norma general, por haber autenticado al titular,
+m
+u
+c estos comercios tienen garantizado el importe de la operación ante posibles repudios.
+o
+d
+e
+ts Permite la tokenización de tarjetas (pago 1-click), la utilización de Wallets integrados con el
+e
+e
+d TPV Virtual (MasterPass, PayPal, etc.) y la utilización de pagos con cuenta (Bizum y
+la
+u
+tc transferencia).
+e
+le
+tn
+NOTA: Los métodos de pago para la autenticación del titular, Wallets y pagos con cuenta,
+i
+d
+a d se explicarán más en detalle en el apartado Métodos de pago del presente documento.
+e
+ip
+o
+rp NOTA 2: Los detalles técnicos para realizar este tipo de integración se presentan en la guía
+a
+L de “TPV-Virtual Manual Integración - Redirección.pdf”.
+• Conexión Host to Host (WebService SOAP o REST)
+Este tipo de conexión resultará útil a comercios que quieren que la experiencia de
+navegación de sus compradores sea continua y no abandonen en ningún momento su web,
+ni siquiera en el momento de realizar el pago.
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:9 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Aquellos comercios que necesiten utilizar este modo de conexión deberán ser autorizadas
+por su Entidad Adquirente y tener validado el cuestionario PCI-DSS, puesto que será el
+comercio el que solicite los datos de tarjeta al titular.
+En las conexiones Host to Host el comercio capturará en su sistema todos los datos
+necesarios para realizar la operación, incluyendo los datos de la tarjeta del titular, y se los
+enviará al TPV Virtual, que procesará la transacción e informará del resultado al comercio,
+quién será el encargado de informar al titular.
+.s NOTA: Es importante resaltar que en este tipo de conexión las operaciones no permiten
+o
+re
+c utilizar métodos de pago tipo Wallets o pagos con cuenta.
+re
+t
+a
+n NOTA 2: Los detalles técnicos para realizar este tipo de integración vía REST se presentan en
+ó
+is
+e la guía de “TPV-Virtual Manual Integración - REST.pdf”.
+c
+o
+a
+tn NOTA 3: Los detalles técnicos para realizar este tipo de integración vía SOAP se presentan
+e
+v ,n en la guía de “TPV-Virtual Manual Integración - Webservice.pdf”.
+ó
+ic
+c u • Conexión Redirección + Host to Host
+d
+o
+rp
+e Un comercio puede utilizar en cada momento el tipo de conexión que mejor se adapte a sus
+r
+u
+s a necesidades, siempre que la Entidad Adquirente le haya configurado correctamente el TPV-
+d
+ib
+ih Virtual y sin necesidad de tener validado el cuestionario PCI-DSS.
+o
+rp
+a Este tipo de conexión es común en comercios que realizan las operaciones que requieren
+d
+e
+u datos de tarjeta con autenticación del titular vía redirección, y las operaciones que no
+Q
+.s y requieren datos de tarjetas vía Host to Host (devoluciones, confirmaciones, anulaciones,
+s
+d
+e etc.), en vez de por el Módulo de Administración.
+R
+a
+e
+c e También es común utilizar este tipo de conexión para realizar la tokenización de tarjetas
+n
+e
+tre (pago 1-click), ya que la primera operación se realiza mediante una conexión por
+p
+o redirección, permitiendo que el TPV Virtual capture los datos de la tarjeta (y opcionalmente
+tn
+e m autentique), y las siguientes operaciones se realizarán mediante una conexión Host to Host,
+u
+c o en la que se envía el token en lugar de la tarjeta.
+d
+e
+ts e NOTA: La operativa de tokenización de tarjetas (pago 1- click) se explicará más en detalle
+e
+d
+la
+en el apartado Servicios de valor añadido del presente documento.
+u
+tc
+e • Conexión InSite
+le
+tn
+i
+d a Este modelo de conexión permite a un comercio utilizar el TPV-Virtual obteniendo las
+d
+e
+ip ventajas de la conexión por redirección y de la conexión Host to Host, sin necesidad de tener
+o
+rp validado el cuestionario PCI-DSS.
+a
+L
+La experiencia de navegación de sus compradores es continua y no abandonan en ningún
+momento su web, ni siquiera en el momento de realizar el pago. Además, permite la
+autenticación del titular, por lo que se tiene garantizado el importe de la operación ante
+posibles repudios.
+NOTA: Los detalles técnicos para realizar este tipo de integración se presentan en la guía de
+“TPV-Virtual Integración inSite.pdf”.
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:10 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+3.1.2 Integración mediante Módulo de pago.
+Los comercios que tienen tiendas virtuales diseñadas con Prestashop, Woocommerce,
+Magento, Oscommerce, Opencart, Virtuemart o Zencart, disponen de módulos gratuitos
+que permiten la activación de pagos con tarjeta en su tienda.
+La instalación del módulo de pago se realiza de forma rápida y sencilla, con unos mínimos
+conocimientos técnicos.
+NOTA: Los detalles de instalación y configuración de los módulos de pago se presentan en el
+.s
+o re siguiente enlace de la web pública de Redsys “http://www.redsys.es/#descargas”.
+c
+re
+t
+a
+n
+ó
+is
+e c 3.1.3 Integración In-App.
+o
+a
+tn Este modelo de conexión permite a los comercios que tengan aplicaciones móviles en
+e
+v
+,n Android o iOS, integrar pagos con tarjeta.
+ó
+ic
+c
+u d Para llevar a cabo esta integración se facilitan SDKs que el comercio deberá integrar en su
+o
+rp
+aplicación.
+e
+r
+u
+s
+a NOTA: Los detalles técnicos para realizar este tipo de integración se presentan en las guías
+d
+ib
+ih de: “TPV-Virtual Documentacion - Integracion TPVInLibrary iOS.pdf” y “TPV-Virtual
+o
+rp Documentacion - integración TPVvirtualAndroid.pdf”.
+a
+d
+e
+u
+Q
+.s
+y
+s
+d e 3.1.4 Integración PUCE
+R
+a
+e c Este modelo de conexión permite a los comercios realizar la autenticación de los titulares
+e
+n
+e tre mediante el TPV-Virtual y posteriormente gestionar la autorización mediante el Protocolo
+p
+o
+PUC.
+tn
+e
+m NOTA: Los detalles técnicos de este modelo de TPV-Virtual se presentan en la guía “TPV-
+u
+c
+o Virtual Manual Integración - REST”.
+d
+e
+ts
+e
+e
+d
+la
+u
+tc 3.2 Modelos sin integración de tienda virtual
+e
+le
+tn
+i
+d
+Esta categoría permite al comercio utilizar las ventajas del TPV-Virtual sin necesidad de realizar
+a
+d ningún tipo de desarrollo para realizar la integración de una tienda virtual. Entre los modelos sin
+e
+ip
+o integración del comercio podemos encontrar los siguientes modelos de TPV-Virtual:
+rp
+a
+L
+3.2.1 Pago por e-mail/SMS (Paygold)
+El pago por e-mail/SMS (Paygold) consiste en el envío de un enlace al titular de la tarjeta a
+través de e-mail o de SMS con una solicitud de pago por parte del comercio, el titular debe
+utilizar dicho enlace para completar el pago. Este tipo de pago no requiere integración por
+parte del comercio ya que el envío de solicitud de pago se realiza a través del módulo de
+administración.
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:11 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Los titulares recibirán un link en su correo o vía SMS con los datos de la operación. El cliente
+tiene que pulsar el link para realizar la compra. De esta manara el comercio no maneja en
+ninguna fase del pago datos de tarjeta.
+Este tipo de operativa puede resultar útil por ejemplo en comercios de donaciones,
+comercios con promociones específicas que quieren realizar un envío masivo, una
+compañía que en lugar de domiciliar recibos envía emails a sus clientes cada vez que quiere
+solicitar el pago de sus servicios o similares.
+.s El comercio también puede automatizar el envío de la solicitud de pago mediante una
+o
+re
+c conexión Host to Host, para ello si requiere realizar una integración por parte de éste.
+re
+t
+a
+n NOTA: Los detalles técnicos de este modelo de TPV-Virtual se presentan en la guía “TPV-
+ó
+is
+e Virtual Pago por e-mail_SMS .pdf”.
+c
+o
+a
+tn
+e
+v
+,n
+ó ic 3.2.2 Pago Manual (Pago MOTO)
+c
+u
+d
+o En el pago manual o pago MOTO el titular de la tarjeta no está presente en el momento del
+rp
+e
+r
+u
+pago, éste facilita los datos de su tarjeta al comercio, bien por teléfono o bien por e-mail y
+s
+a es el comercio el que realiza el pago a través del Módulo de Administración del Tpv Virtual
+d
+ib
+ih por lo que no requiere realizar integración con la web del comercio. Este tipo de pago se
+o
+rp
+utiliza normalmente en Call Centers.
+a
+d
+e
+u Q NOTA: Los detalles técnicos de este modelo de TPV-Virtual se presentan en la guía “TPV-
+.s
+y Virtual Pago MOTO.pdf”.
+s
+d
+e
+R
+a
+e
+c
+e
+n
+e
+tre
+p
+o
+tn
+e
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:12 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Tipos de Operaciones
+El TPV Virtual ofrece una elevada variedad de tipos de operaciones. El comercio puede usar varias según
+sus necesidades y según la configuración que su Entidad Adquirente le permita tener. A continuación, se
+describen las que admite la plataforma:
+4.1 Autorización
+.s
+o
+re Es la operación de venta común. La transacción es iniciada por el titular, que está conectado a través
+c
+re
+t
+a
+de Internet a la página web del comercio durante el proceso de compra, por lo que puede requerir
+n la autenticación del mismo si el comercio está configurado para ello.
+ó
+is
+e
+c
+o La transacción es capturada automáticamente por el TPV Virtual y enviada a la entidad emisora,
+a
+tn produciendo un cargo inmediato en la cuenta del titular asociado a la tarjeta (crédito o débito). Tras
+e
+v
+,n la autorización o denegación al titular de la tarjeta se informará al comercio con el resultado
+ó
+ic
+c obtenido.
+u
+d
+o
+rp
+e 4.1.1 Anulación de Autorización
+r
+u
+s
+a d Debe ser lanzada por el comercio ya que el titular no está presente, y restituye el importe
+ib
+ih cargado al titular en la operación de Autorización loa antes posible. Los movimientos de
+o
+rp
+a Autorización y Anulación pueden no quedar reflejados en la cuenta del titular, lo que
+d
+e
+u depende directamente del emisor.
+Q
+.s
+y s Esta operación se debe realizar desde un backoffice que haya desarrollado el propio
+d
+e
+R
+a
+comercio.
+e
+c
+e
+n
+e 4.2 Devolución (Parcial o total)
+tre
+p
+o tn Son transacciones contables iniciadas por el comercio, en las que el TPV-Virtual comprobará la
+e
+m existencia de la autorización original que se desea devolver, así como que la suma de los importes
+u
+c
+o devueltos no supere en ningún caso el importe autorizado original.
+d
+e
+ts
+e Se puede realizar por el módulo de administración que se ofrece con el TPV y también desde un
+e
+d
+la backoffice que haya desarrollado el propio comercio. El momento del abono al titular depende de la
+u
+tc política comercial de cada entidad emisora.
+e
+le
+tn
+i
+d 4.3 Devolución sin original
+a
+d
+e
+ip
+o Son transacciones contables iniciadas por el comercio, en las que el comercio no tiene información
+rp
+a L de la autorización original que se desea devolver, por tanto, el TPV-Virtual NO comprobará la
+existencia de la autorización original ni los importes devueltos.
+Este tipo de operación sólo puede ser realizada desde el backoffice que haya desarrollado el propio
+comercio. El momento del abono al titular depende de la política comercial de cada entidad emisora.
+NOTA: Este tipo de operaciones requiere una configuración extra que debe ser realizada por la
+Entidad Adquirente.
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:13 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+4.4 Preautorización
+La Preautorización retiene el importe en la cuenta del titular y no produce cargo, si bien puede haber
+excepciones a esto dependiendo de la política del emisor de la tarjeta. Puede utilizarse cuando en el
+momento de la compra no se pueda determinar el importe exacto que se va a cargar al titular.
+La transacción es transparente para el titular que en todo momento actúa exactamente igual que en
+una operación de Autorización, es decir, facilita sus datos y se autentica si corresponde.
+El plazo de validez de una Preautorización son 7 días. Este plazo podrá ser superior si así lo decide
+.s
+o
+re la Entidad Adquirente del Tpv virtual.
+c
+re
+t a La operativa de Preautorización solamente se permite con tarjetas Visa y Master.
+n
+ó
+is
+e c 4.4.1 Confirmación de Preautorización
+o
+a
+tn
+e Debe ser lanzada por el comercio ya que el titular no está presente, y completa la operación
+v
+,n de Preautorización. Esta confirmación ya tiene cargo contable y su importe puede ser
+ó
+ic
+c menor, igual, o hasta un 15% superior al importe de la original. Se puede realizar por el
+u
+d
+o rp Módulo de administración del TPV-Virtual y también desde un backoffice que haya
+e
+r
+u
+desarrollado el propio comercio.
+s
+a
+d
+ib
+ih 4.4.2 Anulación de Preautorización
+o
+rp
+a Debe ser lanzada por el comercio ya que el titular no está presente, y libera el importe
+d
+e
+u retenido al titular en la operación de Preautorización. Se puede realizar por el Módulo de
+Q
+.s
+y administración del TPV-Virtual y también desde un backoffice que haya desarrollado el
+s
+d
+e R propio comercio.
+a
+e
+c e NOTA: Este tipo de operaciones requiere una configuración específica del comercio que debe ser
+n
+e
+tre realizada por la Entidad Adquirente.
+p
+o
+tn
+e 4.5 Autenticación
+m
+u
+c
+o d Este tipo de operación es similar a la operación de preautorización (ver punto 4.4), no se produce
+e
+ts retención en la cuenta del titular ya que el importe que finalmente se envía al emisor es de 0. Se
+e
+e
+d realiza una validación de los datos de la tarjeta, se validará el CVV2/CVC2, la fecha de caducidad y si
+la
+u tc la tarjeta está activa.
+e
+le
+tn La transacción es transparente para el titular que en todo momento actúa exactamente igual que en
+i
+d
+a d una operación de Autorización, es decir, facilita sus datos y se autentica si corresponde.
+e
+ip
+o
+rp El comercio tiene 45 días naturales para confirmarla o simplemente dejar que expire.
+a
+L
+4.5.1 Confirmación de Autenticación
+Debe ser lanzada por el comercio ya que el titular no está presente, y completa la operación
+de Autenticación. Esta confirmación ya tiene cargo contable y su importe puede ser menor,
+igual, o hasta un 15% superior al importe de la original. Se puede realizar a través el Módulo
+de administración del TPV-Virtual y también desde un backoffice que haya desarrollado el
+propio comercio.
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:14 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+4.6 Abono de premio de Apuestas
+Es un tipo de operación para webs de pago de apuestas y que se utilizan el Tpv Virtual para realizar
+el pago de premios. Son transacciones contables iniciadas por el comercio que envía una orden de
+pago a la entidad del cliente, que realizará el pago en la cuenta del titular que esté asociada a la
+tarjeta con la que se ha realizado la apuesta.
+Este tipo de operación requiere una configuración específica por parte de la Entidad Adquirente.
+NOTA: Los detalles técnicos de este modelo de este tipo de operación se presentan en la guía “TPV-
+.s
+o
+re Virtual Pago de premios de apuestas en TPV Virtual.pdf”.
+c
+re
+t
+a
+n
+ó
+is
+e
+c
+o
+a
+tn
+e
+v
+,n
+ó
+ic
+c
+u
+d
+o
+rp
+e
+r
+u
+s
+a
+d
+ib
+ih
+o
+rp
+a
+d
+e
+u
+Q
+.s
+y
+s
+d
+e
+R
+a
+e
+c
+e
+n
+e
+tre
+p
+o
+tn
+e
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:15 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Tipos de Notificaciones/Respuestas
+El TPV Virtual tiene varias formas de informar al comercio del resultado de una operación, las cuales
+dependerán del modelo de TPV-Virtual utilizado:
+5.1 Modelos con integración del comercio
+.s
+Todos los modelos de terminal con integración por parte del comercio podrán obtener el resultado
+o
+re de sus operaciones consultando el Módulo de Administración del TPV-Virtual o mediante una
+c
+re
+t
+a
+notificación por correo electrónico. De forma adicional el TPV-Virtual cuenta con funcionalidades
+n para informar en tiempo real del resultado de las transacciones, sin necesidad de tener que acceder
+ó
+is
+e c al Módulo de Administración del TPV-Virtual. Estas funcionalidades son propias de cada modelo de
+o
+a TPV-Virtual con integración utilizado:
+tn
+e
+v
+,n
+ó 5.1.1 Estándar – Redirección
+ic
+c
+u
+d o Para este tipo de modelos de TPV-Virtual se utilizará la “notificación on-line”, que es una
+rp
+e función opcional que permite a la tienda web recibir el resultado de una transacción de
+r
+u
+s
+a
+forma on-line y en tiempo real, una vez que el cliente ha completado el proceso en el TPV
+d
+ib Virtual.
+ih
+o
+rp
+a El comercio debe capturar y validar todos los parámetros junto a la firma de la notificación
+d
+e
+u on-line de forma previa a cualquier ejecución en su servidor.
+Q
+.s
+y s El TPV Virtual cuenta con diferentes tipos de notificación y son los siguientes:
+d
+e
+R
+a
+e
+1. Síncrona. Implica que el resultado de la compra primero se envía al comercio y a
+c
+e n continuación al cliente y con el valor. Aunque la notificación sea errónea la
+e
+tre
+operación no se anula.
+p
+o
+tn
+e 2. Asíncrona. Implica que el resultado de la autorización se comunica a la vez al
+m
+u c comercio y al cliente. Aunque la notificación sea errónea la operación no se anula.
+o
+d
+e En este caso la notificación se añade a una cola que garantiza que la misma se envía
+ts
+e
+e
+siempre, aún en caso de algún retraso puntual. Es recomendable su utilización.
+d
+la
+u NOTA: Los detalles técnicos de la “notificación on-line” y sus diferentes versiones se
+tc
+e
+le presentan en la guía de “TPV-Virtual Manual Integración - Redirección.pdf”.
+tn
+i
+d
+a
+d 5.1.2 Estándar – Host to Host
+e
+ip
+o
+rp En este tipo de modelos de TPV-Virtual se utilizará la propia respuesta de la petición Host
+a
+L
+to Host enviada por el comercio, en la cual se informará del resultado de una transacción
+en tiempo real una vez que se haya completado el proceso en el TPV Virtual.
+NOTA: Los detalles técnicos de la respuesta Host to Host vía REST se presentan en la guía de
+“TPV-Virtual Manual Integración - REST.pdf”.
+NOTA2: Los detalles técnicos de la respuesta Host to Host vía SOAP se presentan en la guía
+de “TPV-Virtual Manual Integración - Webservice.pdf”.
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:16 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+5.1.3 Integración mediante Módulo de pago
+Para este tipo de modelos de TPV-Virtual se utilizará la “notificación on-line”, pero con la
+salvedad de que el comercio no tendrá que capturar ni validar los parámetros junto a la
+firma de la notificación on-line, ya que el módulo se encargará de realizar todas las
+validaciones necesarias.
+5.1.4 Integración In-App
+.s En función del tipo de integración In-App utilizado por el comercio se tendrá un tipo
+o
+re diferente de notificación o respuesta:
+c
+re
+t
+a
+n
+• WebView: Para este tipo de modelos de integración In-App, se utilizará la
+ó
+is “notificación on-line”, que es una función opcional que permite a la tienda web
+e
+c
+o
+a
+recibir el resultado de una transacción de forma on-line y en tiempo real, una vez
+tn
+e que el cliente ha completado el proceso en el TPV Virtual.
+v
+,n
+ó
+ic • Pago Directo: Para este tipo de modelos de integración In-App, se utilizará la propia
+c
+u
+d respuesta de la petición directa (Host to Host) enviada por el comercio, en la cual
+o
+rp
+e se informará del resultado de una transacción en tiempo real una vez que se haya
+r
+u
+s
+a
+completado el proceso en el TPV Virtual.
+d
+ib
+ih NOTA: Los detalles técnicos para realizar este tipo de integración se presentan en las guías
+o
+rp
+a
+de: “TPV-Virtual Documentacion - Integracion TPVInLibrary iOS.pdf” y “TPV-Virtual
+d
+e u Documentacion - integración TPVvirtualAndroid.pdf”.
+Q
+.s
+y
+s d 5.1.5 Integración PUCE
+e
+R
+a
+e En el modelo de TPV-Virtual con integración PUCE se utilizará la propia respuesta de la
+c
+e
+n e petición enviada por el comercio, en la cual se informará del resultado de la transacción en
+tre
+p tiempo real una vez que se haya completado el proceso en el TPV Virtual.
+o
+tn
+e m NOTA: Los detalles técnicos de este modelo de TPV-Virtual se presentan en la guía “TPV-
+u
+c o Virtual Manual Integración - REST”.
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:17 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+5.2 Modelos sin integración del comercio
+Todos los modelos de terminal sin integración por parte del comercio podrán obtener el resultado
+de sus operaciones consultando el Módulo de Administración del TPV-Virtual o mediante una
+notificación por correo electrónico.
+NOTA: El detalle de como consultar las operaciones en el Módulo de Administración del TPV-Virtual
+se presentan en la guía de “TPV-Virtual Módulo de Administración.pdf”.
+.s
+o
+re
+c
+re
+t
+a
+n
+ó
+is
+e
+c
+o
+a
+tn
+e
+v
+,n
+ó
+ic
+c
+u
+d
+o
+rp
+e
+r
+u
+s
+a
+d
+ib
+ih
+o
+rp
+a
+d
+e
+u
+Q
+.s
+y
+s
+d
+e
+R
+a
+e
+c
+e
+n
+e
+tre
+p
+o
+tn
+e
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:18 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Métodos de pago
+El tpv virtual de Redsys permite ofrecer al cliente diferentes métodos de pago que se pueden dividir
+en: Métodos asociados a Pagos con Tarjeta, uso de Wallet o Pagos con Cuenta.
+6.1 Pago con tarjeta
+.s
+Permite la integración del pago con tarjetas tanto nacionales como internacionales de las principales
+o
+re marcas: Visa, Master, Amex, JCB, Diners, etc. Además, permite la autenticación del cliente mediante
+c
+re
+t
+a
+el sistema de autenticación del titular de la tarjeta mediante el proceso 3D Secure.
+n
+ó
+is
+e 6.2 Wallet
+c
+o
+a
+tn
+e 6.2.1 Paypal
+v
+,n
+ó
+ic Para que un comercio pueda trabajar con PayPal a través del propio TPV Virtual, tendrá que
+c
+u
+d seguir los siguientes pasos:
+o
+rp
+e
+r u • La Entidad Adquirente tiene que autorizar la adhesión a esta modalidad de Pago.
+s
+a
+d
+ib • El comercio se tiene que dar de alta en PayPal.
+ih
+o
+rp
+a
+• Se deben facilitar a la Entidad Adquirente los datos de conexión que le haya facilitado
+d
+e u PayPal.
+Q
+.s
+y s NOTA: Los detalles técnicos de este Wallet se presentan en la guía “TPV-Virtual Manual
+d
+e
+R Integración PayPal.pdf”.
+a
+e
+c
+e
+n
+e
+tre
+p
+o 6.2.2 ApplePay
+tn
+e
+m
+u Para que un comercio pueda trabajar con ApplePay a través del propio TPV Virtual.
+c
+o
+d
+e NOTA: Los detalles técnicos de este Wallet se presentan en la guía “TPV-Virtual ApplePay -
+ts
+e
+e Guía de Integración de los Comercios.pdf”.
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+6.2.3 Masterpass
+a
+d
+e
+ip Para que un comercio pueda trabajar con MasterPass a través del propio TPV Virtual.
+o
+rp
+a L NOTA: Los detalles técnicos de este Wallet se presentan en la guía “TPV-Virtual
+Masterpass.pdf”.
+6.3 Pagos con Cuenta
+6.3.1 Bizum
+Para que un comercio pueda trabajar con Bizum a través del propio TPV Virtual.
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:19 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+NOTA: Los detalles técnicos de este Wallet se presentan en la guía “TPV-Virtual Guia de
+Integracion BIZUM comercios SIS.pdf”.
+6.3.2 Transferencia
+Para que un comercio pueda ofrecer pagos por transferencia bancaria.
+NOTA: Los detalles técnicos de este método de pago se presentan en la guía “TPV-Virtual
+Transferencia.pdf”.
+.s
+o
+re
+c
+re
+t
+a
+n
+ó
+is
+e
+c
+o
+a
+tn
+e
+v
+,n
+ó
+ic
+c
+u
+d
+o
+rp
+e
+r
+u
+s
+a
+d
+ib
+ih
+o
+rp
+a
+d
+e
+u
+Q
+.s
+y
+s
+d
+e
+R
+a
+e
+c
+e
+n
+e
+tre
+p
+o
+tn
+e
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:20 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Servicios de valor añadido
+El TPV Virtual ofrece una gran variedad de servicios de añadido que se presentan a continuación:
+7.1 Pago 1-Click / Tokenización
+El pago 1-Click permite a los titulares comprar de forma recurrente en una web haciendo sólo un
+.s
+click y sin introducir datos de tarjeta. Sólo introducirá los datos de tarjeta en la primera compra.
+o
+re
+c La implantación técnica de este método de pago en Redsys está realizada de tal forma que evita al
+re
+t
+a comercio tener que certificarse como cumplidor del protocolo PCI-DSS, ya que no necesitará
+n
+ó is almacenar datos de tarjetas de los titulares para procesar los pagos.
+e
+c
+o
+a NOTA: Los detalles técnicos de este servicio de valor añadido se presentan en la guía “TPV-Virtrual
+tn
+e v Pago-1-click.pdf”.
+,n
+ó
+ic
+c
+u
+d
+o
+rp
+e 7.2 DCC
+r
+u
+s
+a d La operativa de DCC permite a los titulares de tarjeta cuya divisa sea distinta a la divisa configurada
+ib
+ih en el TPV Virtual, se le ofrecerá la posibilidad de poder pagar en su propia divisa.
+o
+rp
+a d Una vez procesada la operación se mostrará al cliente el resultado de la misma. En caso de que el
+e
+u
+Q cliente elija la divisa de su tarjeta, se mostrará el resultado siempre en inglés.
+.s
+y
+s
+d e NOTA: Este tipo de operativa requiere una configuración extra que debe ser realizada por la Entidad
+R
+a
+e
+Adquirente con la que el comercio tenga contratado el TPV-Virtual.
+c
+e
+n
+e NOTA2: Los detalles técnicos de este servicio de valor añadido se presentan en la guía “TPV-Virtual
+tre
+p Integración DCC.pdf”.
+o
+tn
+e
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:21 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Módulo de Administración del TPV-Virtual
+El TPV Virtual ofrece un módulo de administración donde se podrán consultar y también gestionar las
+operaciones que no requieren datos de tarjetas, es decir, que no se necesita que el titular esté presente.
+El aspecto del módulo de administración puede variar según la Entidad Adquirente.
+NOTA: El detalle de como consultar las operaciones en el Módulo de Administración del TPV-Virtual se
+.s presentan en la guía de “TPV-Virtual Módulo de Administración.pdf”.
+o
+re
+c
+re
+t
+a
+n
+ó
+is
+e
+c
+o
+a
+tn
+e
+v
+,n
+ó
+ic
+c
+u
+d
+o
+rp
+e
+r
+u
+s
+a
+d
+ib
+ih
+o
+rp
+a
+d
+e
+u
+Q
+.s
+y
+s
+d
+e
+R
+a
+e
+c
+e
+n
+e
+tre
+p
+o
+tn
+e
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:22 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Implicaciones de la PSD2 (Avance)
+PSD2 es el acrónimo de Payment Services Directive 2 y que hace alusión a la segunda Directiva de
+servicios de pago de la Unión Europea. Esta directiva a través de su trasposición a los Estados
+Miembros incorpora medidas que afectan de forma importante a todos los pagos electrónicos, y
+especialmente a los pagos remotos como las compras por internet.
+.s De acuerdo a la normativa que entra en vigor el 14 de septiembre de 2019 (cuando entra en vigor el
+o
+re reglamento técnico o RTS), en general todas las operaciones de comercio electrónico dentro de la
+c
+re
+t
+a
+EEA (European Economic Area) deberán utilizar autenticación reforzada (SCA – Strong Customer
+n
+ó Authentication), si bien se contemplan algunos escenarios para los cuales se exime de esta
+is
+e
+c obligatoriedad (exenciones).
+o
+a
+tn
+e De cara a un comercio que acepta pagos de forma remota, cumplir con esta normativa dependerá
+v
+,n del método de pago utilizado, siendo la principal solución la implementación de 3D Secure como
+ó
+ic
+c u protocolo de autenticación para los pagos con tarjeta. Otros métodos de pago como los X-pays
+d
+o
+rp (Apple Pay, Google pay...etc) podrían tener incorporados otros sistemas de autenticación delegada
+e
+r u por parte del emisor de la tarjeta o bien tener incorporados ya de entrada estos mecanismos SCA
+s
+a d (pej. Bizum) y no requerir 3D Secure.
+ib
+ih
+o rp Los casos de pagos remotos que no requieren utilizar SCA son aquellos que están recogidos en las
+a
+d exenciones de la directiva, o bien están fuera del alcance de la misma:
+e
+u
+Q
+.s • Fuera de alcance de PSD2:
+y
+s
+d
+e
+R o Pagos iniciados por el comercio sin participación del cliente (MIT – Merchant
+a
+e c Initiated Transactions), como los pagos recurrentes de una subscripción
+e
+n
+e
+tre o Pagos por teléfono o por correo
+p
+o
+tn o Transacciones no de pago, como las de validación de tarjeta de importe cero
+e
+m
+u euros.
+c
+o
+d
+e ts • Casos de posible aplicación de exenciones (opcional). Son los casos de bajo riesgo que en
+e
+e d conjunción con la existencia de un sistema de análisis de riesgos permiten opcionalmente
+la
+u la no aplicación de SCA
+tc
+e
+le
+tn o Exención de bajo importe (low value): pagos <30 € y cuando no se acumulen más
+i
+d
+a de 100 € o 5 operaciones seguidas sin SCA. El control de estos contadores depende
+d
+e
+ip de la entidad emisora de la tarjeta.
+o
+rp
+a L o Exención por bajo riesgo - Análisis de riesgo realizado (TRA – transaction risk
+analisys). Su aplicación requiere de unas condiciones adicionales sobre el histórico
+de fraude acumulado que deben ser valoradas a nivel de Entidad Adquierente.
+o Exención Protocolo de Pago Corporativo Seguro. Uso restringido a casos especiales
+de pagos entre empresas donde el canal utilizado no está disponible para el
+público general e incorpora otros mecanismos de seguridad al mismo nivel que un
+SCA
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:23 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Para que un comercio pueda aplicar las exenciones debe tener autorización de su Entidad
+Adquirente.
+Para enviar una operación sin autenticación reforzada sin que ésta sea denegada se debe informar
+del caso que aplica de la lista anterior. Esto significa que para evitar rechazos por parte del
+adquirente o el emisor por no utilizar 3DSecure se deben marcar las operaciones debidamente para
+justificar el no uso de 3DSecure (más información en los manuales técnicos de integración):
+Razon de no aplicar SCA Modo de informarlo en el tpv virtual
+.s
+o
+re
+c Operación iniciada por el comercio Indicador exención
+re
+t
+a
+(DS_MERCHANT_EXCEP_SCA): valor MIT
+n
+ó
+is
+e c Operación bajo importe Indicador exención
+o
+a (DS_MERCHANT_EXCEP_SCA): valor LWP
+tn
+e
+v
+,n
+ó Operación telefónica/correo Campo identificación entrada MO/TO
+ic
+c u (DS_MERCHANT_DIRECTPAYMENT) mail
+d
+o
+rp order/telephone order
+e
+r
+u
+s
+a Transacciones de validación tarjeta (importe Según tipo transacción solicitada
+d
+ib
+ih cero) (DS_MERCHANT_TRANSACTIONTYPE)
+o
+rp
+a
+d Exención por bajo riesgo/TRA Indicador exención
+e
+u
+Q (DS_MERCHANT_EXCEP_SCA): valor TRA
+.s
+y
+s
+d
+e R Exención Protocolo Pago Corporativo Seguro Indicador exencion
+a
+e (DS_MERCHANT_EXCEP_SCA): valor COR
+c
+e
+n
+e
+tre
+Operación realizada con autenticación SCA Indicador exención
+p
+o tn
+e
+delegada
+(DS_MERCHANT_EXCEP_SCA): valor ATD
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:24 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Preguntas Frecuentes
+¿Se pueden tener dos direcciones de correo para el envío de confirmaciones dadas de alta en el TPV
+Virtual?
+Redsys únicamente enviará una notificación por operación a una dirección de correo: la configurada en el
+apartado Email-Comercio de Canales. El comercio sin embargo puede remitir esta notificación a cuantas
+.s direcciones estime conveniente.
+o
+re
+c
+re
+t
+a
+n Quiero modificar los métodos de pago de mi comercio.
+ó
+is
+e
+c
+o Toda solicitud de modificación de los métodos de pago que el comercio tiene activados en el TPV Virtual
+a
+tn SIS, deberá ser tramitado a través a la Entidad Adquirente con la que trabaje el comercio.
+e
+v
+,n
+ó
+ic
+c
+u
+d
+o Quiero personalizar las pantallas del TPV Virtual con la imagen de mi comercio. ¿Qué pasos debo de
+rp
+e r
+u
+seguir?
+s
+a
+d Redsys dispone de una herramienta de personalización para comercios incluida dentro de la propia
+ib
+ih
+o herramienta de administración a la que actualmente usted está conectado, y mediante la cual se puede
+rp
+a modificar el aspecto visual de la pasarela de pagos. Una vez realizados los cambios, la entidad propietaria
+d
+e
+u del TPV debe aprobar las modificaciones para que sean efectivos.
+Q
+.s
+y
+s
+d
+e
+R
+a
+e ¿Qué tipos de tarjetas acepta el TPV Virtual?
+c
+e
+n
+e tre Como norma general el TPV acepta todas las tarjetas que puedan operar en comercio electrónico.
+p
+o
+tn
+e
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:25 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Soy un comercio y quiero tener acceso a la información de pago del cliente (número de tarjeta,
+caducidad…).
+Todas las peticiones relacionadas con la solicitud de acceso a la información de pago (número de tarjeta,
+caducidad…), debido a su carácter confidencial, deben ser gestionados directamente con la Entidad
+Adquirente.
+¿Puedo realizar pagos fraccionados/aplazados con el TPV Virtual?
+.s
+o
+re
+El TPV Virtual dispone de distintas funcionalidades dependiendo de la entidad con la que el comercio
+c
+re
+t
+a
+trabaje. Es la propia entidad la que le informará de las particularidades de su operativa.
+n
+ó
+is
+e
+c
+o
+a tn Tengo dos comercios electrónicos, ¿Es posible poder gestionar los dos comercios mediante un único
+e
+v
+,n
+usuario?
+ó
+ic
+c Sí, es posible, siempre y cuando la dirección configurada en ambos usuarios sea la misma. Si es diferente
+u
+d
+o rp deberá ponerse en contacto con su entidad financiera.
+e
+r
+u
+s
+a
+d
+ib
+ih
+o
+rp
+a
+d
+e
+u
+Q
+.s
+y
+s
+d
+e
+R
+a
+e
+c
+e
+n
+e
+tre
+p
+o
+tn
+e
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:26 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Anexos
+A continuación, se presentan los diversos anexos que se citan en el documento:
+11.1 Idiomas
+Los idiomas disponibles para la página de pago son los que se listan a continuación:
+.s
+o
+re
+c
+re Castellano Francés Polaco
+t
+a
+n
+ó Catalán Croata Portugués
+is
+e
+c
+o
+a
+Valenciano Japonés Ruso
+tn
+e
+v
+,n
+Gallego Letón Búlgaro
+ó
+ic
+c u Euskera Lituano Esloveno
+d
+o
+rp
+e Checo Húngaro Eslovaco
+r
+u
+s
+a Danés Maltés Finlandés
+d
+ib
+ih
+o Alemán Holandés Turco
+rp
+a
+d e Estonio Italiano Indio
+u
+Q
+.s
+y Griego Rumano
+s
+d
+e
+R
+a Inglés Sueco
+e
+c
+e
+n
+e 11.2 Monedas
+tre
+p
+o tn Las monedas internacionales disponibles permitidas en comercio electrónico por las marcas de
+e
+m tarjetas son:
+u
+c
+o
+d
+e Euros Dólares Australes Argentino
+ts
+e
+e d Dólares
+Canadienses
+Nuevos Soles
+la
+u Coronas Suecas Peruanos
+tc Libras
+e
+le
+tn Coronas Noruegas Yuanes Chinos
+i
+d
+Pesos
+a
+d e Colones de Costa Liras Turcas
+ip Yenes
+o rp Rica
+Etc.
+a Francos Suizos
+L
+Pesos Uruguayos
+Dólares
+Zlotys
+Australianos
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:27 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Glosario
+12.1 PCI-DSS
+El cumplimiento PCI-DSS se hace referencia a que la información confidencial de las tarjetas
+normalmente no es conocida por el comercio, salvo que el banco propietario del TPV le autorice a
+ello si el comercio cumple las condiciones que se le exijan. Con esto se evita que esta información
+.s pueda ser robada al comercio por terceros con fines fraudulentos. La mejor manera de salvaguardar
+o
+re
+c una información sensible es NO tenerla. En su lugar la información de la tarjeta es almacenada
+re
+t
+a
+convenientemente por Redsys. No obstante, existen otras variantes de conexión para los comercios
+n
+ó que deseen asumir PCI-DSS y el manejo de los datos de pago, para una mayor adaptación a sus
+is
+e
+o
+c requerimientos de negocio.
+a
+tn
+e
+v 12.2 Protocolo PUC
+,n
+ó
+ic
+c u El Protocolo Unificado Comercio (PUC) es el protocolo por el cual un
+d
+o rp Establecimiento/Negocio/Proveedor de Servicio, con toda la infraestructura HW y SW adaptada a
+e
+r
+u
+EMV (estándar de interoperabilidad de Tarjetas con circuito integrado), puede conectar su Host al
+s
+a d Centro Procesador (REDSYS), con el fin de intercambiar mensajes originados, directa o
+ib
+ih indirectamente, por la utilización de la Tarjeta: Solicitud de autorización, Envío de diferidos,
+o
+rp
+a
+Carga/Actualización de Lista Negra, etc.
+d
+e
+u
+Q
+.s 12.3 3D Secure
+y
+s
+d
+e
+R Se denomina 3D Secure al estándar de autenticación que certifica, durante una compra online, la
+a
+e c identidad del consumidor como legítimo titular de la tarjeta que se está utilizando. Este proceso está
+e
+n
+e especialmente pensado para evitar los fraudes con tarjeta en operaciones remotas en las que no
+tre
+p existe una presencia física real de la tarjeta.
+o
+tn
+e
+m Además, el TPV-Virtual permite la autenticación con cualquiera de las versiones de 3DSecure,
+u
+c o incluida la nueva versión 3D Secure 2 (3DS2). Esta nueva versión es la principal vía para cumplir con
+d
+e
+ts la futura reglamentación de autenticación reforzada del cliente (SCA) de la PSD2, permitiendo una
+e
+e d autenticación menos problemática y una mejor experiencia para el usuario.
+la
+u
+tc Una de las principales mejoras del 3DS2 es la autenticación frictionless, una autenticación que, en
+e
+le
+tn función de los datos recopilados sobre el titular de la tarjeta, el dispositivo utilizado, etc. permitirá
+i
+d
+a realizar una autenticación sin requerir intervención por parte del titular.
+d
+e
+ip
+o rp Si ya usas 3D Secure por redirección pasarás a utilizar a la versión 2 sin cambios en la integración,
+a L aunque puedes hacer cambios para incorporar más información opcional a la operación de pago y
+así aprovechar mejor las características de esta nueva ve
+rsión del 3D Secure.
+12.4 SCA
+Strong Customer Authentication o autenticación reforzada, se refiere a la utilización de varios
+factores (en lugar de uno sólo) para autenticar la identidad de un usuario. Los factores deben ser
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:28 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+de catergorías distintas (conocimiento: algo que sólo el usuario sabe, posesión: algo que se tiene, y
+finalmente algo que eres). Por ejemplo: la combinación de una contraseña o PIN (conocimiento) y
+un chip de tarjeta (algo que tienes) o la combinación de una contraseña (algo que sabes) + un
+código enviado por SMS (algo que tienes, el teléfono al que se envía el código).
+12.5 PSD2
+PSD2 es el acrónimo de Payment Services Directive (2) en alusión a la segunda Directiva de pagos de
+la Unión Europea. Incorpora medidas que afectan de forma importante a todos los pagos
+.s
+o re electrónicos, y especialmente a los pagos remotos como las compras por internet.
+c
+re
+t
+a
+De acuerdo a la normativa que entrará en vigor el 14 de septiembre, en general todas las operaciones
+n
+ó de comercio electrónico deberán utilizar autenticación reforzadad (SCA), si bien se contemplan
+is
+e
+o
+c algunos escenarios para los cuales se exime de esta obligatoriedad (exenciones).
+a
+tn
+e Con esta normativa entran en vigor una serie de exenciones para realizar diferentes operativas y así
+v
+,n
+ó no solicitar autenticaciones para aquellas operaciones que así se considere. Se podrán marcar
+ic
+c u exenciones por bajo importe, por operaciones recurrentes o programadas siempre que la primera
+d
+o
+rp sea autenticada SCA o exenciones por análisis de riesgo desde el comercio.
+e
+r
+u
+s
+a
+d
+ib
+ih
+o
+rp
+a
+d e 12.6 Entidad Adquirente
+u
+Q
+.s
+y La Entidad Adquirente hace referencia a la entidad bancaria a través de la cual el comercio tiene
+s
+d
+e R contratado su TPV Virtual.
+a
+e
+c
+e
+n
+e
+tre
+p
+o
+tn
+e
+m
+u
+c
+o
+d
+e
+ts
+e
+e
+d
+la
+u
+tc
+e
+le
+tn
+i
+d
+a
+d
+e
+ip
+o
+rp
+a
+L
+TPV-Virtual Guía SIS
+Referencia: RS.TE.CEL.MAN.0036 Versión: 2.2
+Autor: Redsys Página:29 de 29
+Área propietaria: Comercio Electrónico Fecha: 05/12/2019
+Guías de Referencia
+En este punto se presentan el listado de guías de referencia que dispone el TPV-Virtual.
+13.1 Integración del TPV-Virtual
+• TPV-Virtual Manual Integración - Redirección.pdf
+.s o • TPV-Virtual Manual Integración - REST.pdf
+re
+c
+re • TPV-Virtual Manual Integración - Webservice.pdf
+t
+a
+n
+ó is • TPV-Virtual Integración inSite.pdf
+e
+c
+o
+a • TPV-Virtual Documentacion - Integracion TPVInLibrary iOS.pdf” y “TPV-Virtual Documentacion -
+tn
+e v integración TPVvirtualAndroid.pdf
+,n
+ó
+ic c • TPV-Virtual Pago por e-mail_SMS .pdf
+u
+d
+o
+rp • TPV-Virtual Pago MOTO.pdf
+e
+r
+u
+s a • TPV-Virtual Pago de premios de apuestas en TPV Virtual.pdf
+d
+ib
+ih
+o rp 13.2 Métodos de pago
+a
+d
+e u • TPV-Virtual Manual Integración PayPal.pdf
+Q
+.s
+y s • TPV-Virtual ApplePay - Guía de Integración de los Comercios.pdf
+d
+e
+R
+a e • TPV-Virtual Masterpass.pdf
+c
+e
+n
+e tre • TPV-Virtual Guia de Integracion BIZUM comercios SIS.pdf
+p
+o
+tn • TPV-Virtual Transferencia.pdf
+e
+m
+u
+c o 13.3 Servicios de valor Añadido
+d
+e
+ts
+e • TPV-Virtrual Pago-1-click.pdf
+e
+d
+la
+u • TPV-Virtual Integración DCC.pdf
+tc
+e
+le
+tn • TPV-Virtual Consulta SOAP.pdf
+i
+d
+a
+d
+e ip 13.4 Módulo de administración del SIS
+o
+rp
+a L • TPV-Virtual Módulo de Administración.pdf
+• TPV-Virtual- Herramienta Personalización_Manual Comercios
+TPV-Virtual Guía SIS

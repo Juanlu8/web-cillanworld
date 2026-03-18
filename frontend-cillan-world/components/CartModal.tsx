@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useCallback, useState } from "react";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import CartItem from "@/components/CartItemComp";
+import CheckoutTPV from "@/components/CheckoutTPV";
 import type { CartItemType } from "@/types/cartItem";
 import Link from "next/link";
 import { createPortal } from "react-dom";
@@ -33,7 +34,9 @@ export default function CartModal({
 
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [privacyError, setPrivacyError] = useState<string | null>(null);
-  const [showPaymentNotice, setShowPaymentNotice] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [orderId, setOrderId] = useState<number | null>(null);
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
 
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const initialFocusRef = useRef<HTMLButtonElement | null>(null);
@@ -115,13 +118,62 @@ export default function CartModal({
     if (checked) setPrivacyError(null);
   };
 
-  const onCheckoutClick = () => {
-    //if (!privacyAccepted) {
-    //  setPrivacyError(String(t("bag.privacy_required")));
-    //  document.getElementById("privacy-error")?.focus();
-    //  return;
-    //}
-    setShowPaymentNotice(true);
+  const onCheckoutClick = async () => {
+    try {
+      setIsCreatingOrder(true);
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backendUrl) {
+        throw new Error("Backend URL is not configured");
+      }
+
+      const products = cartItems
+        .map((item) => {
+          const productId = Number(item.product?.id);
+          return {
+            id: productId,
+            quantity: Number(item.quantity) || 1,
+            name: item.product?.attributes?.productName,
+            size: item.size,
+            color: item.color,
+          };
+        })
+        .filter((item) => Number.isFinite(item.id) && item.id > 0);
+
+      if (products.length === 0) {
+        throw new Error("No valid products found in cart");
+      }
+
+      const response = await fetch(`${backendUrl}/api/orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          data: {
+            products,
+            totalAmount: total,
+            currency: "EUR",
+            status: "pending",
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Failed to create order");
+      }
+
+      const createdOrderId = data?.data?.id ?? data?.order?.id;
+      if (createdOrderId) {
+        setOrderId(createdOrderId);
+        setShowCheckout(true);
+      } else {
+        throw new Error("Order was created but no order ID was returned");
+      }
+    } catch (error) {
+      console.error("Checkout order creation error:", error);
+    } finally {
+      setIsCreatingOrder(false);
+    }
   };
 
   if (!isVisible) return null;
@@ -217,37 +269,32 @@ export default function CartModal({
 
                 <button
                   onClick={onCheckoutClick}
+                  disabled={isCreatingOrder}
                   className="border border-black rounded-md py-3 mt-2 w-full cursor-pointer font-semibold hover:bg-black hover:text-white transition"
                 >
-                  {String(t("bag.checkout")).toUpperCase()}
+                  {isCreatingOrder
+                    ? "CREANDO PEDIDO..."
+                    : String(t("bag.checkout")).toUpperCase()}
                 </button>
               </div>
             </>
           )}
         </div>
 
-        {showPaymentNotice && (
+        {showCheckout && orderId && (
           <div
             className="absolute inset-0 bg-black/60 flex items-center justify-center px-4"
-            role="alertdialog"
+            role="dialog"
             aria-modal="true"
           >
-            <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center space-y-4">
-              <p className="text-base">
-                {t("general.temporal_txt_checkout1")}
-                <br/>
-                {t("general.temporal_txt_checkout2")} 
-                <Link href="https://www.instagram.com/sergio.cillan?igsh=MXkxNngwMjZkZXU1dQ==" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Instagram.</Link>
-              </p>
-              <div className="flex justify-center gap-3">
-                <button
-                  onClick={() => setShowPaymentNotice(false)}
-                  className="border border-black rounded-md px-6 py-2 font-semibold hover:bg-black hover:text-white transition"
-                >
-                  OK
-                </button>
-              </div>
-            </div>
+            <CheckoutTPV 
+              orderId={orderId}
+              totalAmount={total}
+              onClose={() => {
+                setShowCheckout(false);
+                setOrderId(null);
+              }}
+            />
           </div>
         )}
       </div>

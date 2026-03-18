@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 import NavBar from "@/components/ui/navbar";
@@ -8,157 +8,150 @@ import NextImage from "next/image";
 import { useTranslation } from "react-i18next";
 import { useCart } from "@/hooks/use-cart";
 
-type SessionCheckResponse = {
-  id: string;
-  status: string | null;
-  paymentStatus: string | null;
-  amountTotal: number | null;
-  currency?: string | null;
-  customerEmail?: string;
-  customerName?: string;
-  paymentIntentStatus?: string | null;
-  paymentIntentId?: string | null;
+type OrderCheckResponse = {
+  success: boolean;
+  orderId: number;
+  status: "pending" | "processing" | "paid" | "failed" | "refunded";
+  totalAmount: number;
+  currency: string;
+  customerEmail: string;
+  metadata?: any;
 };
 
-type ViewState = "loading" | "success" | "pending" | "failed" | "error";
+type ViewState = "loading" | "success" | "processing" | "failed" | "error";
 
 export default function SuccessPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const sp = useSearchParams();
-  const sessionId = sp?.get("session_id") ?? "";
   const { removeAll } = useCart();
 
-  const [sessionData, setSessionData] = useState<SessionCheckResponse | null>(
-    null,
-  );
-  const [state, setState] = useState<ViewState>(
-    sessionId ? "loading" : "error",
-  );
+  // Obtener orderId desde sessionStorage o params
+  const [orderId, setOrderId] = useState<number | null>(null);
+  const [orderData, setOrderData] = useState<OrderCheckResponse | null>(null);
+  const [state, setState] = useState<ViewState>("loading");
   const [error, setError] = useState<string | null>(null);
   const [cartCleared, setCartCleared] = useState(false);
+  const [fromCheckout, setFromCheckout] = useState(false);
 
+  // Inicializar orderId desde sessionStorage o URL
   useEffect(() => {
-    if (!sessionId) {
+    const storedOrderId = sessionStorage.getItem("checkout_orderId");
+    const paramOrderId = sp?.get("orderId");
+    const source = sp?.get("source");
+
+    const id = paramOrderId ? parseInt(paramOrderId, 10) : storedOrderId ? parseInt(storedOrderId, 10) : null;
+    setFromCheckout(source === "checkout" || Boolean(storedOrderId));
+
+    if (id) {
+      setOrderId(id);
+      // Limpiar sessionStorage
+      sessionStorage.removeItem("checkout_orderId");
+      sessionStorage.removeItem("checkout_totalAmount");
+    } else {
       setState("error");
-      setError(t("bag.checkout_error"));
-      return;
+      setError(t("bag.checkout_error") || "Invalid order ID");
     }
+  }, [sp, t]);
+
+  // Consultar estado de la orden
+  useEffect(() => {
+    if (!orderId) return;
 
     const controller = new AbortController();
 
-    const verifySession = async () => {
+    const checkOrder = async () => {
       setState("loading");
       setError(null);
 
       try {
-        const response = await fetch(
-          `/api/orders/session?session_id=${encodeURIComponent(sessionId)}`,
-          {
-            cache: "no-store",
-            signal: controller.signal,
-          },
-        );
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:1337";
+        const response = await fetch(`${backendUrl}/api/payment/check-order/${orderId}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
 
         if (!response.ok) {
-          const payload = (await response.json().catch(() => null)) as
-            | { error?: string }
-            | null;
-          throw new Error(
-            payload?.error || "Unable to verify payment session",
-          );
+          const errorData = (await response.json().catch(() => null)) as { error?: string } | null;
+          throw new Error(errorData?.error || "Unable to verify order");
         }
 
-        const data = (await response.json()) as SessionCheckResponse;
-        setSessionData(data);
+        const data = (await response.json()) as OrderCheckResponse;
+        setOrderData(data);
 
-        if (data.paymentStatus === "paid") {
+        // Mapear estado de orden a estado de vista
+        if (data.status === "paid") {
           setState("success");
-        } else if (
-          data.status === "open" ||
-          data.paymentStatus === "unpaid" ||
-          data.paymentStatus === "no_payment_required"
-        ) {
-          setState("pending");
+        } else if (data.status === "processing" || data.status === "pending") {
+          setState("processing");
         } else {
           setState("failed");
         }
       } catch (err) {
         if ((err as Error).name === "AbortError") return;
         setState("error");
-        setError(
-          err instanceof Error ? err.message : t("bag.checkout_error"),
-        );
+        setError(err instanceof Error ? err.message : t("bag.checkout_error") || "Unknown error");
       }
     };
 
-    verifySession();
+    checkOrder();
     return () => controller.abort();
-  }, [sessionId, t]);
+  }, [orderId, t]);
 
+  // Limpiar carrito tras volver de Redsys (pagado o en procesamiento)
   useEffect(() => {
-    if (cartCleared) return;
-    if (sessionData?.paymentStatus === "paid") {
+    if (cartCleared || !fromCheckout) return;
+    const shouldClearCart =
+      orderData?.status === "paid" || orderData?.status === "processing";
+
+    if (shouldClearCart) {
       try {
         removeAll();
       } catch {
-        // ignore storage quirks
+        // ignorar errores de storage
       } finally {
         setCartCleared(true);
       }
     }
-  }, [cartCleared, removeAll, sessionData?.paymentStatus]);
+  }, [cartCleared, fromCheckout, removeAll, orderData?.status]);
 
-  const goToHome = () => router.push(`/`);
-
-  const formattedAmount = useMemo(() => {
-    if (!sessionData?.amountTotal) return null;
-    const currency = (sessionData.currency || "EUR").toUpperCase();
-    try {
-      return new Intl.NumberFormat(undefined, {
-        style: "currency",
-        currency,
-      }).format((sessionData.amountTotal ?? 0) / 100);
-    } catch {
-      return `${(sessionData.amountTotal ?? 0) / 100} ${currency}`;
-    }
-  }, [sessionData?.amountTotal, sessionData?.currency]);
+  const goToHome = () => router.push("/");
+  const goToCheckout = () => router.push("/catalog");
 
   const headline = (() => {
-    if (state === "success") return t("bag.success_title");
-    if (state === "pending") return t("bag.payment_pending_title");
-    if (state === "failed") return t("bag.payment_failed_title");
-    if (state === "error") return t("bag.checkout_error");
-    return t("bag.success_title");
+    if (state === "success") return t("bag.success_title") || "Payment Successful!";
+    if (state === "processing") return t("bag.payment_pending_title") || "Payment Processing";
+    if (state === "failed") return t("bag.payment_failed_title") || "Payment Failed";
+    return t("bag.checkout_error") || "Error";
   })();
 
   const description = (() => {
-    if (state === "success") return t("bag.success_message");
-    if (state === "pending") return t("bag.payment_pending_message");
-    if (state === "failed") return t("bag.payment_failed_message");
-    if (state === "error") return error || t("bag.checkout_error");
-    return t("bag.payment_pending_message");
+    if (state === "success")
+      return t("bag.success_message") || "Your payment has been successfully processed.";
+    if (state === "processing")
+      return t("bag.payment_pending_message") || "Your payment is being processed. Please wait.";
+    if (state === "failed")
+      return t("bag.payment_failed_message") || "Your payment could not be processed.";
+    return error || (t("bag.checkout_error") || "An error occurred");
   })();
 
   const badgeStyles =
     state === "success"
       ? "bg-green-100 text-green-800 border-green-200"
-      : state === "pending"
-      ? "bg-amber-100 text-amber-800 border-amber-200"
-      : state === "failed" || state === "error"
-      ? "bg-red-100 text-red-800 border-red-200"
-      : "bg-slate-100 text-slate-800 border-slate-200";
+      : state === "processing"
+        ? "bg-amber-100 text-amber-800 border-amber-200"
+        : state === "failed" || state === "error"
+          ? "bg-red-100 text-red-800 border-red-200"
+          : "bg-slate-100 text-slate-800 border-slate-200";
 
   const badgeText =
     state === "success"
       ? "PAID"
-      : state === "pending"
-      ? "PENDING"
-      : state === "failed"
-      ? "FAILED"
-      : state === "error"
-      ? "ERROR"
-      : "CHECKING";
+      : state === "processing"
+        ? "PROCESSING"
+        : state === "failed"
+          ? "FAILED"
+          : "ERROR";
 
   return (
     <div className="relative text-justify">
@@ -189,9 +182,7 @@ export default function SuccessPage() {
       <div className="px-8 md:px-10 lg:px-32 xl:px-[30rem] pt-48 md:pt-[17.5rem] pb-12 md:pb-24">
         <div className="rounded-2xl bg-white/90 p-8 shadow-lg backdrop-blur">
           <div className="mb-4 flex items-center justify-center">
-            <span
-              className={`rounded-full border px-4 py-1 text-xs font-semibold tracking-wide ${badgeStyles}`}
-            >
+            <span className={`rounded-full border px-4 py-1 text-xs font-semibold tracking-wide ${badgeStyles}`}>
               {badgeText}
             </span>
           </div>
@@ -199,47 +190,97 @@ export default function SuccessPage() {
           <h1 className="text-3xl font-bold mb-4 text-center">{headline}</h1>
           <p className="mb-6 text-gray-800 text-center">{description}</p>
 
-          {state !== "error" && sessionId && (
-            <div className="mb-6 space-y-2 rounded-xl border border-black/10 bg-gray-50 p-4 text-sm text-gray-700">
-              <div className="flex justify-between">
-                <span>{t("bag.payment_status_label")}</span>
-                <span className="font-semibold">
-                  {sessionData?.paymentStatus?.toUpperCase() ?? badgeText}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>{t("bag.payment_amount_label")}</span>
-                <span className="font-semibold">
-                  {formattedAmount ?? "—"}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>{t("bag.payment_id_label")}</span>
-                <span className="font-mono text-xs">
-                  {sessionData?.paymentIntentId || sessionId}
-                </span>
-              </div>
-              {sessionData?.customerEmail && (
-                <div className="flex justify-between">
-                  <span>Email</span>
-                  <span>{sessionData.customerEmail}</span>
+          {/* Información de la orden */}
+          {orderData && (
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-600 text-xs uppercase tracking-wide">Order ID</p>
+                  <p className="font-semibold text-gray-900">#{orderData.orderId}</p>
                 </div>
-              )}
+                <div>
+                  <p className="text-gray-600 text-xs uppercase tracking-wide">Amount</p>
+                  <p className="font-semibold text-gray-900">
+                    €{orderData.totalAmount.toFixed(2)}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-gray-600 text-xs uppercase tracking-wide">Email</p>
+                  <p className="font-semibold text-gray-900">{orderData.customerEmail}</p>
+                </div>
+              </div>
             </div>
           )}
 
-          <button
-            onClick={goToHome}
-            className="border border-black rounded-md py-12 mt-2 w-full cursor-pointer font-semibold hover:bg-black hover:text-white transition"
-          >
-            {String(t("bag.success_back_to_shop")).toUpperCase()}
-          </button>
+          {/* Botones de acción */}
+          <div className="flex flex-col gap-3">
+            {state === "success" && (
+              <>
+                <button
+                  onClick={goToHome}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors"
+                >
+                  {t("common.backHome") || "Back to Home"}
+                </button>
+                <a
+                  href={`mailto:${orderData?.customerEmail}`}
+                  className="text-center text-sm text-blue-600 hover:underline"
+                >
+                  {t("bag.confirmationEmail") || "Check your email for confirmation"}
+                </a>
+              </>
+            )}
 
-          {state === "failed" && (
-            <p className="mt-4 text-center text-sm text-gray-500">
-              {t("bag.payment_try_again")}
-            </p>
-          )}
+            {state === "processing" && (
+              <>
+                <div className="flex items-center justify-center mb-4">
+                  <div className="animate-spin">
+                    <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-center text-sm text-gray-600 mb-4">
+                  {t("bag.paymentProcessing") || "Your payment is being processed. This may take a few moments."}
+                </p>
+                <button
+                  onClick={goToHome}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors"
+                >
+                  {t("common.backHome") || "Back to Home"}
+                </button>
+              </>
+            )}
+
+            {(state === "failed" || state === "error") && (
+              <>
+                <button
+                  onClick={goToCheckout}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors"
+                >
+                  {t("bag.tryAgain") || "Try Again"}
+                </button>
+                <button
+                  onClick={goToHome}
+                  className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 rounded-lg transition-colors"
+                >
+                  {t("common.backHome") || "Back to Home"}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

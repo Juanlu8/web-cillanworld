@@ -62,6 +62,27 @@
     },
     "orderedAt": {
       "type": "datetime"
+    },
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": [
+        "card",
+        "wallet",
+        "bizum",
+        "transfer"
+      ],
+      "options": {
+        "index": true
+      }
+    },
+    "tpvTransactionId": {
+      "type": "string",
+      "options": {
+        "index": true
+      }
+    },
+    "tpvAuthCode": {
+      "type": "string"
     }
   }
 }

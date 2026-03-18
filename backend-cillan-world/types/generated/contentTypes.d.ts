@@ -555,6 +555,9 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     metadata: Schema.Attribute.JSON;
     notes: Schema.Attribute.Text;
     orderedAt: Schema.Attribute.DateTime;
+    paymentMethod: Schema.Attribute.Enumeration<
+      ['card', 'wallet', 'bizum', 'transfer']
+    >;
     products: Schema.Attribute.JSON & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     shippingAddress: Schema.Attribute.JSON;
@@ -563,6 +566,8 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.DefaultTo<'pending'>;
     totalAmount: Schema.Attribute.Decimal;
+    tpvAuthCode: Schema.Attribute.String;
+    tpvTransactionId: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

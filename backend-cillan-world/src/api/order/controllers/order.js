@@ -8,7 +8,14 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
   async create(ctx) {
     const body = ctx.request.body || {};
     const payload = body.data ?? body;
-    const { products } = payload; // [{ id, quantity? }]
+    const {
+      products,
+      totalAmount,
+      currency,
+      customerEmail,
+      customerName,
+      customerPhone,
+    } = payload; // [{ id, quantity? }]
 
     try {
       if (!Array.isArray(products) || products.length === 0) {
@@ -37,6 +44,11 @@ module.exports = createCoreController('api::order.order', ({ strapi }) => ({
             size: p.size || 'N/A',
             color: p.color || 'N/A',
           })),
+          totalAmount: Number(totalAmount) || null,
+          currency: currency || 'EUR',
+          customerEmail: customerEmail || null,
+          customerName: customerName || null,
+          customerPhone: customerPhone || null,
           status: 'pending',
           orderedAt: new Date(),
         },
