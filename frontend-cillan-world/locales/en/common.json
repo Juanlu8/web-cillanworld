@@ -21,6 +21,28 @@
     "universe": "universe",
     "about": "about"
   },
+  "common": {
+    "cancel": "Cancel",
+    "backHome": "Back to Home"
+  },
+  "checkout": {
+    "title": "Secure Checkout",
+    "items": "Items",
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "processing": "Processing...",
+    "payNow": "Pay Now",
+    "securePayment": "Secure payment processed by Redsys",
+    "validation": {
+      "nameEmailRequired": "Name and email are required",
+      "cartEmpty": "Your cart is empty"
+    },
+    "cancelled_title": "Payment Cancelled",
+    "cancelled_message": "Your payment was cancelled. No charges have been made.",
+    "cancelled_info": "You can try again or contact support if you need help.",
+    "tryAgain": "Try Again"
+  },
   "bag": {
     "your_bag": "Your Bag",
     "color": "Color",

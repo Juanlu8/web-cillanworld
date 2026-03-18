@@ -21,6 +21,28 @@
     "universe": "universo",
     "about": "about"
   },
+  "common": {
+    "cancel": "Cancelar",
+    "backHome": "Volver al inicio"
+  },
+  "checkout": {
+    "title": "Finalizar compra segura",
+    "items": "Articulos",
+    "fullName": "Nombre completo",
+    "email": "Correo electronico",
+    "phone": "Telefono",
+    "processing": "Procesando...",
+    "payNow": "Pagar ahora",
+    "securePayment": "Pago seguro procesado por Redsys",
+    "validation": {
+      "nameEmailRequired": "Nombre y correo electronico son obligatorios",
+      "cartEmpty": "La cesta esta vacia"
+    },
+    "cancelled_title": "Pago cancelado",
+    "cancelled_message": "Tu pago ha sido cancelado. No se ha realizado ningun cargo.",
+    "cancelled_info": "Puedes intentarlo de nuevo o contactar con soporte si lo necesitas.",
+    "tryAgain": "Intentar de nuevo"
+  },
   "bag": {
     "your_bag": "Tu Cesta",
     "color": "Color",
