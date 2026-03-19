@@ -3,6 +3,284 @@
 const { createCoreController } = require('@strapi/strapi').factories;
 const { serializeAndSignJSONRequest, deserializeAndVerifyJSONResponse } = require('redsys-easy');
 
+const RESEND_ENDPOINT = 'https://api.resend.com/emails';
+const DEFAULT_ADMIN_EMAIL = 'cillan-world@gmail.com';
+const DEFAULT_FROM_EMAIL = 'Cillan <cillan.world@gmail.com>';
+const DEFAULT_LOGO_PATH = '/images/logo-top.webp';
+
+const escapeHtml = (value) => String(value || '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
+const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || ''));
+
+const formatMoney = (amount, currency) => {
+  const numericAmount = Number(amount);
+  if (!Number.isFinite(numericAmount)) {
+    return 'N/A';
+  }
+  return `${numericAmount.toFixed(2)} ${currency || 'EUR'}`;
+};
+
+const buildLogoUrl = () => {
+  const baseUrl = String(process.env.FRONTEND_URL || '').trim();
+  if (!baseUrl) {
+    return null;
+  }
+
+  try {
+    return new URL(DEFAULT_LOGO_PATH, baseUrl).toString();
+  } catch (error) {
+    return null;
+  }
+};
+
+const formatAddressLines = (address) => {
+  if (!address || typeof address !== 'object') {
+    return [];
+  }
+
+  const preferredKeys = [
+    'name',
+    'fullName',
+    'line1',
+    'line2',
+    'address',
+    'street',
+    'address1',
+    'address2',
+    'city',
+    'state',
+    'province',
+    'postalCode',
+    'zip',
+    'country',
+    'phone',
+  ];
+
+  const lines = [];
+  const seen = new Set();
+
+  preferredKeys.forEach((key) => {
+    const rawValue = address[key];
+    if (rawValue === undefined || rawValue === null) {
+      return;
+    }
+    const value = String(rawValue).trim();
+    if (!value || seen.has(value)) {
+      return;
+    }
+    seen.add(value);
+    lines.push(value);
+  });
+
+  if (lines.length === 0) {
+    Object.entries(address).forEach(([key, rawValue]) => {
+      if (rawValue === undefined || rawValue === null) {
+        return;
+      }
+      const value = String(rawValue).trim();
+      if (!value || seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+      lines.push(`${key}: ${value}`);
+    });
+  }
+
+  return lines;
+};
+
+const formatProducts = (products) => {
+  const items = Array.isArray(products) ? products : [];
+
+  const htmlRows = items.map((item) => {
+    const name = escapeHtml(item?.name || `Producto ${item?.id || ''}`.trim() || 'Producto');
+    const quantity = Number(item?.quantity) || 1;
+    const size = item?.size ? ` - Talla: ${escapeHtml(item.size)}` : '';
+    const color = item?.color ? ` - Color: ${escapeHtml(item.color)}` : '';
+    return `
+      <tr>
+        <td style="padding: 6px 0;">${name}${size}${color}</td>
+        <td style="padding: 6px 0; text-align: right;">x${quantity}</td>
+      </tr>
+    `;
+  }).join('');
+
+  const textLines = items.map((item) => {
+    const name = item?.name || `Producto ${item?.id || ''}`.trim() || 'Producto';
+    const quantity = Number(item?.quantity) || 1;
+    const size = item?.size ? ` - Talla: ${item.size}` : '';
+    const color = item?.color ? ` - Color: ${item.color}` : '';
+    return `- ${name}${size}${color} x${quantity}`;
+  });
+
+  return { htmlRows, textLines };
+};
+
+const buildEmailContent = (order, options) => {
+  const logoUrl = options?.logoUrl;
+  const logoMarkup = logoUrl
+    ? `<img src="${logoUrl}" alt="Cillan World" style="max-width: 160px; height: auto; margin-bottom: 16px;" />`
+    : '';
+
+  const products = formatProducts(order.products);
+  const totalLabel = formatMoney(order.totalAmount, order.currency || 'EUR');
+
+  const shippingLines = formatAddressLines(order.shippingAddress);
+  const billingLines = formatAddressLines(order.billingAddress);
+
+  return {
+    logoMarkup,
+    products,
+    totalLabel,
+    shippingLines,
+    billingLines,
+  };
+};
+
+const buildCustomerEmail = (order, logoUrl) => {
+  const content = buildEmailContent(order, { logoUrl });
+  const subject = `Pedido confirmado - #${order.id}`;
+  const customerName = escapeHtml(order.customerName || 'Cliente');
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #111; line-height: 1.4;">
+      ${content.logoMarkup}
+      <h2 style="margin: 0 0 12px;">Gracias por tu pedido</h2>
+      <p>Hola ${customerName},</p>
+      <p>Hemos recibido tu pedido y el pago se ha completado correctamente.</p>
+      <p><strong>Numero de pedido:</strong> #${escapeHtml(order.id)}</p>
+      <h3 style="margin: 20px 0 8px;">Productos</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tbody>
+          ${content.products.htmlRows || '<tr><td>No hay productos en el pedido.</td></tr>'}
+          <tr>
+            <td style="padding-top: 10px; border-top: 1px solid #eee;"><strong>Total</strong></td>
+            <td style="padding-top: 10px; border-top: 1px solid #eee; text-align: right;"><strong>${escapeHtml(content.totalLabel)}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 20px;">Si tienes alguna duda, responde a este correo.</p>
+    </div>
+  `;
+
+  const text = `
+Gracias por tu pedido
+
+Hola ${order.customerName || 'Cliente'},
+Hemos recibido tu pedido y el pago se ha completado correctamente.
+
+Numero de pedido: #${order.id}
+
+Productos:
+${content.products.textLines.join('\n') || '- (sin productos)'}
+
+Total: ${content.totalLabel}
+
+Si tienes alguna duda, responde a este correo.
+  `.trim();
+
+  return { subject, html, text };
+};
+
+const buildAdminEmail = (order, logoUrl) => {
+  const content = buildEmailContent(order, { logoUrl });
+  const subject = `Nuevo pedido pagado - #${order.id}`;
+
+  const shippingHtml = content.shippingLines.length
+    ? content.shippingLines.map((line) => escapeHtml(line)).join('<br />')
+    : 'N/A';
+  const billingHtml = content.billingLines.length
+    ? content.billingLines.map((line) => escapeHtml(line)).join('<br />')
+    : 'N/A';
+
+  const shippingText = content.shippingLines.length ? content.shippingLines.join('\n') : 'N/A';
+  const billingText = content.billingLines.length ? content.billingLines.join('\n') : 'N/A';
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #111; line-height: 1.4;">
+      ${content.logoMarkup}
+      <h2 style="margin: 0 0 12px;">Nuevo pedido pagado</h2>
+      <p><strong>Numero de pedido:</strong> #${escapeHtml(order.id)}</p>
+      <p><strong>Cliente:</strong> ${escapeHtml(order.customerName || 'N/A')}</p>
+      <p><strong>Email:</strong> ${escapeHtml(order.customerEmail || 'N/A')}</p>
+      <p><strong>Telefono:</strong> ${escapeHtml(order.customerPhone || 'N/A')}</p>
+      <h3 style="margin: 20px 0 8px;">Productos</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tbody>
+          ${content.products.htmlRows || '<tr><td>No hay productos en el pedido.</td></tr>'}
+          <tr>
+            <td style="padding-top: 10px; border-top: 1px solid #eee;"><strong>Total</strong></td>
+            <td style="padding-top: 10px; border-top: 1px solid #eee; text-align: right;"><strong>${escapeHtml(content.totalLabel)}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <h3 style="margin: 20px 0 8px;">Direccion de envio</h3>
+      <p>${shippingHtml}</p>
+      <h3 style="margin: 20px 0 8px;">Direccion de facturacion</h3>
+      <p>${billingHtml}</p>
+    </div>
+  `;
+
+  const text = `
+Nuevo pedido pagado
+
+Numero de pedido: #${order.id}
+Cliente: ${order.customerName || 'N/A'}
+Email: ${order.customerEmail || 'N/A'}
+Telefono: ${order.customerPhone || 'N/A'}
+
+Productos:
+${content.products.textLines.join('\n') || '- (sin productos)'}
+
+Total: ${content.totalLabel}
+
+Direccion de envio:
+${shippingText}
+
+Direccion de facturacion:
+${billingText}
+  `.trim();
+
+  return { subject, html, text };
+};
+
+const sendTransactionalEmail = async ({ to, subject, html, text, replyTo }) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    return { ok: false, error: 'RESEND_API_KEY not configured' };
+  }
+
+  const fromEmail = process.env.CONTACT_FROM_EMAIL || DEFAULT_FROM_EMAIL;
+
+  const response = await fetch(RESEND_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [to],
+      subject,
+      html,
+      text,
+      replyTo: replyTo || undefined,
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    return { ok: false, error: `Resend error ${response.status}: ${body}` };
+  }
+
+  return { ok: true };
+};
+
 /**
  * Payment Controller para gestionar pagos con TPV-Virtual Redsys
  */
@@ -296,6 +574,71 @@ module.exports = {
           },
         },
       });
+
+      if (isSuccessful) {
+        const metadataAfterUpdate = /** @type {any} */ (
+          (updatedOrder?.metadata && typeof updatedOrder.metadata === 'object')
+            ? updatedOrder.metadata
+            : existingMetadata
+        );
+        const emailFlags = /** @type {any} */ (metadataAfterUpdate.email_notifications || {});
+        const logoUrl = buildLogoUrl();
+        const adminEmail = process.env.CONTACT_TO_EMAIL || DEFAULT_ADMIN_EMAIL;
+        const orderForEmail = updatedOrder || order;
+
+        let customerSent = Boolean(emailFlags.customerSent);
+        let adminSent = Boolean(emailFlags.adminSent);
+
+        try {
+          if (!customerSent && isValidEmail(orderForEmail.customerEmail)) {
+            const customerEmailContent = buildCustomerEmail(orderForEmail, logoUrl);
+            const customerResult = await sendTransactionalEmail({
+              to: orderForEmail.customerEmail,
+              subject: customerEmailContent.subject,
+              html: customerEmailContent.html,
+              text: customerEmailContent.text,
+              replyTo: adminEmail,
+            });
+            customerSent = customerResult.ok;
+            if (!customerResult.ok) {
+              strapi.log.warn(`Customer email failed for order ${order.id}: ${customerResult.error}`);
+            }
+          }
+
+          if (!adminSent && isValidEmail(adminEmail)) {
+            const adminEmailContent = buildAdminEmail(orderForEmail, logoUrl);
+            const adminResult = await sendTransactionalEmail({
+              to: adminEmail,
+              subject: adminEmailContent.subject,
+              html: adminEmailContent.html,
+              text: adminEmailContent.text,
+              replyTo: orderForEmail.customerEmail || undefined,
+            });
+            adminSent = adminResult.ok;
+            if (!adminResult.ok) {
+              strapi.log.warn(`Admin email failed for order ${order.id}: ${adminResult.error}`);
+            }
+          }
+        } catch (emailError) {
+          strapi.log.error('Unexpected error sending payment emails:', emailError);
+        }
+
+        if (customerSent || adminSent) {
+          await strapi.entityService.update('api::order.order', order.id, {
+            data: {
+              metadata: {
+                ...metadataAfterUpdate,
+                email_notifications: {
+                  ...emailFlags,
+                  customerSent: customerSent || emailFlags.customerSent,
+                  adminSent: adminSent || emailFlags.adminSent,
+                  sentAt: new Date().toISOString(),
+                },
+              },
+            },
+          });
+        }
+      }
 
       strapi.log.info(
         `TPV Notification processed: Order ${order.id} - Status: ${newStatus} (Response: ${dsResponseCode})`
