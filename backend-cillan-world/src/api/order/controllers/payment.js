@@ -26,6 +26,11 @@ const formatMoney = (amount, currency) => {
 };
 
 const buildLogoUrl = () => {
+  const explicitUrl = String(process.env.FRONTEND_LOGO_URL || '').trim();
+  if (explicitUrl) {
+    return explicitUrl;
+  }
+
   const baseUrl = String(process.env.FRONTEND_URL || '').trim();
   if (!baseUrl) {
     return null;
@@ -124,7 +129,7 @@ const formatProducts = (products) => {
 const buildEmailContent = (order, options) => {
   const logoUrl = options?.logoUrl;
   const logoMarkup = logoUrl
-    ? `<img src="${logoUrl}" alt="Cillan World" style="max-width: 160px; height: auto; margin-bottom: 16px;" />`
+    ? `<img src="${logoUrl}" alt="Cillan World" style="max-width: 160px; height: auto; margin-bottom: 16px; display: block; background-color: #ffffff;" />`
     : '';
 
   const products = formatProducts(order.products);
@@ -153,6 +158,7 @@ const buildCustomerEmail = (order, logoUrl) => {
       <h2 style="margin: 0 0 12px;">Gracias por tu pedido</h2>
       <p>Hola ${customerName},</p>
       <p>Hemos recibido tu pedido y el pago se ha completado correctamente.</p>
+      <p>Muchas gracias por tu compra. Esperamos que disfrutes de tu prenda.</p>
       <p><strong>Numero de pedido:</strong> #${escapeHtml(order.id)}</p>
       <h3 style="margin: 20px 0 8px;">Productos</h3>
       <table style="width: 100%; border-collapse: collapse;">
@@ -173,6 +179,8 @@ Gracias por tu pedido
 
 Hola ${order.customerName || 'Cliente'},
 Hemos recibido tu pedido y el pago se ha completado correctamente.
+
+Muchas gracias por tu compra!. Esperamos que disfrutes de tu prenda.
 
 Numero de pedido: #${order.id}
 

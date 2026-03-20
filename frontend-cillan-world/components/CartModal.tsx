@@ -40,6 +40,8 @@ export default function CartModal({
 
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const initialFocusRef = useRef<HTMLButtonElement | null>(null);
+  const privacySectionRef = useRef<HTMLDivElement | null>(null);
+  const privacyErrorRef = useRef<HTMLParagraphElement | null>(null);
 
   // Bloquea scroll al abrir
   useEffect(() => {
@@ -90,6 +92,12 @@ export default function CartModal({
     return () => document.removeEventListener("keydown", handleKey);
   }, [isVisible, isCartOpen, closeCart, cartRef]);
 
+  useEffect(() => {
+    if (!privacyError) return;
+    privacySectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    privacyErrorRef.current?.focus();
+  }, [privacyError]);
+
   const onOverlayClick = useCallback(
     (e: React.MouseEvent) => {
       if (e.target === overlayRef.current) closeCart();
@@ -120,6 +128,13 @@ export default function CartModal({
 
   const onCheckoutClick = async () => {
     try {
+      if (!privacyAccepted) {
+        setPrivacyError(
+          (t("bag.privacy_required") as string) || "Debes aceptar la política de privacidad para continuar"
+        );
+        return;
+      }
+
       setIsCreatingOrder(true);
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
@@ -222,12 +237,12 @@ export default function CartModal({
             <>
               <div aria-live="polite">{itemsUI}</div>
 
-              <div className="mt-8">
+              <div className="mt-8" ref={privacySectionRef}>
                 <div className="flex items-start gap-2 mb-2">
                   <input
                     type="checkbox"
                     id="privacy"
-                    className="mt-1 cursor-pointer"
+                    className={`mt-1 cursor-pointer ${privacyError ? "ring-2 ring-red-500" : ""}`}
                     checked={privacyAccepted}
                     onChange={onChangePrivacy}
                     aria-invalid={!!privacyError}
@@ -252,6 +267,7 @@ export default function CartModal({
                     id="privacy-error"
                     role="alert"
                     tabIndex={-1}
+                    ref={privacyErrorRef}
                     className="text-sm text-red-600 mb-4"
                   >
                     {privacyError}
@@ -269,8 +285,8 @@ export default function CartModal({
 
                 <button
                   onClick={onCheckoutClick}
-                  disabled={isCreatingOrder}
-                  className="border border-black rounded-md py-3 mt-2 w-full cursor-pointer font-semibold hover:bg-black hover:text-white transition"
+                  disabled={isCreatingOrder || !privacyAccepted}
+                  className="border border-black rounded-md py-3 mt-2 w-full cursor-pointer font-semibold hover:bg-black hover:text-white transition disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-transparent disabled:hover:text-black"
                 >
                   {isCreatingOrder
                     ? "CREANDO PEDIDO..."
