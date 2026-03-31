@@ -308,13 +308,55 @@ module.exports = {
    */
   async createTransaction(ctx) {
     try {
-      const { orderId, customerName, customerEmail, customerPhone, totalAmount } = ctx.request.body;
+      const {
+        orderId,
+        customerName,
+        customerEmail,
+        customerPhone,
+        totalAmount,
+        shippingAddress,
+        billingAddress,
+      } = ctx.request.body;
 
       // Validar datos
       if (!orderId || !customerEmail) {
         ctx.response.status = 400;
         return { error: 'Missing required fields: orderId, customerEmail' };
       }
+
+      const normalizeAddress = (address) => {
+        if (!address || typeof address !== 'object') {
+          return null;
+        }
+
+        const normalized = {
+          fullName: String(address.fullName || address.name || '').trim(),
+          line1: String(address.line1 || address.address1 || address.address || '').trim(),
+          line2: String(address.line2 || address.address2 || '').trim(),
+          city: String(address.city || '').trim(),
+          province: String(address.province || address.state || '').trim(),
+          postalCode: String(address.postalCode || address.zip || '').trim(),
+          country: String(address.country || '').trim(),
+          phone: String(address.phone || '').trim(),
+        };
+
+        return normalized;
+      };
+
+      const normalizedShipping = normalizeAddress(shippingAddress);
+      if (
+        !normalizedShipping ||
+        !normalizedShipping.line1 ||
+        !normalizedShipping.city ||
+        !normalizedShipping.province ||
+        !normalizedShipping.postalCode ||
+        !normalizedShipping.country
+      ) {
+        ctx.response.status = 400;
+        return { error: 'Missing required shipping address fields' };
+      }
+
+      const normalizedBilling = normalizeAddress(billingAddress) || null;
 
       // Obtener la order de Strapi
       const order = await strapi.entityService.findOne('api::order.order', orderId);
@@ -419,6 +461,8 @@ module.exports = {
           customerName,
           customerEmail,
           customerPhone,
+          shippingAddress: normalizedShipping,
+          billingAddress: normalizedBilling || order.billingAddress || null,
           tpvTransactionId: orderReference,
           metadata: {
             ...existingMetadata,

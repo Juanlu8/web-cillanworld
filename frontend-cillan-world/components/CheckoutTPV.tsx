@@ -32,6 +32,12 @@ export default function CheckoutTPV({ orderId, totalAmount = 0, onClose }: Check
     customerName: '',
     customerEmail: '',
     customerPhone: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    province: '',
+    postalCode: '',
+    country: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +56,10 @@ export default function CheckoutTPV({ orderId, totalAmount = 0, onClose }: Check
     try {
       if (!formData.customerName || !formData.customerEmail) {
         throw new Error(t('checkout.validation.nameEmailRequired') || 'Name and email are required');
+      }
+
+      if (!formData.addressLine1 || !formData.city || !formData.province || !formData.postalCode || !formData.country) {
+        throw new Error(t('checkout.validation.addressRequired') || 'Shipping address is required');
       }
 
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -74,6 +84,16 @@ export default function CheckoutTPV({ orderId, totalAmount = 0, onClose }: Check
           customerEmail: formData.customerEmail,
           customerPhone: formData.customerPhone,
           totalAmount: total,
+          shippingAddress: {
+            fullName: formData.customerName,
+            line1: formData.addressLine1,
+            line2: formData.addressLine2,
+            city: formData.city,
+            province: formData.province,
+            postalCode: formData.postalCode,
+            country: formData.country,
+            phone: formData.customerPhone,
+          },
         }),
       });
 
@@ -127,7 +147,7 @@ export default function CheckoutTPV({ orderId, totalAmount = 0, onClose }: Check
   };
 
   return (
-    <div className="checkout-tpv max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="checkout-tpv w-full max-w-lg max-h-[90vh] overflow-y-auto mx-auto p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">
         {t('checkout.title') || 'Secure Checkout'}
       </h2>
@@ -199,6 +219,114 @@ export default function CheckoutTPV({ orderId, totalAmount = 0, onClose }: Check
             placeholder="+34 123 456 789"
             disabled={loading}
           />
+        </div>
+
+        <div className="pt-2">
+          <div className="text-sm font-semibold text-gray-900 mb-2">
+            {t('checkout.shippingTitle') || 'Shipping address'}
+          </div>
+          <div className="space-y-3">
+            <div>
+              <label htmlFor="addressLine1" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('checkout.addressLine1') || 'Address line 1'} *
+              </label>
+              <input
+                id="addressLine1"
+                type="text"
+                name="addressLine1"
+                value={formData.addressLine1}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Calle Mayor 123"
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="addressLine2" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('checkout.addressLine2') || 'Address line 2'}
+              </label>
+              <input
+                id="addressLine2"
+                type="text"
+                name="addressLine2"
+                value={formData.addressLine2}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Piso, puerta, etc."
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('checkout.city') || 'City'} *
+              </label>
+              <input
+                id="city"
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Madrid"
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="province" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('checkout.province') || 'Province'} *
+              </label>
+              <input
+                id="province"
+                type="text"
+                name="province"
+                value={formData.province}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Madrid"
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('checkout.postalCode') || 'Postal code'} *
+              </label>
+              <input
+                id="postalCode"
+                type="text"
+                name="postalCode"
+                value={formData.postalCode}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="28001"
+                disabled={loading}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('checkout.country') || 'Country'} *
+              </label>
+              <input
+                id="country"
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Espana"
+                disabled={loading}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="pt-4">
