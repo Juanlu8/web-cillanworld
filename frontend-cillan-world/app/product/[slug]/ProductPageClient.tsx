@@ -364,6 +364,12 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
 
   useEffect(() => {
 
+    setSelectedSize(null);
+
+  }, [product?.id]);
+
+  useEffect(() => {
+
     if (product?.attributes?.color) {
 
       const colorName = getBasicColorName(product.attributes.color.trim());
@@ -500,11 +506,35 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
 
     price,
 
+    sizeType,
+
+    sizeOptions,
+
     slug: productSlug,
 
   } = product.attributes;
 
 
+
+  const availableSizes = useMemo(() => {
+    const normalizedType = sizeType === "numeric" ? "numeric" : "alpha";
+
+    const customSizes = Array.isArray(sizeOptions)
+      ? sizeOptions
+          .map((value) => String(value ?? "").trim())
+          .filter(Boolean)
+      : [];
+
+    if (customSizes.length > 0) {
+      return customSizes;
+    }
+
+    return normalizedType === "numeric"
+      ? ["36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46"]
+      : ["S", "M", "L", "XL"];
+  }, [sizeType, sizeOptions]);
+
+  const sizeGridColumns = Math.min(Math.max(availableSizes.length, 1), 5);
 
   const imageUrls = getProductImageUrls(product);
 
@@ -917,9 +947,12 @@ export default function ProductPageClient({ initialProduct, allProducts }: Props
 
           {/* Tallas */}
           <div>
-            <div className="grid grid-cols-4 gap-2">
+            <div
+              className="grid gap-2"
+              style={{ gridTemplateColumns: `repeat(${sizeGridColumns}, minmax(0, 1fr))` }}
+            >
 
-              {["S", "M", "L", "XL"].map((size) => (
+              {availableSizes.map((size) => (
 
                 <button
 

@@ -297,26 +297,41 @@ export default function CartModal({
           )}
         </div>
 
-        {showCheckout && orderId && (
-          <div
-            className="absolute inset-0 bg-black/60 flex items-center justify-center px-4"
-            role="dialog"
-            aria-modal="true"
-          >
-            <CheckoutTPV 
-              orderId={orderId}
-              totalAmount={total}
-              onClose={() => {
-                setShowCheckout(false);
-                setOrderId(null);
-              }}
-            />
-          </div>
-        )}
       </div>
     </div>
   );
 
-  if (typeof document !== "undefined") return createPortal(panel, document.body);
-  return panel;
+  const checkoutPanel = showCheckout && orderId ? (
+    <div
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/70 px-4 py-6"
+      role="dialog"
+      aria-modal="true"
+    >
+      <CheckoutTPV
+        orderId={orderId}
+        totalAmount={total}
+        onClose={() => {
+          setShowCheckout(false);
+          setOrderId(null);
+        }}
+      />
+    </div>
+  ) : null;
+
+  if (typeof document !== "undefined") {
+    return createPortal(
+      <>
+        {panel}
+        {checkoutPanel}
+      </>,
+      document.body
+    );
+  }
+
+  return (
+    <>
+      {panel}
+      {checkoutPanel}
+    </>
+  );
 }

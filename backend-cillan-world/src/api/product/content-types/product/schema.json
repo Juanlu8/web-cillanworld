@@ -42,6 +42,17 @@
     "price": {
       "type": "decimal"
     },
+    "sizeType": {
+      "type": "enumeration",
+      "enum": [
+        "alpha",
+        "numeric"
+      ],
+      "default": "alpha"
+    },
+    "sizeOptions": {
+      "type": "json"
+    },
     "color": {
       "type": "string"
     },

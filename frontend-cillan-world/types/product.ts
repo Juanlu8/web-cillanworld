@@ -8,6 +8,8 @@ export type ProductType = {
     active: boolean;
     isFeatured: boolean;
     price: number;
+    sizeType?: "alpha" | "numeric";
+    sizeOptions?: Array<string | number>;
     order?: number;
     materials: string;
     materials_en: string;

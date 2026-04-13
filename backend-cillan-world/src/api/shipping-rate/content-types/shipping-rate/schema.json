@@ -1,0 +1,55 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shipping_rates",
+  "info": {
+    "singularName": "shipping-rate",
+    "pluralName": "shipping-rates",
+    "displayName": "Shipping Rate",
+    "description": "Tarifas de envio editables por zona"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "zoneKey": {
+      "type": "enumeration",
+      "enum": [
+        "espana_peninsula",
+        "espana_baleares",
+        "espana_canarias",
+        "europa_cercana",
+        "europa_central",
+        "europa_norte_este",
+        "norteamerica",
+        "latinoamerica",
+        "asia_tier_1",
+        "asia_tier_2",
+        "resto_mundo"
+      ],
+      "required": true,
+      "unique": true
+    },
+    "zoneLabel": {
+      "type": "string",
+      "required": true
+    },
+    "method": {
+      "type": "string",
+      "required": true
+    },
+    "amount": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "currency": {
+      "type": "string",
+      "default": "EUR"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

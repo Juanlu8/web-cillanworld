@@ -2,6 +2,7 @@
 
 const { createCoreController } = require('@strapi/strapi').factories;
 const { serializeAndSignJSONRequest, deserializeAndVerifyJSONResponse } = require('redsys-easy');
+const { getShippingQuote, loadShippingRatesFromStrapi } = require('../utils/shipping-rates');
 
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 const DEFAULT_ADMIN_EMAIL = 'cillan-world@gmail.com';
@@ -133,6 +134,9 @@ const buildEmailContent = (order, options) => {
     : '';
 
   const products = formatProducts(order.products);
+  const pricing = (order.metadata && order.metadata.pricing) || {};
+  const subtotalLabel = formatMoney(pricing.subtotalAmount, order.currency || 'EUR');
+  const shippingLabel = formatMoney(pricing.shippingAmount, order.currency || 'EUR');
   const totalLabel = formatMoney(order.totalAmount, order.currency || 'EUR');
 
   const shippingLines = formatAddressLines(order.shippingAddress);
@@ -141,6 +145,8 @@ const buildEmailContent = (order, options) => {
   return {
     logoMarkup,
     products,
+    subtotalLabel,
+    shippingLabel,
     totalLabel,
     shippingLines,
     billingLines,
@@ -165,6 +171,14 @@ const buildCustomerEmail = (order, logoUrl) => {
         <tbody>
           ${content.products.htmlRows || '<tr><td>No hay productos en el pedido.</td></tr>'}
           <tr>
+            <td style="padding-top: 10px; border-top: 1px solid #eee;">Subtotal</td>
+            <td style="padding-top: 10px; border-top: 1px solid #eee; text-align: right;">${escapeHtml(content.subtotalLabel)}</td>
+          </tr>
+          <tr>
+            <td>Envio</td>
+            <td style="text-align: right;">${escapeHtml(content.shippingLabel)}</td>
+          </tr>
+          <tr>
             <td style="padding-top: 10px; border-top: 1px solid #eee;"><strong>Total</strong></td>
             <td style="padding-top: 10px; border-top: 1px solid #eee; text-align: right;"><strong>${escapeHtml(content.totalLabel)}</strong></td>
           </tr>
@@ -187,6 +201,8 @@ Numero de pedido: #${order.id}
 Productos:
 ${content.products.textLines.join('\n') || '- (sin productos)'}
 
+Subtotal: ${content.subtotalLabel}
+Envio: ${content.shippingLabel}
 Total: ${content.totalLabel}
 
 Si tienes alguna duda, responde a este correo.
@@ -222,6 +238,14 @@ const buildAdminEmail = (order, logoUrl) => {
         <tbody>
           ${content.products.htmlRows || '<tr><td>No hay productos en el pedido.</td></tr>'}
           <tr>
+            <td style="padding-top: 10px; border-top: 1px solid #eee;">Subtotal</td>
+            <td style="padding-top: 10px; border-top: 1px solid #eee; text-align: right;">${escapeHtml(content.subtotalLabel)}</td>
+          </tr>
+          <tr>
+            <td>Envio</td>
+            <td style="text-align: right;">${escapeHtml(content.shippingLabel)}</td>
+          </tr>
+          <tr>
             <td style="padding-top: 10px; border-top: 1px solid #eee;"><strong>Total</strong></td>
             <td style="padding-top: 10px; border-top: 1px solid #eee; text-align: right;"><strong>${escapeHtml(content.totalLabel)}</strong></td>
           </tr>
@@ -245,6 +269,8 @@ Telefono: ${order.customerPhone || 'N/A'}
 Productos:
 ${content.products.textLines.join('\n') || '- (sin productos)'}
 
+Subtotal: ${content.subtotalLabel}
+Envio: ${content.shippingLabel}
 Total: ${content.totalLabel}
 
 Direccion de envio:
@@ -415,15 +441,28 @@ module.exports = {
         phone: customerPhone || '',
       };
 
-      const computedTotal = await resolveOrderTotal(order);
-      const normalizedTotalAmount = Number.isFinite(computedTotal) && computedTotal !== null
-        ? computedTotal
+      const computedSubtotal = await resolveOrderTotal(order);
+      const normalizedSubtotalAmount = Number.isFinite(computedSubtotal) && computedSubtotal !== null
+        ? computedSubtotal
         : Number(totalAmount);
 
-      if (!Number.isFinite(normalizedTotalAmount) || normalizedTotalAmount <= 0) {
+      if (!Number.isFinite(normalizedSubtotalAmount) || normalizedSubtotalAmount <= 0) {
         ctx.response.status = 400;
         return { error: 'Order total is zero. Please check product prices.' };
       }
+
+      const configuredRatesByZone = await loadShippingRatesFromStrapi(strapi);
+
+      const shippingQuote = getShippingQuote({
+        country: normalizedShipping.country,
+        province: normalizedShipping.province,
+        city: normalizedShipping.city,
+        postalCode: normalizedShipping.postalCode,
+      }, {
+        ratesByZone: configuredRatesByZone,
+      });
+
+      const normalizedTotalAmount = Number((normalizedSubtotalAmount + Number(shippingQuote.amount || 0)).toFixed(2));
 
       const orderForPayment = {
         ...order,
@@ -466,6 +505,15 @@ module.exports = {
           tpvTransactionId: orderReference,
           metadata: {
             ...existingMetadata,
+            pricing: {
+              subtotalAmount: Number(normalizedSubtotalAmount.toFixed(2)),
+              shippingAmount: Number(shippingQuote.amount || 0),
+              totalAmount: normalizedTotalAmount,
+              shippingZone: shippingQuote.zoneKey,
+              shippingZoneLabel: shippingQuote.zoneLabel,
+              shippingMethod: shippingQuote.method,
+              shippingCurrency: shippingQuote.currency,
+            },
             tpv_attempts: nextAttempt,
             last_tpv_transaction: {
               timestamp: new Date().toISOString(),
@@ -489,6 +537,10 @@ module.exports = {
         tpvParams: signedPayload,
         redirectURL,
         orderId,
+        subtotalAmount: Number(normalizedSubtotalAmount.toFixed(2)),
+        shippingAmount: Number(shippingQuote.amount || 0),
+        totalAmount: normalizedTotalAmount,
+        shipping: shippingQuote,
         paramBase64,
         signature,
       };
@@ -719,12 +771,17 @@ module.exports = {
         return { error: `Order ${orderId} not found` };
       }
 
+      const metadata = /** @type {any} */ (
+        (order.metadata && typeof order.metadata === 'object') ? order.metadata : {}
+      );
+
       ctx.body = {
         success: true,
         orderId,
         status: order.status,
         totalAmount: order.totalAmount,
         currency: order.currency,
+        pricing: metadata.pricing || null,
         customerEmail: order.customerEmail,
         metadata: order.metadata,
       };

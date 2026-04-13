@@ -126,13 +126,6 @@
   }
 }
 
-/* --- FONTES --- */
-/* Quitar @font-face: lo gestiona next/font/local en layout.tsx */
-/* No forzar font-family aquí; la aplica <body className={cillan.className}> */
-
-/* Opcional: evita que el navegador "fabrique" bold/italic si no existen en la fuente */
-html { font-synthesis-weight: none; font-synthesis-style: none; }
-
 /* Resto de utilidades y estilos */
 summary::-webkit-details-marker { display: none; }
 
@@ -175,21 +168,14 @@ body::-webkit-scrollbar,
   font-display: swap;
 }
 
-/* opcional: evita bold/italic sintéticos si la fuente no los trae */
-html { font-synthesis-weight: none; font-synthesis-style: none; }
-
-body { font-family: 'cillan', system-ui, sans-serif; }
-
-/* global (mejor evita en párrafos largos) */
-body { letter-spacing: -0.08em; }
-
-/* solo en títulos / logos */
-h1, .title, .logo {
-  letter-spacing: -0.05em; /* prueba entre -0.01em y -0.06em */
+body {
+  font-family: 'cillan', system-ui, sans-serif;
 }
 
-/* asegúrate de aplicar kerning del font */
-html { font-kerning: normal; font-feature-settings: "kern" 1; }
+html {
+  font-kerning: normal;
+  font-feature-settings: "kern" 1;
+}
 
 .animate-fadeZoom { animation: fadeZoom 0.3s ease-out forwards; }
 

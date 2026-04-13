@@ -616,10 +616,71 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     price: Schema.Attribute.Decimal;
     productName: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    sizeOptions: Schema.Attribute.JSON;
+    sizeType: Schema.Attribute.Enumeration<['alpha', 'numeric']> &
+      Schema.Attribute.DefaultTo<'alpha'>;
     slug: Schema.Attribute.UID<'productName'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiShippingRateShippingRate
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'shipping_rates';
+  info: {
+    description: 'Tarifas de envio editables por zona';
+    displayName: 'Shipping Rate';
+    pluralName: 'shipping-rates';
+    singularName: 'shipping-rate';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    amount: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'EUR'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::shipping-rate.shipping-rate'
+    > &
+      Schema.Attribute.Private;
+    method: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    zoneKey: Schema.Attribute.Enumeration<
+      [
+        'espana_peninsula',
+        'espana_baleares',
+        'espana_canarias',
+        'europa_cercana',
+        'europa_central',
+        'europa_norte_este',
+        'norteamerica',
+        'latinoamerica',
+        'asia_tier_1',
+        'asia_tier_2',
+        'resto_mundo',
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    zoneLabel: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -1138,6 +1199,7 @@ declare module '@strapi/strapi' {
       'api::home-image.home-image': ApiHomeImageHomeImage;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
+      'api::shipping-rate.shipping-rate': ApiShippingRateShippingRate;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
