@@ -42,7 +42,7 @@ Frontend (zonas más importantes):
 
 - `app/` → rutas App Router (ver sección 6)
 - `components/` → UI reutilizable, incluye `CheckoutTPV.tsx` y `CartModal.tsx`
-- `api/*.tsx` → hooks cliente para leer Strapi (`useGetProducts`, `useGetCollections`, `useGetHomeImages`, `useGetFeaturedProducts`)
+- `api/*.tsx` → hooks cliente para leer Strapi (`useGetProducts`, `useGetCollections`, `useGetCategories`, `useGetHomeImages`, `useGetFeaturedProducts`)
 - `lib/` → utilidades fetch/media/i18n + `shipping-rates.ts` (cálculo de envío en cliente)
 - `hooks/use-cart.tsx` → lógica carrito persistente (Zustand)
 - `locales/es`, `locales/en` → traducciones (`common.json`, ~270 líneas cada uno)
@@ -112,7 +112,7 @@ Usadas en código pero **faltantes en `.env.example`** (importante al desplegar 
 ## 6) Content-types Strapi
 
 - `product`: `productName`, `slug`, `images`, `active`, `order`, `isFeatured`, `price`, `color`, `details`/`details_en`, `materials`/`materials_en`, `garmentCare`/`garmentCare_en`, relación con `category`, `imageUrl` (json). **Nuevo (último commit)**: `sizeType` (enum `alpha`/`numeric`, default `alpha`) y `sizeOptions` (json) para soportar tallas numéricas de calzado además de las alfa de ropa.
-- `category`: `categoryName`, `slug`, relación manyToMany con `product`.
+- `category`: `categoryName`, `slug`, `order` (integer, opcional — posición en el menú), relación manyToMany con `product`. Totalmente gestionable desde el admin de Strapi: `components/ui/navbar.tsx` (vía hook `useGetCategories`) y `app/catalog/[category]/CatalogClient.tsx`/`page.tsx` (vía `getCategories()` server-side) leen las categorías en tiempo real — crear/editar/reordenar una categoría no requiere tocar código ni redeploy del frontend.
 - `collection`: `collectionName`, `slug`, `description`/`description_en`, `images`, `order`, `imageUrl`.
 - `home-image`: `homeImageName`, `slug`, `image`, `order`, `productSlug`, `imageUrl`.
 - `order`: `products` (json), `status` (enum `pending`/`processing`/`paid`/`failed`/`refunded`), `totalAmount`, `currency`, `customerEmail`/`customerName`/`customerPhone`, `billingAddress`/`shippingAddress` (json), `notes`, `metadata` (json), `orderedAt`, `paymentMethod` (enum `card`/`wallet`/`bizum`/`transfer`), `tpvTransactionId`, `tpvAuthCode`.
@@ -206,3 +206,12 @@ Archivos clave: `src/api/order/controllers/payment.js`, `src/api/order/services/
   - Página `/success` y `/checkout/error`
   - Contacto (`/api/contact/send-email`)
   - Health (`/api/health`)
+
+## 15) Despliegue
+
+- Es un **monorepo único** (`Juanlu8/web-cillanworld` en GitHub, remoto `origin`) y es el origen real de despliegue de ambos servicios — no hay repos separados por app.
+- Backend (Strapi) → **Render**, servicio `web-cillanworld`, con **Root Directory = `backend-cillan-world`**. Auto-deploy al hacer push a `main`.
+- Frontend (Next.js) → **Vercel**, proyecto conectado al mismo repo `Juanlu8/web-cillanworld` (Root Directory = `frontend-cillan-world`). Auto-deploy al hacer push a `main`.
+- Para desplegar ambos a la vez basta `git push origin main` desde la raíz. **No usar `git subtree push`**: pueden existir remotos locales residuales (`backend-cillan-world`, `frontend-cillan-world`) apuntando a `web-cillanworld-backend`/`web-cillanworld-frontend`, pero esos repos ya no existen en GitHub (confirmado con `gh api repos/...` → 404) — son vestigios de un setup antiguo de repos split, ignorarlos o eliminarlos con `git remote remove`.
+- Base de datos de producción: **Postgres externo en Neon** (no es un addon de Render, aunque el backend corra ahí) — el host real está en `DATABASE_HOST`/`DATABASE_URL` del entorno de Render. Para respaldos antes de un cambio de schema arriesgado, usar el sistema de **branches** de Neon (copy-on-write instantáneo, "Branch data and schema" con parent `production`) en vez de `pg_dump` manual.
+- Los cambios en `content-types/.../schema.json` de Strapi se auto-sincronizan contra la base de datos al arrancar (tanto en `develop` local como en producción tras el deploy). Añadir un campo nuevo es seguro (aditivo, columna nullable); **eliminar o renombrar** un campo existente sí borra la columna y sus datos en producción — pensarlo dos veces y valorar un branch de Neon antes.
