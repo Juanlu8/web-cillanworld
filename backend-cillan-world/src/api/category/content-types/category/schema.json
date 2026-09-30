@@ -24,6 +24,9 @@
       "relation": "manyToMany",
       "target": "api::product.product",
       "inversedBy": "categories"
+    },
+    "order": {
+      "type": "integer"
     }
   }
 }

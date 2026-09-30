@@ -5,6 +5,8 @@ import CartModal from "@/components/CartModal";
 import { useCart } from "@/hooks/use-cart";
 import type { CollectionType } from "@/types/collection";
 import { useGetCollections } from "@/api/useGetCollections";
+import type { CategoryType } from "@/types/category";
+import { useGetCategories } from "@/api/useGetCategories";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../LanguageSwitcher";
 import NextImage from "next/image";
@@ -30,6 +32,7 @@ const Navbar = () => {
   }, [i18n.isInitialized, i18n.language]);
 
   const { result: collectionsRaw } = useGetCollections();
+  const { result: categoriesRaw } = useGetCategories();
 
   // cierre con click fuera + Esc
   useEffect(() => {
@@ -60,6 +63,11 @@ const Navbar = () => {
     const list = collectionsRaw ?? [];
     return list.slice().sort((a, b) => (a.order ?? a.id ?? 0) - (b.order ?? b.id ?? 0));
   }, [collectionsRaw]);
+
+  const categories: CategoryType[] = useMemo(() => {
+    const list = categoriesRaw ?? [];
+    return list.slice().sort((a, b) => (a.order ?? a.id ?? 0) - (b.order ?? b.id ?? 0));
+  }, [categoriesRaw]);
 
   const total = useMemo(
     () =>
@@ -130,11 +138,18 @@ const Navbar = () => {
                   {t("navbar.shop").toUpperCase()}
                 </li>
                 {activeSubmenu === "shop" && (
-                  <ul className="mt-1 space-y-0 text-md">
+                  <ul className="mt-1 space-y-0 text-md max-h-36 overflow-y-auto">
                     <li onClick={() => goTo("/catalog/view-all")} className="hover:uppercase cursor-pointer text-outline-black"> {t("navbar.view_all")} </li>
-                    <li onClick={() => goTo("/catalog/tops")} className="hover:uppercase cursor-pointer text-outline-black"> {t("navbar.tops")} </li>
-                    <li onClick={() => goTo("/catalog/bottoms")} className="hover:uppercase cursor-pointer text-outline-black"> {t("navbar.bottoms")} </li>
-                    <li onClick={() => goTo("/catalog/runaway-pieces")} className="hover:uppercase cursor-pointer text-outline-black"> {t("navbar.runaway_pieces")} </li>
+                    {categories.map((category) => (
+                      <li
+                        key={category.id}
+                        onClick={() => goTo(`/catalog/${category.slug}`)}
+                        className="hover:uppercase cursor-pointer text-outline-black"
+                        role="menuitem"
+                      >
+                        {category.categoryName}
+                      </li>
+                    ))}
                   </ul>
                 )}
 

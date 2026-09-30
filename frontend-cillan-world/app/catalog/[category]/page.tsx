@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getProducts, getCategories } from "@/lib/strapi-server";
 import CatalogClient from "./CatalogClient";
 import type { Metadata } from "next";
+import { normalizeCategory, type CategoryType } from "@/types/category";
 
 type Params = { category?: string };
 
@@ -27,15 +28,11 @@ export async function generateMetadata(
   }
 
   const categoriesResponse = await getCategories();
-  const categories = categoriesResponse?.data ?? [];
-  const match = categories.find(
-    (cat: any) => (cat?.attributes?.slug || cat?.slug) === category
-  );
+  const categories = (categoriesResponse?.data ?? []).map(normalizeCategory);
+  const match = categories.find((cat: CategoryType) => cat.slug === category);
 
-  const categoryName =
-    match?.attributes?.categoryName || match?.categoryName || category;
-  const description =
-    match?.attributes?.description || match?.description || fallbackDescription;
+  const categoryName = match?.categoryName || category;
+  const description = fallbackDescription;
   const title = `${categoryName} - Catalogo | Cillan World`;
 
   return {
@@ -53,10 +50,10 @@ export async function generateMetadata(
 
 export async function generateStaticParams() {
   const response = await getCategories();
-  const categories = response.data || [];
+  const categories = (response.data || []).map(normalizeCategory);
 
-  return categories.map((cat: any) => ({
-    category: cat.attributes?.slug || "",
+  return categories.map((cat: CategoryType) => ({
+    category: cat.slug || "",
   }));
 }
 
@@ -83,7 +80,7 @@ export default async function CatalogPage({
     >
       <CatalogClient
         initialProducts={productsResponse.data || []}
-        categories={categoriesResponse.data || []}
+        categories={(categoriesResponse.data || []).map(normalizeCategory)}
         initialCategory={category || null}
       />
     </Suspense>

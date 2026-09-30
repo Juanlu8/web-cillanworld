@@ -9,11 +9,12 @@ import ProductCard from "@/components/ProductCard";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { getProductImageUrls } from "@/lib/product-images";
+import type { CategoryType } from "@/types/category";
 
 // ✅ Definir el tipo de las props
 type Props = {
   initialProducts: ProductType[];
-  categories: any[];
+  categories: CategoryType[];
   initialCategory: string | null;
 };
 
@@ -90,16 +91,15 @@ export default function CatalogClient({
   }, [orderedResult, activeCategory]);
 
   // title (use i18n on client)
+  const activeCategoryData = useMemo(
+    () => categories.find((c) => c.slug === activeCategory),
+    [categories, activeCategory]
+  );
+
   const pageTitle =
     !activeCategory || activeCategory === "view-all"
       ? t("general.all_catalogue").toUpperCase()
-      : activeCategory === "tops"
-      ? t("navbar.tops").toUpperCase()
-      : activeCategory === "bottoms"
-      ? t("navbar.bottoms").toUpperCase()
-      : activeCategory === "runaway-pieces"
-      ? t("navbar.runaway_pieces").toUpperCase()
-      : t("general.all_catalogue").toUpperCase();
+      : (activeCategoryData?.categoryName ?? t("general.all_catalogue")).toUpperCase();
 
   // --- JSON-LD: ItemList for catalog ---------------------------------------
   const jsonLd = useMemo(() => {
